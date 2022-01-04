@@ -1,0 +1,14 @@
+
+body {
+  background-image: linear-gradient(180deg, #072B36 0%, #031E26 100%);
+  /* background-image: linear-gradient(180deg, #062833 52.08%, rgba(6, 40, 51, 0.728261) 82.29%, rgba(6, 40, 51, 0) 100%); */
+}
+
+::-webkit-scrollbar {
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb:horizontal{
+  background: #6C6D6D;
+  border-radius: 3px;
+}
