@@ -5,33 +5,25 @@ import styles from './style';
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
 // import { useRouter } from 'next/router';
 import Router from 'next/router'
 import { Height } from '@material-ui/icons';
-const alchemyKey = "https://eth-ropsten.alchemyapi.io/v2/O1zFXAP1hugb6q3Iti5B8uFXtBbejZuc";
+import api from '../../utils/api';
+//const alchemyKey = "https://eth-ropsten.alchemyapi.io/v2/O1zFXAP1hugb6q3Iti5B8uFXtBbejZuc";
 //require('dotenv').config();
 //const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY;
-const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
+//const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 //const web3 = createAlchemyWeb3(alchemyKey); 
 const NFTcontractABI = require('../../NFT.json');
 const MarketcontractABI = require('../../Marketplace.json');
-// const NFTcontractAddress = "0x428DF45323574E562AB4180F0e89Bff7BE187C46";
-// const MarketcontractAddress = "0x588B1a01575DD533bf2A709490191b0438c4Eb33";
 const NFTcontractAddress = "0xd95D493b5B048bE25bA70a89AD2360AC5f653a68";
 const MarketcontractAddress = "0x2c8a4c0B41300Df687DFd0c1931AECe146BAE559";
-
 const Web3 = require("web3");
 let web3 = new Web3(
     new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/acc8266b5baf41c5ad44a05fe4a49925")
 );
-const api = axios.create({
-  baseURL: '/api'
-  // headers: {
-  //   'Content-Type': 'application/json'
-  // }
-});
 const useStyles = makeStyles(styles);
+
 export const connectWallet = async () => {
   if (window.ethereum) {
     try {
@@ -142,75 +134,65 @@ const Power = (props) => {
 }
 
 async function sellNft(id,price) {
-  window.contractMark = await new web3.eth.Contract(MarketcontractABI, MarketcontractAddress);
-  window.ContractNFT = await new web3.eth.Contract(NFTcontractABI, NFTcontractAddress);
-  const transactionParameters = {
-    to: NFTcontractAddress, // Required except during contract publications.
-    from: window.ethereum.selectedAddress, // must match user's active address.
-    'data': window.ContractNFT.methods.approve(MarketcontractAddress, id).encodeABI()//make call to NFT smart contract 
-  };
-  try {
-    const receipt = await window.ethereum
-    .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-    });
-  } catch (err) {
-    return {
-      error: err        
+  if(id!="" && price !="" && window.ethereum.selectedAddress != ""){
+    let data_approve = {
+      id: id,
+      address : window.ethereum.selectedAddress
     };
-  }
-  var TokenContract_ = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
-  TokenContract_.events.Approval((err, events)=>{
-    let sendprice = ethers.utils.parseUnits(price.toString(), 'ether')
-    let priceStr = parseInt(sendprice._hex).toString()
-    const transactionParameters = {
-        to: MarketcontractAddress, // Required except during contract publications.
-        from: window.ethereum.selectedAddress, // must match user's active address.
-        'data': window.contractMark.methods.listItemOnSale(id, NFTcontractAddress,priceStr).encodeABI()//make call to NFT smart contract 
-    };
-
+    const transactionParameters = await api.post('/cues/getApproveParam', JSON.stringify(data_approve));
     try {
-      window.ethereum
+      const receipt = await window.ethereum
       .request({
           method: 'eth_sendTransaction',
-          params: [transactionParameters],
+          params: [transactionParameters.data],
       });
     } catch (err) {
       return {
         error: err        
       };
     }
-  });  
+    var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
+    TokenContract.events.Approval(async (err, events)=>{
+      let data_sell = {
+        id: id,
+        address : window.ethereum.selectedAddress,
+        price : price
+      };      
+      const transactionParameters = await api.post('/cues/getSellParam', JSON.stringify(data_sell));
+      try {
+        window.ethereum
+        .request({
+            method: 'eth_sendTransaction',
+            params: [transactionParameters.data],
+        });
+      } catch (err) {
+        return {
+          error: err        
+        };
+      } 
+    }); 
+  }   
 }
 
-async function buyNft(id,price) {
-  window.contractMark = await new web3.eth.Contract(MarketcontractABI, MarketcontractAddress);
-  window.ContractNFT = await new web3.eth.Contract(NFTcontractABI, NFTcontractAddress);
-  //var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
-
-  let sendprice = ethers.utils.parseUnits(price.toString(), 'ether')
-
-  const transactionParameters = {
-      to: MarketcontractAddress, // Required except during contract publications.
-      from: window.ethereum.selectedAddress, // must match user's active address.
-      value: sendprice._hex,
-      'data': window.contractMark.methods.sellMarketItem(id, NFTcontractAddress).encodeABI()//make call to NFT smart contract 
-  };
-
-  // TokenContract.events.Transfer((err, events)=>{
-  //   Router.reload(window.location.pathname);});
-
-  try {
-    const receipt = await window.ethereum
-    .request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-    });
-  } catch (err) {
-    return {
-      error: err        
+async function buyNft(id,price) { 
+  if(id!="" && price !="" && window.ethereum.selectedAddress != ""){
+    let data = {
+      id: id,
+      address : window.ethereum.selectedAddress,
+      price : price
     };
+    const transactionParameters = await api.post('/cues/getBuyParam', JSON.stringify(data));
+    try {
+      const receipt = await window.ethereum
+      .request({
+          method: 'eth_sendTransaction',
+          params: [transactionParameters.data],
+      });
+    } catch (err) {
+      return {
+        error: err        
+      };
+    }
   }
 }
 
@@ -222,7 +204,7 @@ const Cues = () => {
 
   var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
   TokenContract.events.Transfer((err, events)=>{Router.reload(window.location.pathname);});
-
+  
   function addWalletListener() {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", (accounts) => {
@@ -248,8 +230,7 @@ const Cues = () => {
         });
         if (addressArray.length > 0) {
           loadNFTs(addressArray[0]);
-          loadMarket();
-          
+          loadMarket();          
         } 
       } catch (err) {
         return {
@@ -258,15 +239,13 @@ const Cues = () => {
       }
     } 
   };
-  async function loadMarket() {
-    window.nftContract = await new web3.eth.Contract(NFTcontractABI, NFTcontractAddress);
-    window.marketContract = await new web3.eth.Contract(MarketcontractABI, MarketcontractAddress);
-    const data = await  window.marketContract.methods.fetchAllItemsOnSale().call();
-    const items = await Promise.all(data.map(async i => {
-      const tokenUri = await window.nftContract.methods.tokenURI(i.tokenId).call();
-      const meta = await axios.get(tokenUri);
+  async function loadMarket() {    
+    const res = await api.post('/cues/fetchOnSale'); 
+    const items = await Promise.all(res.data.map(async i => {
+      let data_ID = { Id: i.tokenId};
+      const tokenUri = await api.post('/cues/getTokenURI', JSON.stringify(data_ID)); 
+      const meta = await axios.get(tokenUri.data);
       let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-      //let price = parseInt(i.price);
       let item = {
         price,
         itemId: parseInt(i.itemId),
@@ -290,16 +269,14 @@ const Cues = () => {
     setMarketNfts(items)
     setLoadingState('loaded')
   }
-  async function loadNFTs(userAddress) { 
-    window.nftContract = await new web3.eth.Contract(NFTcontractABI, NFTcontractAddress);
-    window.marketContract = await new web3.eth.Contract(MarketcontractABI, MarketcontractAddress);
-    const data = await  window.marketContract.methods.fetchAllItemsOfOwner(userAddress).call();
-    const items = await Promise.all(data.map(async i => {
-      const tokenUri = await window.nftContract.methods.tokenURI(i.tokenId).call();
-      const meta = await axios.get(tokenUri);
+  async function loadNFTs(userAddress) {     
+    let data_address = { address: userAddress};
+    const res = await api.post('/cues/fetchOfOwner',JSON.stringify(data_address));  
+    const items = await Promise.all(res.data.map(async i => {
+      let data_ID = { Id: i.tokenId};
+      const tokenUri = await api.post('/cues/getTokenURI', JSON.stringify(data_ID)); 
+      const meta = await axios.get(tokenUri.data);
       let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-      //let price = parseInt(i.price);
-      
       let item = {
         price,
         itemId: parseInt(i.itemId),
@@ -318,8 +295,7 @@ const Cues = () => {
         spin: meta.data.spin,
         time: meta.data.time,
         isAuto: false,
-      }
-      
+      } 
       return item
     }))
     setNfts(items)

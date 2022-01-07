@@ -8,13 +8,13 @@ import LifesAndTokens from '../../components/LifesAndTokens';
 import styles from './style';
 import { useEffect, useState } from "react";
 import { connectWallet} from "../../components/Cues/index.js";
-import { ethers } from 'ethers'
-const Web3 = require("web3");
-let web3 = new Web3(
-    new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/acc8266b5baf41c5ad44a05fe4a49925")
-);
+import { ethers } from 'ethers';
 import api from '../../utils/api';
 const useStyles = makeStyles(styles);
+// const Web3 = require("web3");
+// let web3 = new Web3(
+//     new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/acc8266b5baf41c5ad44a05fe4a49925")
+// );
 
 function HomePage() {
   const classes = useStyles();
@@ -51,10 +51,15 @@ function HomePage() {
           method: "eth_accounts",
         });
         if (addressArray.length > 0) {
-          web3.eth.getBalance(addressArray[0], (err, balanceOf) => {
-            let balETH = ethers.utils.formatUnits(balanceOf, 'ether');               
-            setBalance(String(balETH).substring(0, 6) + " ETH");
-          });
+          setAdress(addressArray[0]);
+          // web3.eth.getBalance(addressArray[0], (err, balanceOf) => {
+          //   let balETH = ethers.utils.formatUnits(balanceOf, 'ether');               
+          //   setBalance(String(balETH).substring(0, 6) + " ETH");
+          // });
+          let data = { address: addressArray[0].toString()};
+          let res = await api.post('/cues/getBalance', JSON.stringify(data));
+          let balETH = ethers.utils.formatUnits(res.data.toString(), 'ether'); 
+          setBalance(String(balETH).substring(0, 6) + " ETH");
         } 
       } catch (err) {
         return {
@@ -65,27 +70,29 @@ function HomePage() {
   };
 
   async function connect_Wallet() {
-    
+    let balETH;
     if(address.length==0){
       const walletResponse = await connectWallet();
       setAdress(walletResponse.address);
-      web3.eth.getBalance(walletResponse.address, (err, balanceOf) => {
-        let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-        setBalance(String(balETH).substring(0, 6) + " ETH");
-      });  
+      // web3.eth.getBalance(walletResponse.address, (err, balanceOf) => {
+      //   let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+      //   setBalance(String(balETH).substring(0, 6) + " ETH");
+      // });
+      let data = { address: walletResponse.address};
+      let res = await api.post('/cues/getBalance', JSON.stringify(data));
+      balETH = ethers.utils.formatUnits(res.data.toString(), 'ether');     
+      setBalance(String(balETH).substring(0, 6) + " ETH");
       
     }
     else{
-      web3.eth.getBalance(address, (err, balanceOf) => {
-        let balETH = ethers.utils.formatUnits(balanceOf, 'ether');               
-        setBalance(String(balETH).substring(0, 6) + " ETH");
-      });
-      // let data = { address: '0x89C30f2Af966Ed9e733E5dCFc76AE984EaAF5373'};
-      //     const res = await api.get('/cues/getBalance');
-      //     //web3.eth.getBalance(addressArray[0], (err, balanceOf) => {
-      //       //let balETH = ethers.utils.formatUnits(balanceOf, 'ether');   
-      //       let balETH = ethers.utils.formatUnits(res, 'ether');     
-      //       setBalance(String(balETH).substring(0, 6) + " ETH");     
+      // web3.eth.getBalance(address, (err, balanceOf) => {
+      //   let balETH = ethers.utils.formatUnits(balanceOf, 'ether');               
+      //   setBalance(String(balETH).substring(0, 6) + " ETH");
+      // });
+      let data = { address: address};
+      let res = await api.post('/cues/getBalance', JSON.stringify(data));
+      balETH = ethers.utils.formatUnits(res.data.toString(), 'ether');     
+      setBalance(String(balETH).substring(0, 6) + " ETH");   
     }
   };
 

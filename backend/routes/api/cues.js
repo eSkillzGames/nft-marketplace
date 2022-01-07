@@ -24,12 +24,40 @@ router.post('/getTokenURI', async function(req, res) {
 
 router.post('/fetchOnSale', async function(req, res) {
   let resVal =await MarketContract.methods.fetchAllItemsOnSale().call();
-  res.send(resVal);
+  const items = await Promise.all(resVal.map(async i => {
+    let item = {
+      itemId: i.itemId,
+      lastPrice: i.lastPrice,
+      lastSeller: i.lastSeller,
+      nftContract: i.nftContract,
+      onSale: i.onSale,
+      owner: i.owner,
+      prevOwners: i.prevOwners,
+      price: i.price,
+      tokenId: i.tokenId      
+    }
+    return item
+  })) 
+  res.send(items);
 });
 
 router.post('/fetchOfOwner', async function(req, res) {
   let resVal =await MarketContract.methods.fetchAllItemsOfOwner(req.body.address).call();
-  res.send(resVal);
+  const items = await Promise.all(resVal.map(async i => {
+    let item = {
+      itemId: i.itemId,
+      lastPrice: i.lastPrice,
+      lastSeller: i.lastSeller,
+      nftContract: i.nftContract,
+      onSale: i.onSale,
+      owner: i.owner,
+      prevOwners: i.prevOwners,
+      price: i.price,
+      tokenId: i.tokenId      
+    }
+    return item
+  })) 
+  res.send(items);
 });
 
 router.post('/getBalance', async function(req, res) {
@@ -37,40 +65,45 @@ router.post('/getBalance', async function(req, res) {
   res.send(resVal);
 });
 
+// router.get('/getBalance', async function(req, res) {
+//   let resVal =await web3.eth.getBalance("0x89C30f2Af966Ed9e733E5dCFc76AE984EaAF5373");
+//   res.send(resVal);
+// });
+
 router.post(
-  '/getBuyParam/:id',
+  '/getBuyParam',
   async function (req, res) {
     let sendprice = ethers.utils.parseUnits(req.body.price.toString(), 'ether');
     const transactionParameters = {
         to: MarketcontractAddress,
         from: req.body.address,
-        value: parseInt(sendprice._hex).toString(),
-        data: MarketContract.methods.sellMarketItem(req.params.id, NFTcontractAddress).encodeABI()
+        value: sendprice._hex,
+        'data': MarketContract.methods.sellMarketItem(req.body.id, NFTcontractAddress).encodeABI()
     };  
     res.send(transactionParameters);    
   }
 );
 
 router.post(
-  '/getSellParam/:id',
+  '/getSellParam',
   async function (req, res) {
     let sendprice = ethers.utils.parseUnits(req.body.price.toString(), 'ether');
     const transactionParameters = {
         to: MarketcontractAddress,
         from: req.body.address,
-        data: MarketContract.methods.listItemOnSale(req.params.id, NFTcontractAddress,parseInt(sendprice._hex).toString()).encodeABI()
+        data: MarketContract.methods.listItemOnSale(req.body.id, NFTcontractAddress,parseInt(sendprice._hex).toString()).encodeABI()
     };
     res.send(transactionParameters);    
   }
 );
 
 router.post(
-  '/getApproveParam/:id',
+  '/getApproveParam',
   async function (req, res) {
     const transactionParameters = {
       to: NFTcontractAddress,
       from: req.body.address,
-      data: TokenContract.methods.approve(MarketcontractAddress, req.params.id).encodeABI()
+      data: TokenContract.methods.approve(MarketcontractAddress, req.body.id).encodeABI()
     };
     res.send(transactionParameters);    
   }
