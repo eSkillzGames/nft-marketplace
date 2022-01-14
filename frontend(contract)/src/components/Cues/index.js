@@ -196,15 +196,28 @@ async function buyNft(id,price) {
   }
 }
 
+
 const Cues = () => {
   const classes = useStyles();
   const [nfts, setNfts] = useState([])
   const [marketNfts, setMarketNfts] = useState([])
   const [loadingState, setLoadingState] = useState('not-loaded')
-
+  const [walletAddress, setWalletAddress] = useState()
+  const [ttt, setTTT] = useState(0)
   var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
-  TokenContract.events.Transfer((err, events)=>{Router.reload(window.location.pathname);});
   
+  TokenContract.events.Transfer({})
+    //Router.reload(window.location.pathname);    
+    // setTTT(ttt++);
+    // if(refresNum== 0){
+    //   refresh(walletAddress);
+    // }
+    // refresNum++;
+  .on('data', async function(event){
+    Router.reload(window.location.pathname);  
+  })
+  
+   
   function addWalletListener() {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", (accounts) => {
@@ -229,6 +242,7 @@ const Cues = () => {
           method: "eth_accounts",
         });
         if (addressArray.length > 0) {
+          setWalletAddress(addressArray[0]);
           loadNFTs(addressArray[0]);
           loadMarket();          
         } 

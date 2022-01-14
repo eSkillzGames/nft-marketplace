@@ -20,7 +20,7 @@ function HomePage() {
   const classes = useStyles();
   
   const [selected, setSelected] = React.useState(0);
-
+  
   const images = [
     "cues.png",
     "chalks.png",
@@ -42,6 +42,7 @@ function HomePage() {
   useEffect(() => {
     getCurrentWalletConnected(); 
   }, [])
+  
 
   async function getCurrentWalletConnected() {
     
