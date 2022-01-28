@@ -1,11 +1,11 @@
 
 import React from 'react';
-import HomePage from '../../src/pages/home';
+import MintPage from '../../src/pages/mint';
 
 function Home() {
 
   return (
-    <HomePage />
+    <MintPage />
   );
 }
 

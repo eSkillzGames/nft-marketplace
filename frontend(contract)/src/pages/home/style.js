@@ -19,6 +19,11 @@ const styles = createStyles({
     justifyContent: 'space-between',
     position: 'relative',
     zIndex: '9999',
+    '& > img': {
+      position: 'absolute',
+      left: '50px',
+      borderRadius: '10px',
+    },
   },
   btn: {
     width: '24%',

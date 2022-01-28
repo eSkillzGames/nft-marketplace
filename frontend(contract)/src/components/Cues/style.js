@@ -80,7 +80,7 @@ const styles = createStyles({
         padding: '0 20px',
       },
       '&:nth-child(3)': {
-        minWidth: '170px',
+        minWidth: '220px',
         alignItems: 'center',
         justifyContent: 'center',
         '& button': {
@@ -100,7 +100,7 @@ const styles = createStyles({
           background: '#2DBFDF',
         },
         '& button#buy': {
-          width: '120px',
+          width: '140px',
         },
         '& > div': {
           width: '100%',

@@ -128,7 +128,7 @@ const Chalks = () => {
   
   return (
     <>
-      <div className={classes.hero}>
+      {/* <div className={classes.hero}>
         <img src="/images/bg.png" alt="" />
         <div>
           <div className={classes.buttons}>
@@ -155,7 +155,7 @@ const Chalks = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
