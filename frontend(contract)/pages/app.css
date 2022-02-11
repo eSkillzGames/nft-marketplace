@@ -1,7 +1,8 @@
 
 body {
-  background-image: linear-gradient(180deg, #072B36 0%, #031E26 100%);
-  /* background-image: linear-gradient(180deg, #062833 52.08%, rgba(6, 40, 51, 0.728261) 82.29%, rgba(6, 40, 51, 0) 100%); */
+  background-color: #072B36 !important; 
+  /*background-image: linear-gradient(180deg, #072B36 0%, #031E26 100%);*/
+  
 }
 
 /* ::-webkit-scrollbar {

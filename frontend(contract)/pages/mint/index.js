@@ -2,11 +2,11 @@
 import React from 'react';
 import MintPage from '../../src/pages/mint';
 
-function Home() {
+function Mint() {
 
   return (
     <MintPage />
   );
 }
 
-export default Home;
+export default Mint;

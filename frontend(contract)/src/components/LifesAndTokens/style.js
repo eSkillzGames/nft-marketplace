@@ -13,7 +13,7 @@ const styles = createStyles({
       alignItems: 'center',
       justifyContent: 'space-between',
       width: '100%',
-      '&:first-child': {
+      '&:nth-child(2)': {
         '& > span': {
           width: '30%',
           border: '1px solid #0F3D4B',
@@ -58,6 +58,41 @@ const styles = createStyles({
       color: '#849297',
       textTransform: 'uppercase',
     },
+    
+  },
+  btn : {
+    width: '24%',
+    height: '40px',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    color: 'white',
+    '& img': {
+      margin: '0 8px 4px 0',
+    },
+  },
+  btn1 : {
+    width: '20%',
+    height: '40px',
+    background: 'rgba(0, 255, 0, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    color: 'white',
+    '& img': {
+      margin: '0 8px 4px 0',
+    },
+  },
+  btn2 : {
+    width: '20%',
+    height: '40px',
+    background: 'rgba(255, 0, 255, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    color: 'white',
+    '& img': {
+      margin: '0 8px 4px 0',
+    },
+  },
+  selected_btn: {
+    background: 'linear-gradient(180deg, rgba(45, 191, 223, 0.2) 0%, #2DBFDF 100%)',
+    border: '1px solid #2DBFDF',
   },
   card: {
     background: 'linear-gradient(180deg, rgba(15, 61, 75, 0.3) 0%, #0F3D4B 100%)',

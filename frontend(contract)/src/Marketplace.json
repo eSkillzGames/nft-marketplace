@@ -5,6 +5,19 @@
     "type": "constructor"
   },
   {
+    "inputs": [],
+    "name": "NFTContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -25,6 +38,42 @@
         "type": "uint256"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "createMarketItemFromNFTContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "nftContract",
+        "type": "address"
+      }
+    ],
+    "name": "createMarketItems",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -80,7 +129,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarket1.MarketItem[]",
+        "internalType": "struct NFTMarket.MarketItem[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -146,7 +195,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarket1.MarketItem[]",
+        "internalType": "struct NFTMarket.MarketItem[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -206,7 +255,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarket1.MarketItem[]",
+        "internalType": "struct NFTMarket.MarketItem[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -272,7 +321,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarket1.MarketItem[]",
+        "internalType": "struct NFTMarket.MarketItem[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -338,7 +387,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarket1.MarketItem[]",
+        "internalType": "struct NFTMarket.MarketItem[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -404,9 +453,73 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct NFTMarket1.MarketItem[]",
+        "internalType": "struct NFTMarket.MarketItem[]",
         "name": "",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getIdToMarketItemOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getIdToMarketItemTokenID",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getListingPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMarketOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -449,6 +562,29 @@
       }
     ],
     "name": "listItemOnSale",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "listItemOnSaleFromNFTContract",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -529,6 +665,32 @@
     "name": "setMarketOwner",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_NFTAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setNFTContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "payable",
     "type": "function"
   }
 ]

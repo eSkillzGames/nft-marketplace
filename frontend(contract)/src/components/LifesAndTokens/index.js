@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button, makeStyles } from '@material-ui/core';
+import { useRouter } from 'next/router';
 import styles from './style';
 
 const useStyles = makeStyles(styles);
@@ -36,10 +37,11 @@ const Card = (props) => {
 
 const LifesAndTokens = () => {
   const classes = useStyles();
-
+  const router = useRouter();
   const [selectedLife, setSelectedLife] = React.useState(0);
   const [selectedToken, setSelectedToken] = React.useState(0);
   const [time, setTime] = React.useState(1532);
+  const [esgAndSPORTSelected, setESGAndSPORTSelected] = React.useState(0);
 
   const lifes = [
     {
@@ -102,6 +104,15 @@ const LifesAndTokens = () => {
   return (
     <>
       <div className={classes.hero}>
+        <div style={{justifyContent: 'center',marginBottom:"20px"}}>
+          <Button className={`${classes.btn1} ${esgAndSPORTSelected === 2 ? classes.selected_btn : ''}`} onClick={() => {setESGAndSPORTSelected(2);router.push('/esg');}}>              
+            {"ESG Token sale"}
+          </Button>
+          <div style={{width:"34px"}}></div>
+          <Button className={`${classes.btn2} ${esgAndSPORTSelected === 1 ? classes.selected_btn : ''}`} onClick={() => {setESGAndSPORTSelected(1);router.push('/sport');}}>              
+            {"SPORT Token sale"}
+          </Button>
+        </div>        
         <div>
           <span />
           <div>

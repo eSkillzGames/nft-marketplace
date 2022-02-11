@@ -2,12 +2,11 @@
 import React from 'react';
 import { Button, FormControlLabel, Checkbox, makeStyles, LinearProgress } from '@material-ui/core';
 import styles from './style';
-import { ethers } from 'ethers'
+import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Directions } from '@material-ui/icons';
 import { element } from 'prop-types';
-
 const { EventEmitter } = require("events");
 
 // import { useRouter } from 'next/router';
@@ -22,8 +21,8 @@ const NFTcontractABI = require('../../NFT.json');
 const MarketcontractABI = require('../../Marketplace.json');
 // const NFTcontractAddress = "0xd95D493b5B048bE25bA70a89AD2360AC5f653a68";
 // const MarketcontractAddress = "0x2c8a4c0B41300Df687DFd0c1931AECe146BAE559";
-const NFTcontractAddress = "0x2dC7DE43f04Cf66fA0fa25cDAD796Ff3fcF9e56A";
-const MarketcontractAddress = "0x5ef97ACc5C9b671f9c59f214b5733635580ef089";
+const NFTcontractAddress = "0xF1f88246D1809D520b89E5470F07beD7Ae9451e9";
+const MarketcontractAddress = "0x1A885f35a076e5075C98062a8b61c657862Fd252";
 var pendingArray = new Array(100000);
 
 const Web3 = require("web3");
@@ -31,14 +30,20 @@ const Web3 = require("web3");
 let web3 = new Web3(
     new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/acc8266b5baf41c5ad44a05fe4a49925")
 );
+
+
 const useStyles = makeStyles(styles);
 
 const myEmitter = new EventEmitter();
 let eventvariable = 1;
+var repeatMarkOwnedCheck = new Array(100000);
+var repeatOwnedCheck = new Array(100000);
+var repeatMarkCheck = new Array(100000);
 export const connectWallet = async () => {
   const { ethereum } = window;
+ 
   if (ethereum) {
-    try {
+    try {     
       const addressArray = await ethereum.request({
         method: "eth_requestAccounts",
       });
@@ -47,14 +52,14 @@ export const connectWallet = async () => {
           return {
             status: "success : Connect",  
             address: addressArray[0],    
-            chainID: chainID, 
+            chainID: chainIDBuffer, 
           };
       }
       else{
         return {
           status: "error : Another network",  
           address: addressArray[0],     
-          chainID: chainID,
+          chainID: chainIDBuffer,
         };
       }
 
@@ -88,14 +93,27 @@ const Cue = (props) => {
   const [sellprice, setPrice] = useState("");
   const [isPending, setIsPending] = useState(0);
   
-  const { name, itemId, level, owned, exp, currentPower, totalPower, image, force, aim, spin, time, isActive, price, lastPrice, isAuto, isSelected, ...rest } = props;
+  const { name, description, itemId, tokenId, level, owned, exp, currentPower, totalPower, image, force, aim, spin, time, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
   myEmitter.on('event1', () => {
     setIsPending(1-isPending);
   });
-  return (
-    <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>
-      <div>
-        <div>
+  var countReal = 0;
+  if(check == 0){
+    countReal = repeatOwnedCheck[count];
+  }
+  else if(check == 1){
+    countReal = repeatMarkOwnedCheck[count];
+  }
+  else{
+    countReal = repeatMarkCheck[count];
+  }
+  if(countReal > 0){
+  
+  return (  
+      
+    <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>      
+      <div>                        
+        <div>        
           <h3>{name}</h3>
           <div>
             <p>{level} Level</p>
@@ -104,7 +122,16 @@ const Cue = (props) => {
             <img src="/images/power.png" alt="" />
           </div>
         </div>
-        <img src={image} alt="" />
+        <h4 style={{textAlign: "center", padding:"4px 0px", margin : "0px"}}>{description}</h4>
+        <div style={{maxWidth:"400px", maxHeight : "30px"}}>
+          <img src={image} alt="" width="100%"/>          
+        </div>
+        
+      </div>
+      <div>
+        <span style={{margin : "0px 50%", color : "white", fontSize : "20px",paddingTop:"30px"}}>
+          {countReal > 1 ? countReal : ""}
+        </span> 
       </div>
       <div>
         <Power power={force} label="Force" />
@@ -146,7 +173,7 @@ const Cue = (props) => {
             {isActive ? (
               <>
               <div>
-                <Button id="upgrade" style = {{width : "10px"}} onClick={() => {eventvariable = 0;pendingArray[itemId] = 1;setIsPending(1-isPending);sellNft(itemId,sellprice);}}>Sell</Button>
+                <Button id="upgrade" style = {{width : "10px"}} onClick={() => {eventvariable = 0;pendingArray[itemId] = 1;setIsPending(1-isPending);sellNft(itemId,tokenId,sellprice);}}>Sell</Button>
                 <input
                   type="text"
                   placeholder="0.00"
@@ -185,7 +212,10 @@ const Cue = (props) => {
       </div>
       { isSelected && <label>Selected</label> }
     </div>
-  )
+  )}
+  else{
+    return(<div/>)
+  }
 }
 
 const Power = (props) => {
@@ -202,42 +232,24 @@ const Power = (props) => {
   )
 }
 
-async function sellNft(id,price) {
+async function sellNft(id,tokenID, price) {
   const { ethereum } = window;
   if (ethereum) {
     const chainIDBuffer = await ethereum.networkVersion;
     if(chainIDBuffer == 3){
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
-      const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);         
+      const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);  
+      let sendprice = ethers.utils.parseUnits(price.toString(), 'ether')       
       try {
-        let nftTxn = await nftContract.approve(MarketcontractAddress, id);   
-        await nftTxn.wait(); 
-        if (ethereum) {
-          const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 3){            
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const signer = provider.getSigner();
-            let sendprice = ethers.utils.parseUnits(price.toString(), 'ether')
-            const contractMark = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
-            try {
-              let nftTxn1 = await contractMark.listItemOnSale(id, NFTcontractAddress,parseInt(sendprice._hex).toString());   
-              await nftTxn1.wait();              
-              pendingArray[id] = 0; 
-              
-              eventEmit();
-
-              //Cues();    
-            } catch (err) {
-              pendingArray[id] = 0;
-              eventEmit();
-              //Cues();
-              return {
-                error: err        
-              };
-            }                         
+        let nftTxn = await nftContract.approveAndListOnsSale(id, parseInt(sendprice._hex).toString(), tokenID,
+          {
+            value: ethers.utils.parseUnits("0.0025", 'ether')._hex,
           }
-        }     
+        );   
+        await nftTxn.wait(); 
+        pendingArray[id] = 0;               
+        eventEmit();            
       } catch (err) {
         pendingArray[id] = 0;
         eventEmit();        
@@ -325,7 +337,8 @@ const Cues = (props) => {
   const [loaded, setLoaded] = useState(0)
   const [walletAddress, setWalletAddress] = useState(0)
   var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
-  const {check, sortVal} = props;
+  const {check, sortVal, connected} = props;
+  
   if(loaded == 0){
     setLoaded(1);
     TokenContract.events.Transfer((err, events)=>{
@@ -380,7 +393,7 @@ const Cues = (props) => {
   };
 
   async function loadMarketOwned(userAddress) {
-    if(!check){
+    if(!check && connected){
       const { ethereum } = window;
       if (ethereum) {
         const chainIDBuffer = await ethereum.networkVersion;
@@ -401,6 +414,7 @@ const Cues = (props) => {
               price,
               lastPrice,
               itemId: parseInt(i.itemId),
+              tokenId: parseInt(i.tokenId),
               lastseller: i.lastSeller,
               owner: i.owner,
               owned: 1,
@@ -430,8 +444,21 @@ const Cues = (props) => {
               return a.price - b.price;
             });
           }
-          
-          setMarketNftsOwned(items)
+
+          for (var i = 0; i < items.length; i++) {
+            repeatMarkOwnedCheck[i] = 1;
+            for(var j = 0; j < i; j++){
+              if(items[i].price === items[j].price && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
+                items[i].level === items[j].level &&items[i].exp === items[j].exp &&items[i].currentPower === items[j].currentPower &&items[i].totalPower === items[j].totalPower &&
+                items[i].force === items[j].force &&items[i].aim === items[j].aim &&items[i].spin === items[j].spin &&items[i].time === items[j].time &&repeatMarkOwnedCheck[j] > 0){
+                repeatMarkOwnedCheck[i] = 0;
+                repeatMarkOwnedCheck[j]+=1;
+                break;
+              }
+            }
+            
+          }
+          setMarketNftsOwned(items)          
           setLoadingState('loaded')        
         }
       } 
@@ -439,7 +466,7 @@ const Cues = (props) => {
   }
 
   async function loadMarket(userAddress) {
-    if(!check){
+    if(!check && connected){
       const { ethereum } = window;
       if (ethereum) {
         const chainIDBuffer = await ethereum.networkVersion;
@@ -460,6 +487,7 @@ const Cues = (props) => {
               price,
               lastPrice,
               itemId: parseInt(i.itemId),
+              tokenId: parseInt(i.tokenId),
               lastseller: i.lastSeller,
               owner: i.owner,
               owned: 0,
@@ -488,6 +516,20 @@ const Cues = (props) => {
               return a.price - b.price;
             });
           }
+          for (var i = 0; i < items.length; i++) {
+            repeatMarkCheck[i] = 1;
+            for(var j = 0; j < i; j++){
+              if(items[i].price === items[j].price && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
+                items[i].level === items[j].level &&items[i].exp === items[j].exp &&items[i].currentPower === items[j].currentPower &&items[i].totalPower === items[j].totalPower &&
+                items[i].force === items[j].force &&items[i].aim === items[j].aim &&items[i].spin === items[j].spin &&items[i].time === items[j].time &&repeatMarkCheck[j] > 0){
+                repeatMarkCheck[i] = 0;
+                repeatMarkCheck[j]+=1;
+                break;
+              }
+            }
+            
+          }
+          
           setMarketNfts(items)
           setLoadingState('loaded')        
         }
@@ -496,7 +538,7 @@ const Cues = (props) => {
   }
 
   async function loadNFTs(userAddress) { 
-    if(check){
+    if(check && connected){
       const { ethereum } = window;
       if (ethereum) {
         const chainIDBuffer = await ethereum.networkVersion;
@@ -517,6 +559,7 @@ const Cues = (props) => {
               price,
               lastPrice,
               itemId: parseInt(i.itemId),
+              tokenId: parseInt(i.tokenId),
               lastseller: i.lastSeller,
               owner: i.owner,
               image: meta.data.image_url,
@@ -546,6 +589,20 @@ const Cues = (props) => {
               return a.price - b.price;
             });
           }
+          for (var i = 0; i < items.length; i++) {
+            repeatOwnedCheck[i] = 1;
+            for(var j = 0; j < i; j++){
+              if(items[i].lastPrice === items[j].lastPrice && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
+                items[i].level === items[j].level &&items[i].exp === items[j].exp &&items[i].currentPower === items[j].currentPower &&items[i].totalPower === items[j].totalPower &&
+                items[i].force === items[j].force &&items[i].aim === items[j].aim &&items[i].spin === items[j].spin &&items[i].time === items[j].time &&repeatOwnedCheck[j] > 0){
+                repeatOwnedCheck[i] = 0;
+                repeatOwnedCheck[j]+= 1;
+                break;
+              }
+            }
+            
+          }
+          
           setNfts(items)
           setLoadingState('loaded')
         }
@@ -559,27 +616,33 @@ const Cues = (props) => {
     <>
       <div className={classes.hero}>
         { check === 1 &&
-          nfts.map((cue, index) => (
-            <Cue 
-            key={index}
-            itemId = {cue.itemId}
-            name={cue.name}
-            level={cue.level}
-            exp={cue.exp}
-            currentPower={cue.currentPower}
-            totalPower={cue.totalPower}
-            image={cue.image}
-            force={cue.force}
-            aim={cue.aim}
-            spin={cue.spin}
-            time={cue.time}
-            isActive={cue.isActive}
-            price={cue.price}
-            lastPrice={cue.lastPrice}
-            isAuto={cue.isAuto}
-            isSelected={selected === index}
-            onClick={() => setSelected(index)}
-          />            
+          nfts.map((cue, index) =>(
+            //if(repeatOwnedCheck[index] > 0){
+              <Cue 
+              key={index}
+              itemId = {cue.itemId}
+              tokenId = {cue.tokenId}
+              name={cue.name}
+              description = {cue.description}
+              level={cue.level}
+              exp={cue.exp}
+              currentPower={cue.currentPower}
+              totalPower={cue.totalPower}
+              image={cue.image}
+              force={cue.force}
+              aim={cue.aim}
+              spin={cue.spin}
+              time={cue.time}
+              isActive={cue.isActive}
+              price={cue.price}
+              lastPrice={cue.lastPrice}
+              isAuto={cue.isAuto}
+              count = {index}
+              check = {0}
+              isSelected={selected === index}
+              onClick={() => setSelected(index)}
+            />
+           // }                        
           ))
         }
         { check === 0 &&
@@ -587,7 +650,9 @@ const Cues = (props) => {
             <Cue 
             key={nfts.length+index}
             itemId = {cue.itemId}
+            tokenId = {cue.tokenId}
             name={cue.name}
+            description = {cue.description}
             owned = {cue.owned}
             level={cue.level}
             exp={cue.exp}
@@ -601,6 +666,8 @@ const Cues = (props) => {
             isActive={cue.isActive}
             price={cue.price}
             lastPrice={cue.lastPrice}
+            count = {index}
+            check = {1}
             isSelected={selected === nfts.length+index}
             onClick={() => setSelected(nfts.length+index)}
           />            
@@ -611,7 +678,9 @@ const Cues = (props) => {
             <Cue 
             key={nfts.length+marketNftsOwned.length+index}
             itemId = {cue.itemId}
+            tokenId = {cue.tokenId}
             name={cue.name}
+            description = {cue.description}
             owned = {cue.owned}
             level={cue.level}
             exp={cue.exp}
@@ -625,6 +694,8 @@ const Cues = (props) => {
             isActive={cue.isActive}
             price={cue.price}
             lastPrice={cue.lastPrice}
+            count = {index}
+            check = {2}
             isSelected={selected === nfts.length+marketNftsOwned.length+index}
             onClick={() => setSelected(nfts.length+marketNftsOwned.length+index)}
           />            

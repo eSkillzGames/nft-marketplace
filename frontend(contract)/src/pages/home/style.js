@@ -42,7 +42,7 @@ const styles = createStyles({
   circle_btn: {
     position: 'absolute',
     zIndex: '9999',
-    top: '30px',
+    // top: '30px',
     left: '40px',
     minWidth: 'auto',
     width: '40px',
