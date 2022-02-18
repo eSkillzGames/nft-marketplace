@@ -92,6 +92,7 @@ const Cue = (props) => {
   const classes = useStyles();
   const [sellprice, setPrice] = useState("");
   const [isPending, setIsPending] = useState(0);
+<<<<<<< HEAD
   const [showDescrit, setShowDescrit] = useState(0);
   const { name, description, itemId, tokenId, level, owned, exp, currentPower, totalPower, image, force, aim, spin, time, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
   const imgRef = React.useRef(null);
@@ -105,6 +106,13 @@ const Cue = (props) => {
   function hideDescription(e) {
     setShowDescrit(0)
   }
+=======
+  
+  const { name, description, itemId, tokenId, level, owned, exp, currentPower, totalPower, image, force, aim, spin, time, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
+  myEmitter.on('event1', () => {
+    setIsPending(1-isPending);
+  });
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
   var countReal = 0;
   if(check == 0){
     countReal = repeatOwnedCheck[count];
@@ -118,11 +126,19 @@ const Cue = (props) => {
   if(countReal > 0){
   
   return (  
+<<<<<<< HEAD
      
     <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>      
       <div>                        
         <div>        
           <h3 onMouseOver={showDescription} onMouseOut = {hideDescription}>{name}</h3>
+=======
+      
+    <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>      
+      <div>                        
+        <div>        
+          <h3>{name}</h3>
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           <div>
             <p>{level} Level</p>
             <LinearProgress variant="determinate" value={exp} />
@@ -130,6 +146,7 @@ const Cue = (props) => {
             <img src="/images/power.png" alt="" />
           </div>
         </div>
+<<<<<<< HEAD
        <h4 style={{textAlign: "center", padding:"4px 0px", margin : "0px"}}> {showDescrit == 1 ? description : ""}</h4>        
         <div style={{maxWidth:"400px", maxHeight : "30px"}}>
           <img ref={imgRef} src={image} alt="" style={{width : size.width, height : size.height}} onLoad={event => {
@@ -147,6 +164,11 @@ const Cue = (props) => {
               }              
             }}
           />          
+=======
+        <h4 style={{textAlign: "center", padding:"4px 0px", margin : "0px"}}>{description}</h4>
+        <div style={{maxWidth:"400px", maxHeight : "30px"}}>
+          <img src={image} alt="" width="100%"/>          
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
         </div>
         
       </div>
@@ -664,9 +686,12 @@ const Cues = (props) => {
               check = {0}
               isSelected={selected === index}
               onClick={() => setSelected(index)}
+<<<<<<< HEAD
               // showDescription = {showDescription}
               // onmouseover = {()=> setShowDescription(1)}
               // onmouseout = {()=> setShowDescription(0)}
+=======
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
             />
            // }                        
           ))

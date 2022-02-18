@@ -65,6 +65,10 @@ function MintPage() {
 
   const router = useRouter();
   Modal.setAppElement("#__next");
+<<<<<<< HEAD
+=======
+  
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
   const upload = async (e) => {    
     
     setMetaDatachanged(0);
@@ -403,14 +407,24 @@ function MintPage() {
       </div>
       
       <div className={classes.hero}>   
+<<<<<<< HEAD
         <img src="/images/mint_logo.png" alt=""/>
+=======
+        <img src="/images/mint_logo.png" alt="" />
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
         <div className={classes.infos}>
           <span>Title</span>
           <TextField
             placeholder="Hall of fame"
+<<<<<<< HEAD
             variant="filled"  
             value = {imgName}      
             onChange={(event) => {setImageName(event.target.value.substring(0,30)); setMetaDatachanged(0);}}
+=======
+            variant="filled"      
+            value = {imgName}      
+            onChange={(event) => {setImageName(event.target.value); setMetaDatachanged(0);}}
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           />
           <span>Description</span>
           <TextField
@@ -419,7 +433,11 @@ function MintPage() {
             multiline
             rows={4}   
             value = {imgDescription}         
+<<<<<<< HEAD
             onChange={(event) => {setImageDescription(event.target.value.substring(0,256));setMetaDatachanged(0);}}
+=======
+            onChange={(event) => {setImageDescription(event.target.value);setMetaDatachanged(0);}}
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           />
           
           <div className="titles"> 

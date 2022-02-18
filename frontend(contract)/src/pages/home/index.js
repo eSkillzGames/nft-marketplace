@@ -258,9 +258,12 @@ function HomePage() {
                   if(index === 3){
                     connect_Wallet();
                   }
+<<<<<<< HEAD
                   else if(index == 2){
                     router.push('/token')
                   }
+=======
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
                   else{
                     setSelected(index);
                   }
@@ -280,7 +283,11 @@ function HomePage() {
             { selected === 1 && byAndSellSelected === 1 && sortValue ==0 && address != ""&& <Cues check = {1} sortVal = {0} connected = {1}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==1 && address != ""&& <Cues check = {0} sortVal = {1} connected = {1}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==0 && address != ""&& <Cues check = {0} sortVal = {0} connected = {1}/> }            
+<<<<<<< HEAD
             {/* { selected === 2 && <LifesAndTokens /> } */}
+=======
+            { selected === 2 && <LifesAndTokens /> }
+>>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           </div> 
         
     </>
