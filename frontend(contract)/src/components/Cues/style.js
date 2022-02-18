@@ -76,11 +76,11 @@ const styles = createStyles({
           },
         },
       },
-      '&:nth-child(2)': {
+      '&:nth-child(3)': {
         padding: '0 20px',
       },
-      '&:nth-child(3)': {
-        minWidth: '170px',
+      '&:nth-child(4)': {
+        minWidth: '220px',
         alignItems: 'center',
         justifyContent: 'center',
         '& button': {
@@ -100,7 +100,7 @@ const styles = createStyles({
           background: '#2DBFDF',
         },
         '& button#buy': {
-          width: '120px',
+          width: '100%',
         },
         '& > div': {
           width: '100%',
