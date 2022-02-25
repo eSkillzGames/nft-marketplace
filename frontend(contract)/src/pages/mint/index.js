@@ -48,13 +48,10 @@ function MintPage() {
   const [imgNameUpload, setImgNameUpload] = React.useState("");
   const [imgName, setImageName] = React.useState("");
   const [imgLevel, setImageLevel] = React.useState("");
-  const [imgExp, setImageExp] = React.useState("");
-  const [imgCurrentPower, setImageCurrentPower] = React.useState("");
-  const [imgTotalPower, setImagePower] = React.useState("");
-  const [imgForce, setImageForce] = React.useState("");
-  const [imgAim, setImageAim] = React.useState("");
-  const [imgSpin, setImageSpin] = React.useState("");
-  const [imgTime, setImageTime] = React.useState("");
+  const [imgStrength, setImageStrength] = React.useState("");
+  const [imgAccuracy, setImageAccuracy] = React.useState("");
+  const [imgControl, setImageControl] = React.useState("");
+  const [imgFIDC, setImageFIDC] = React.useState("");
   const [imgDescription, setImageDescription] = React.useState("");
   const [metadaState, setMetadaState] = React.useState("");
   const [beforeTokenURI, setBeforeTokenURI] = React.useState("");
@@ -65,10 +62,6 @@ function MintPage() {
 
   const router = useRouter();
   Modal.setAppElement("#__next");
-<<<<<<< HEAD
-=======
-  
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
   const upload = async (e) => {    
     
     setMetaDatachanged(0);
@@ -164,55 +157,49 @@ function MintPage() {
    };
 
    const uploadMetaData = async () => {
-    if (imgName.toString().trim() == "" || imgDescription.toString().trim() == "" || imgHash.toString().trim() == "" || imgHash.toString().trim() == "Pending" ||imgLevel.toString().trim() == "" ||imgExp.toString().trim() == "" ||imgCurrentPower.toString().trim() == "" ||imgTotalPower.toString().trim() == "" ||imgForce.toString().trim() == "" ||imgAim.toString().trim() == "" ||imgSpin.toString().trim() == "" ||imgTime.toString().trim() == "") { 
+    if (imgName.toString().trim() == "" || imgDescription.toString().trim() == "" || imgHash.toString().trim() == "" || imgHash.toString().trim() == "Pending" ||imgLevel.toString().trim() == "" ||imgStrength.toString().trim() == "" ||imgAccuracy.toString().trim() == "" ||imgControl.toString().trim() == "" ||imgFIDC.toString().trim() == "" ) { 
         setMetadaState("❗Please make sure all fields are completed before minting.");      
     }
     else{
-      if(parseInt(imgLevel) > 0 && parseInt(imgExp) > 0 && parseInt(imgCurrentPower) > 0 && parseInt(imgTotalPower) > 0 && parseInt(imgForce) > 0 && parseInt(imgAim) > 0 && parseInt(imgSpin) > 0 &&parseInt(imgTime) > 0){
-        if(parseInt(imgCurrentPower) <= parseInt(imgTotalPower)){
-          if(address!=""){
-            // make metaData
-            const metadata = new Object();
-            metadata.name = imgName;
-            metadata.image_url = "https://gateway.pinata.cloud/ipfs/" + imgHash;
-            metadata.description = imgDescription;   
-            metadata.level = imgLevel;
-            metadata.exp = imgExp;
-            metadata.currentPower = imgCurrentPower;
-            metadata.totalPower = imgTotalPower;
-            metadata.force = imgForce;
-            metadata.aim = imgAim;
-            metadata.spin = imgSpin;
-            metadata.time = imgTime;
-            if(metaDatachanged > 0) {
-              mintNft(beforeTokenURI, metadata);
-            }
-            else{
-              if(metadaState != "Pending"){
-                setMetadaState("Pending");          
-                //make pinata call
-                const pinataResponse = await pinJSONToIPFS(metadata);
-                if (!pinataResponse.success) {
-                  setMetadaState("😢 Something went wrong while uploading your tokenURI.");          
-                } 
-                else{
-                  setMetadaState("PinataHash : " + pinataResponse.pinataUrl);
-                  //setMetadaState("PinataUpload : Success.");
-                  const tokenURI = pinataResponse.pinataUrl;   
-                  setBeforeTokenURI(tokenURI);
-                  setMetaDatachanged(1);
-                  mintNft(tokenURI);      
-                }
-              }
-            }    
+      if(parseInt(imgLevel) > 0 && parseInt(imgStrength) > 0 && parseInt(imgAccuracy) > 0 && parseInt(imgControl) > 0 && parseInt(imgFIDC) > 0 ){
+        
+        if(address!=""){
+          // make metaData
+          const metadata = new Object();
+          metadata.name = imgName;
+          metadata.image_url = "https://gateway.pinata.cloud/ipfs/" + imgHash;
+          metadata.description = imgDescription;   
+          metadata.level = imgLevel;
+          metadata.strength = imgStrength;
+          metadata.accuracy = imgAccuracy;
+          metadata.control = imgControl;
+          metadata.FIDC = imgFIDC;
+          if(metaDatachanged > 0) {
+            mintNft(beforeTokenURI, metadata);
           }
           else{
-            window.alert("Connect to the MetaMask");
-          }
+            if(metadaState != "Pending"){
+              setMetadaState("Pending");          
+              //make pinata call
+              const pinataResponse = await pinJSONToIPFS(metadata);
+              if (!pinataResponse.success) {
+                setMetadaState("😢 Something went wrong while uploading your tokenURI.");          
+              } 
+              else{
+                setMetadaState("PinataHash : " + pinataResponse.pinataUrl);
+                //setMetadaState("PinataUpload : Success.");
+                const tokenURI = pinataResponse.pinataUrl;   
+                setBeforeTokenURI(tokenURI);
+                setMetaDatachanged(1);
+                mintNft(tokenURI);      
+              }
+            }
+          }    
         }
         else{
-          setMetadaState("❗TotalPower must be bigger than CurrentPower.");
+          window.alert("Connect to the MetaMask");
         }
+               
         
       }
       else {
@@ -265,13 +252,10 @@ function MintPage() {
           setImageDescription("");
           setImgNameUpload("");
           setImageLevel("");
-          setImageExp("");
-          setImageCurrentPower("");
-          setImagePower("");
-          setImageForce("");
-          setImageAim("");
-          setImageSpin("");
-          setImageTime("");
+          setImageStrength("");
+          setImageAccuracy("");
+          setImageControl("");
+          setImageFIDC("");
           setImgHash("");
           var image = document.getElementById('output');
           image.src = "";
@@ -407,24 +391,14 @@ function MintPage() {
       </div>
       
       <div className={classes.hero}>   
-<<<<<<< HEAD
         <img src="/images/mint_logo.png" alt=""/>
-=======
-        <img src="/images/mint_logo.png" alt="" />
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
         <div className={classes.infos}>
           <span>Title</span>
           <TextField
             placeholder="Hall of fame"
-<<<<<<< HEAD
             variant="filled"  
             value = {imgName}      
             onChange={(event) => {setImageName(event.target.value.substring(0,30)); setMetaDatachanged(0);}}
-=======
-            variant="filled"      
-            value = {imgName}      
-            onChange={(event) => {setImageName(event.target.value); setMetaDatachanged(0);}}
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           />
           <span>Description</span>
           <TextField
@@ -433,11 +407,7 @@ function MintPage() {
             multiline
             rows={4}   
             value = {imgDescription}         
-<<<<<<< HEAD
             onChange={(event) => {setImageDescription(event.target.value.substring(0,256));setMetaDatachanged(0);}}
-=======
-            onChange={(event) => {setImageDescription(event.target.value);setMetaDatachanged(0);}}
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           />
           
           <div className="titles"> 
@@ -447,19 +417,19 @@ function MintPage() {
                 placeholder="0"
                 variant="filled"      
                 value = {imgLevel}  
-                onChange={(event) => {setImageLevel(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}    
+                onChange={(event) => {setImageLevel(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}    
               />
             </div>
             <div>
-              <span>Exp</span>
+              <span>Strength</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgExp}
-                onChange={(event) => {setImageExp(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
+                value = {imgStrength}
+                onChange={(event) => {setImageStrength(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
               />   
             </div>
-            <div>
+            {/* <div>
               <span>CurrentPower</span>
               <TextField
                 placeholder="0"
@@ -476,38 +446,38 @@ function MintPage() {
                 value = {imgTotalPower}  
                 onChange={(event) => {setImagePower(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}     
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="titles"> 
             <div>
-              <span>Force</span>
+              <span>Accuracy</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgForce}  
-                onChange={(event) => {setImageForce(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
+                value = {imgAccuracy}  
+                onChange={(event) => {setImageAccuracy(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
               />
             </div>
             <div>
-              <span>Aim</span>
+              <span>Control</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgAim}  
-                onChange={(event) => {setImageAim(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}       
+                value = {imgControl}  
+                onChange={(event) => {setImageControl(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}       
               />
             </div>
             <div>
-              <span>Spin</span>
+              <span>Free Item Drop Chance</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgSpin}  
-                onChange={(event) => {setImageSpin(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}     
+                value = {imgFIDC}  
+                onChange={(event) => {setImageFIDC(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}     
               />
             </div>
-            <div>
+            {/* <div>
               <span>Time</span>
               <TextField
                 placeholder="0"
@@ -515,7 +485,7 @@ function MintPage() {
                 value = {imgTime}  
                 onChange={(event) => {setImageTime(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
               />
-            </div>
+            </div> */}
           </div>
           
           <div id="toggles">

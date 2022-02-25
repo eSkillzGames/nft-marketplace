@@ -8,7 +8,7 @@ const TotalEarned = ({address, price}) => {
     return (
         <div className={`${style.total_earned} text-start`}>
             <p>Total Earned</p>
-            <h3 className={`${style.color_white} mt-5`}>127,000.34 <span className={`h6 ${style.color_blue}`}>$ {price}</span></h3>
+            <h3 className={`${style.color_white} mt-5`}>127,000.34 <span className={`h6 ${style.color_blue}`}>$ {String(127000.34*Number(price.substring(0,8)))}</span></h3>
             <div className="d-flex mt-5 mb-1">
                 <p className={style.color_middle_green}>{address}</p>
                 <div className="ms-2" style={{cursor: "pointer"}}><img src="/images/Copy.png" alt="copy" onClick={() => {copy();}}/></div>

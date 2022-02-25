@@ -5,9 +5,12 @@ import Calculator from '../../components/Calculator';
 import TokenBuy from '../../components/TokenBuy';
 import style from "./style.module.scss";
 import { useRouter } from 'next/router';
+import tokenPriceABI from '../../GetTokenPrice.json';
 const Web3 = require("web3");
 const sportTokenAddress = "0xd371c8BcE5e4BeCC2c66E7003CD46f6558105C35";
-const esgTokenAddress = "0x8C534C9aa8d6cDB75d139caF5aD9716Db25eB628";
+//const esgTokenAddress = "0x8C534C9aa8d6cDB75d139caF5aD9716Db25eB628";
+const esgTokenAddress = "0xd1Bdf11f5F4c79e217ebC4DefBDF8b2F438e1D69";
+const tokenPriceAddress = "0xf48eD7f89f81973C48E0275002c23b82eDE795F3";
 var minABI = [
     // balanceOf
     {
@@ -37,6 +40,8 @@ const initialData = [{
 const Token = () => {
     const [sportBalance, setSportBalance] = useState("");
     const [esgBalance, setEsgBalance] = useState("");
+    const [esgPrice, setEsgPrice] = useState("");
+    const [sportPrice, setSportPrice] = useState("");
     const [address, setAdress] = useState(null);
     useEffect(() => {        
         init();        
@@ -55,6 +60,15 @@ const Token = () => {
                  
                     var sportContract = new web3.eth.Contract(minABI, sportTokenAddress);
                     var esgContract = new web3.eth.Contract(minABI, esgTokenAddress);
+                    var tokenPriceContract = new web3.eth.Contract(tokenPriceABI,tokenPriceAddress);
+                    tokenPriceContract.methods.getPrice(sportTokenAddress).call(function (err, res) {
+                        initialData[1].totalPrice = String(res[0] * res[2] / (res[1]*10**6));
+                        setSportPrice(String(res[0] * res[2] / (res[1]*10**6)));
+                    });
+                    tokenPriceContract.methods.getPrice(esgTokenAddress).call(function (err, res) {
+                        initialData[0].totalPrice = String(res[0] * res[2] / (res[1]*10**6));
+                        setEsgPrice(String(res[0] * res[2] / (res[1]*10**6)));
+                    });
                     sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
                     if(res.length>7){
                         initialData[1].balance = String(parseInt(String(res).substring(0,res.length-7))/100);
@@ -91,8 +105,8 @@ const Token = () => {
             <Header getAddress={getAddress}/>
             <div className={`w-100 ${style.content}`}>
                 <div className={`row row-cols-md-2 row-cols-sm-1 ${style.first_container}`}>
-                    <div className="col" ><TotalEarned address = {address} price = {initialData[1].totalPrice}/></div>
-                    <div className="col" ><Calculator price = {initialData[1].totalPrice}/></div>
+                    <div className="col" ><TotalEarned address = {address} price = {sportPrice}/></div>
+                    <div className="col" ><Calculator price = {sportPrice}/></div>
                 </div>
                 <div className={`row row-cols-md-2 row-cols-sm-1 ${style.second_container}`}>
                     {

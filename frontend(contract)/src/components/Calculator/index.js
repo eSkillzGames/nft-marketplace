@@ -57,7 +57,7 @@ const Calculator = ({price}) => {
                 </div>
                 <div className="col">
                     <div className={`ms-5 text-start ${style.color_middle_green} ${style.subtitle}`}>$ Earnings</div>
-                    <input type="text" className={`${style.form_control} ${style.bg_dark_green} w-100`} value={"$ "+`${earning}` + " ("+Number(sliderVal)*Number(amount)+" SPORT)"} readOnly/>
+                    <input type="text" className={`${style.form_control} ${style.bg_dark_green} w-100`} value={"$ "+String(Number(price)*Number(sliderVal)*Number(amount)).substring(0,8)} readOnly/>
                 </div>
             </div>
         </div>

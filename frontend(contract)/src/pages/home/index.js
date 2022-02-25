@@ -14,7 +14,7 @@ import { ethers } from 'ethers'
 import { useRouter } from 'next/router';
 const NFTcontractABI = require('../../NFT.json');
 const NFTcontractAddress = "0xF1f88246D1809D520b89E5470F07beD7Ae9451e9";
-const sportTokenAddress = "0x19330E3C89c9AFB1581c7a16a863f1c5Bd489F46";
+const sportTokenAddress = "0xd371c8BcE5e4BeCC2c66E7003CD46f6558105C35";
 const Web3 = require("web3");
 
 let web3 = new Web3(
@@ -258,12 +258,9 @@ function HomePage() {
                   if(index === 3){
                     connect_Wallet();
                   }
-<<<<<<< HEAD
                   else if(index == 2){
                     router.push('/token')
                   }
-=======
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
                   else{
                     setSelected(index);
                   }
@@ -283,11 +280,7 @@ function HomePage() {
             { selected === 1 && byAndSellSelected === 1 && sortValue ==0 && address != ""&& <Cues check = {1} sortVal = {0} connected = {1}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==1 && address != ""&& <Cues check = {0} sortVal = {1} connected = {1}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==0 && address != ""&& <Cues check = {0} sortVal = {0} connected = {1}/> }            
-<<<<<<< HEAD
             {/* { selected === 2 && <LifesAndTokens /> } */}
-=======
-            { selected === 2 && <LifesAndTokens /> }
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           </div> 
         
     </>

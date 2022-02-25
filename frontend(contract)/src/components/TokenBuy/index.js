@@ -12,7 +12,7 @@ const TokenBuy = ({ data ,id,address}) => {
                 <div className={`${style.sub_container} ${style.bg_dark_green}`}>
                     <p className={style.color_light_green}>{data.title}</p>
                     <h3 className={`${style.color_white} mt-4`}>{data.balance}</h3>
-                    <div className={`h6 ${style.color_blue} mt-3`}>$ {data.totalPrice}</div>
+                    <div className={`h6 ${style.color_blue} mt-3`}>$ {Number(data.balance)*Number(data.totalPrice.substring(0,8))}</div>
                     <Button
                         variant="outline-primary"
                         className={`${style.color_blue} ${style.btn_outline_primary} rounded-pill w-100 mt-4`}
@@ -23,7 +23,7 @@ const TokenBuy = ({ data ,id,address}) => {
                 </div>
                 <div className="m-4 text-start">
                     <p className={style.color_light_green}>{data.priceTitle}</p>
-                    <div className={`h2 ${style.color_blue}`}>$ {data.price}</div>
+                    <div className={`h2 ${style.color_blue}`}>${data.totalPrice.substring(0,8)}</div>
                 </div>
 
             </div>

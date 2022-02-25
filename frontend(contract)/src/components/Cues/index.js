@@ -92,9 +92,8 @@ const Cue = (props) => {
   const classes = useStyles();
   const [sellprice, setPrice] = useState("");
   const [isPending, setIsPending] = useState(0);
-<<<<<<< HEAD
   const [showDescrit, setShowDescrit] = useState(0);
-  const { name, description, itemId, tokenId, level, owned, exp, currentPower, totalPower, image, force, aim, spin, time, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
+  const { name, description, itemId, tokenId, level, owned, image, strength, accuracy, control, FIDC, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
   const imgRef = React.useRef(null);
   const [size, setSize] = useState({});
   myEmitter.on('event1', () => {
@@ -106,13 +105,6 @@ const Cue = (props) => {
   function hideDescription(e) {
     setShowDescrit(0)
   }
-=======
-  
-  const { name, description, itemId, tokenId, level, owned, exp, currentPower, totalPower, image, force, aim, spin, time, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
-  myEmitter.on('event1', () => {
-    setIsPending(1-isPending);
-  });
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
   var countReal = 0;
   if(check == 0){
     countReal = repeatOwnedCheck[count];
@@ -126,27 +118,16 @@ const Cue = (props) => {
   if(countReal > 0){
   
   return (  
-<<<<<<< HEAD
      
     <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>      
       <div>                        
         <div>        
           <h3 onMouseOver={showDescription} onMouseOut = {hideDescription}>{name}</h3>
-=======
-      
-    <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>      
-      <div>                        
-        <div>        
-          <h3>{name}</h3>
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
           <div>
             <p>{level} Level</p>
-            <LinearProgress variant="determinate" value={exp} />
-            <p>{currentPower}/{totalPower}</p>
-            <img src="/images/power.png" alt="" />
+            <LinearProgress variant="determinate" value={level} />
           </div>
         </div>
-<<<<<<< HEAD
        <h4 style={{textAlign: "center", padding:"4px 0px", margin : "0px"}}> {showDescrit == 1 ? description : ""}</h4>        
         <div style={{maxWidth:"400px", maxHeight : "30px"}}>
           <img ref={imgRef} src={image} alt="" style={{width : size.width, height : size.height}} onLoad={event => {
@@ -164,11 +145,6 @@ const Cue = (props) => {
               }              
             }}
           />          
-=======
-        <h4 style={{textAlign: "center", padding:"4px 0px", margin : "0px"}}>{description}</h4>
-        <div style={{maxWidth:"400px", maxHeight : "30px"}}>
-          <img src={image} alt="" width="100%"/>          
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
         </div>
         
       </div>
@@ -178,10 +154,10 @@ const Cue = (props) => {
         </span> 
       </div>
       <div>
-        <Power power={force} label="Force" />
-        <Power power={aim} label="Aim" />
-        <Power power={spin} label="Spin" />
-        <Power power={time} label="Time" />
+        <Power power={strength} label="Strength" />
+        <Power power={accuracy} label="Accuracy" />
+        <Power power={control} label="Control" />
+        <Power power={FIDC} label="Free Item Drop Chance" />
       </div>
       <div>
         {pendingArray[itemId] == 1 ? (
@@ -268,7 +244,7 @@ const Power = (props) => {
 
   return (
     <div className={classes.power}>
-      {[...Array(10)].map((_, index) => (
+      {[...Array(100)].map((_, index) => (
         <div key={index} id={ power > index ? 'active' : '' } />
       ))}
       <p>{label}</p>
@@ -467,13 +443,10 @@ const Cues = (props) => {
               description: meta.data.description,
               isActive: false,
               level: meta.data.level,
-              exp: meta.data.exp,
-              currentPower: meta.data.currentPower,
-              totalPower: meta.data.totalPower,
-              force: meta.data.force,
-              aim: meta.data.aim,
-              spin: meta.data.spin,
-              time: meta.data.time
+              strength: meta.data.strength,
+              accuracy: meta.data.accuracy,
+              control: meta.data.control,
+              FIDC: meta.data.FIDC
             }
             return item
           }))
@@ -493,8 +466,8 @@ const Cues = (props) => {
             repeatMarkOwnedCheck[i] = 1;
             for(var j = 0; j < i; j++){
               if(items[i].price === items[j].price && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
-                items[i].level === items[j].level &&items[i].exp === items[j].exp &&items[i].currentPower === items[j].currentPower &&items[i].totalPower === items[j].totalPower &&
-                items[i].force === items[j].force &&items[i].aim === items[j].aim &&items[i].spin === items[j].spin &&items[i].time === items[j].time &&repeatMarkOwnedCheck[j] > 0){
+                items[i].level === items[j].level &&
+                items[i].strength === items[j].strength &&items[i].accuracy === items[j].accuracy &&items[i].control === items[j].control &&items[i].FIDC === items[j].FIDC &&repeatMarkOwnedCheck[j] > 0){
                 repeatMarkOwnedCheck[i] = 0;
                 repeatMarkOwnedCheck[j]+=1;
                 break;
@@ -540,13 +513,10 @@ const Cues = (props) => {
               description: meta.data.description,
               isActive: false,
               level: meta.data.level,
-              exp: meta.data.exp,
-              currentPower: meta.data.currentPower,
-              totalPower: meta.data.totalPower,
-              force: meta.data.force,
-              aim: meta.data.aim,
-              spin: meta.data.spin,
-              time: meta.data.time
+              strength: meta.data.strength,
+              accuracy: meta.data.accuracy,
+              control: meta.data.control,
+              FIDC: meta.data.FIDC
             }
             return item
           }))
@@ -564,8 +534,8 @@ const Cues = (props) => {
             repeatMarkCheck[i] = 1;
             for(var j = 0; j < i; j++){
               if(items[i].price === items[j].price && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
-                items[i].level === items[j].level &&items[i].exp === items[j].exp &&items[i].currentPower === items[j].currentPower &&items[i].totalPower === items[j].totalPower &&
-                items[i].force === items[j].force &&items[i].aim === items[j].aim &&items[i].spin === items[j].spin &&items[i].time === items[j].time &&repeatMarkCheck[j] > 0){
+                items[i].level === items[j].level &&
+                items[i].strength === items[j].strength &&items[i].accuracy === items[j].accuracy &&items[i].control === items[j].control &&items[i].FIDC === items[j].FIDC &&repeatMarkCheck[j] > 0){
                 repeatMarkCheck[i] = 0;
                 repeatMarkCheck[j]+=1;
                 break;
@@ -611,13 +581,10 @@ const Cues = (props) => {
               description: meta.data.description,
               isActive: true,
               level: meta.data.level,
-              exp: meta.data.exp,
-              currentPower: meta.data.currentPower,
-              totalPower: meta.data.totalPower,
-              force: meta.data.force,
-              aim: meta.data.aim,
-              spin: meta.data.spin,
-              time: meta.data.time,
+              strength: meta.data.strength,
+              accuracy: meta.data.accuracy,
+              control: meta.data.control,
+              FIDC: meta.data.FIDC,
               isAuto: false,
             }
             
@@ -637,8 +604,8 @@ const Cues = (props) => {
             repeatOwnedCheck[i] = 1;
             for(var j = 0; j < i; j++){
               if(items[i].lastPrice === items[j].lastPrice && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
-                items[i].level === items[j].level &&items[i].exp === items[j].exp &&items[i].currentPower === items[j].currentPower &&items[i].totalPower === items[j].totalPower &&
-                items[i].force === items[j].force &&items[i].aim === items[j].aim &&items[i].spin === items[j].spin &&items[i].time === items[j].time &&repeatOwnedCheck[j] > 0){
+                items[i].level === items[j].level &&
+                items[i].strength === items[j].strength &&items[i].accuracy === items[j].accuracy &&items[i].control === items[j].control &&items[i].FIDC === items[j].FIDC &&repeatOwnedCheck[j] > 0){
                 repeatOwnedCheck[i] = 0;
                 repeatOwnedCheck[j]+= 1;
                 break;
@@ -670,14 +637,11 @@ const Cues = (props) => {
               name={cue.name}
               description = {cue.description}
               level={cue.level}
-              exp={cue.exp}
-              currentPower={cue.currentPower}
-              totalPower={cue.totalPower}
               image={cue.image}
-              force={cue.force}
-              aim={cue.aim}
-              spin={cue.spin}
-              time={cue.time}
+              strength={cue.strength}
+              accuracy={cue.accuracy}
+              control={cue.control}
+              FIDC={cue.FIDC}
               isActive={cue.isActive}
               price={cue.price}
               lastPrice={cue.lastPrice}
@@ -686,12 +650,9 @@ const Cues = (props) => {
               check = {0}
               isSelected={selected === index}
               onClick={() => setSelected(index)}
-<<<<<<< HEAD
               // showDescription = {showDescription}
               // onmouseover = {()=> setShowDescription(1)}
               // onmouseout = {()=> setShowDescription(0)}
-=======
->>>>>>> d6a42dbdec69a5931078d54e8997a1f767331ce5
             />
            // }                        
           ))
@@ -706,14 +667,11 @@ const Cues = (props) => {
             description = {cue.description}
             owned = {cue.owned}
             level={cue.level}
-            exp={cue.exp}
-            currentPower={cue.currentPower}
-            totalPower={cue.totalPower}
             image={cue.image}
-            force={cue.force}
-            aim={cue.aim}
-            spin={cue.spin}
-            time={cue.time}
+            strength={cue.strength}
+            accuracy={cue.accuracy}
+            control={cue.control}
+            FIDC={cue.FIDC}
             isActive={cue.isActive}
             price={cue.price}
             lastPrice={cue.lastPrice}
@@ -734,14 +692,11 @@ const Cues = (props) => {
             description = {cue.description}
             owned = {cue.owned}
             level={cue.level}
-            exp={cue.exp}
-            currentPower={cue.currentPower}
-            totalPower={cue.totalPower}
             image={cue.image}
-            force={cue.force}
-            aim={cue.aim}
-            spin={cue.spin}
-            time={cue.time}
+            strength={cue.strength}
+            accuracy={cue.accuracy}
+            control={cue.control}
+            FIDC={cue.FIDC}
             isActive={cue.isActive}
             price={cue.price}
             lastPrice={cue.lastPrice}
