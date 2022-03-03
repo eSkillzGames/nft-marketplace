@@ -17,12 +17,12 @@ const { EventEmitter } = require("events");
 //const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY;
 //const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 //const web3 = createAlchemyWeb3(alchemyKey); 
-const NFTcontractABI = require('../../NFT.json');
-const MarketcontractABI = require('../../Marketplace.json');
+const NFTcontractABI = require('../../NFT_CARD.json');
+const MarketcontractABI = require('../../Marketplace_CARD.json');
 // const NFTcontractAddress = "0xd95D493b5B048bE25bA70a89AD2360AC5f653a68";
 // const MarketcontractAddress = "0x2c8a4c0B41300Df687DFd0c1931AECe146BAE559";
-const NFTcontractAddress = "0x4e3ec2260c79369319b322808c084886849E81EC";
-const MarketcontractAddress = "0x26a612d5871f757aB4650a689Ae351139db87CBf";
+const NFTcontractAddress = "0x4Add67aC56C4DC86B87C7e4B73FE9495f7d0FF65";
+const MarketcontractAddress = "0xcaF7aFD5C5CA7CB4f8Ec08E594dD6E7A818C013C";
 var pendingArray = new Array(100000);
 
 const Web3 = require("web3");
@@ -39,67 +39,13 @@ let eventvariable = 1;
 var repeatMarkOwnedCheck = new Array(100000);
 var repeatOwnedCheck = new Array(100000);
 var repeatMarkCheck = new Array(100000);
-export const connectWallet = async () => {
-  try{
-    const { ethereum } = window;
- 
-    if (ethereum) {
-      try {     
-        const addressArray = await ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const chainIDBuffer = await ethereum.networkVersion;
-        if(chainIDBuffer == 3){
-            return {
-              status: "success : Connect",  
-              address: addressArray[0],    
-              chainID: chainIDBuffer, 
-            };
-        }
-        else{
-          return {
-            status: "error : Another network",  
-            address: addressArray[0],     
-            chainID: chainIDBuffer,
-          };
-        }
 
-      } catch (err) {
-        return {
-          status: "😥 " + err.message,
-          address: "",
-        };
-      }
-    } else {
-      return {
-        address: "",
-        status: (
-          <span>
-            <p>
-              {" "}
-              🦊{" "}
-              <a target="_blank" href={`https://metamask.io/download.html`}>
-                You must install Metamask, a virtual Ethereum wallet, in your
-                browser.
-              </a>
-            </p>
-          </span>
-        ),
-      };
-    } 
-  }
-  catch{
-    return;
-  }
-   
-};
-
-const Cue = (props) => {
+const Card = (props) => {
   const classes = useStyles();
   const [sellprice, setPrice] = useState("");
   const [isPending, setIsPending] = useState(0);
   const [showDescrit, setShowDescrit] = useState(0);
-  const { name, description, itemId, tokenId, level, owned, image, strength, accuracy, control, freeItemDropChance, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
+  const { name, description, itemId, tokenId, yieldBonus, owned, image, strength, accuracy, control, freeItemDropChance, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
   const imgRef = React.useRef(null);
   const [size, setSize] = useState({});
   myEmitter.on('event1', () => {
@@ -125,13 +71,13 @@ const Cue = (props) => {
   
   return (  
      
-    <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>      
+    <div className={`${classes.card} ${isSelected ? classes.selected_card : ''}`} {...rest}>      
       <div>                        
         <div>        
           <h3 onMouseOver={showDescription} onMouseOut = {hideDescription}>{name}</h3>
           <div>
-            <p>{level} Level</p>
-            <LinearProgress variant="determinate" value={level} />
+            <p>{yieldBonus} Yield Bonus</p>
+            <LinearProgress variant="determinate" value={yieldBonus} />
           </div>
         </div>
        <h4 style={{textAlign: "center", padding:"4px 0px", margin : "0px"}}> {showDescrit == 1 ? description : ""}</h4>        
@@ -289,7 +235,7 @@ async function sellNft(id,tokenID, price) {
         } catch (err) {
           pendingArray[id] = 0;
           eventEmit();        
-          //Cues();
+          //Cards();
           return {
             error: err        
           };
@@ -327,8 +273,7 @@ async function removeNft(id,tokenID) {
         }   
       }
     }
-  }
-  catch{
+  }catch{
     return;
   }
    
@@ -352,19 +297,18 @@ async function buyNft(id,price) {
           await nftTxn.wait();
           pendingArray[id] = 0;
           eventEmit();
-          //Cues();
+          //cards();
         } catch (err) {
           pendingArray[id] = 0;
           eventEmit();
-          //Cues();
+          //cards();
           return {
             error: err        
           };
         }            
       }   
     }
-  }
-  catch{
+  }catch{
     return;
   }
   
@@ -384,11 +328,11 @@ async function cancelNft(id) {
           await nftTxn.wait();
           pendingArray[id] = 0;
           eventEmit();
-          //Cues();
+          //cards();
         } catch (err) {
           pendingArray[id] = 0;
           eventEmit();
-          //Cues();
+          //cards();
           return {
             error: err        
           };
@@ -410,7 +354,7 @@ function eventEmit() {
   
 }
 
-const Cues = (props) => {
+const Cards = (props) => {
   const classes = useStyles();
   const [nfts, setNfts] = useState([])
   const [marketNfts, setMarketNfts] = useState([])
@@ -429,9 +373,9 @@ const Cues = (props) => {
   }
  
   async function eventListened() {
-    try {
+    try{
       if (window.ethereum) {
-        
+        try {
           const addressArray = await window.ethereum.request({
             method: "eth_accounts",
           });
@@ -441,13 +385,18 @@ const Cues = (props) => {
             loadMarketOwned(addressArray[0]);
             loadMarket(addressArray[0]);
           } 
-        
+        } catch (err) {
+          return {
+            address: ""        
+          };
+        }
       }
-    } catch (err) {
-      return {
-        address: ""        
-      };
     }
+    catch{
+      return;
+    }
+    
+    
   }
 
   useEffect(() => {
@@ -455,9 +404,9 @@ const Cues = (props) => {
   }, [])
 
   async function getCurrentWalletConnected() {
-    try {
+    try{
       if (window.ethereum) {
-        
+        try {
           const addressArray = await window.ethereum.request({
             method: "eth_accounts",
           });
@@ -468,13 +417,17 @@ const Cues = (props) => {
             loadMarketOwned(addressArray[0]);
             loadMarket(addressArray[0]);
           } 
-        
-      } 
-    } catch (err) {
-      return {
-        address: ""        
-      };
+        } catch (err) {
+          return {
+            address: ""        
+          };
+        }
+      }
     }
+    catch{
+      return;
+    }
+     
   };
 
   async function loadMarketOwned(userAddress) {
@@ -495,7 +448,7 @@ const Cues = (props) => {
                 tokenUri = await nftContract.tokenURI(i.tokenId);  
               } catch (err) {
                 return;
-              }           
+              }        
               const meta = await axios.get(tokenUri);
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
@@ -513,7 +466,7 @@ const Cues = (props) => {
                 name: meta.data.name,
                 description: meta.data.description,
                 isActive: false,
-                level: meta.data.level,
+                yieldBonus: meta.data.yieldBonus,
                 strength: meta.data.strength,
                 accuracy: meta.data.accuracy,
                 control: meta.data.control,
@@ -548,7 +501,7 @@ const Cues = (props) => {
               repeatMarkOwnedCheck[i] = 1;
               for(var j = 0; j < i; j++){
                 if(items[i].price === items[j].price && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
-                  items[i].level === items[j].level &&
+                  items[i].yieldBonus === items[j].yieldBonus &&
                   items[i].strength === items[j].strength &&items[i].accuracy === items[j].accuracy &&items[i].control === items[j].control &&items[i].freeItemDropChance === items[j].freeItemDropChance &&repeatMarkOwnedCheck[j] > 0){
                   repeatMarkOwnedCheck[i] = 0;
                   repeatMarkOwnedCheck[j]+=1;
@@ -586,7 +539,7 @@ const Cues = (props) => {
                 tokenUri = await nftContract.tokenURI(i.tokenId);  
               } catch (err) {
                 return;
-              }           
+              }            
               const meta = await axios.get(tokenUri);
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
@@ -604,7 +557,7 @@ const Cues = (props) => {
                 name: meta.data.name,
                 description: meta.data.description,
                 isActive: false,
-                level: meta.data.level,
+                yieldBonus: meta.data.yieldBonus,
                 strength: meta.data.strength,
                 accuracy: meta.data.accuracy,
                 control: meta.data.control,
@@ -637,7 +590,7 @@ const Cues = (props) => {
               repeatMarkCheck[i] = 1;
               for(var j = 0; j < i; j++){
                 if(items[i].price === items[j].price && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
-                  items[i].level === items[j].level &&
+                  items[i].yieldBonus === items[j].yieldBonus &&
                   items[i].strength === items[j].strength &&items[i].accuracy === items[j].accuracy &&items[i].control === items[j].control &&items[i].freeItemDropChance === items[j].freeItemDropChance &&repeatMarkCheck[j] > 0){
                   repeatMarkCheck[i] = 0;
                   repeatMarkCheck[j]+=1;
@@ -651,11 +604,11 @@ const Cues = (props) => {
             setLoadingState('loaded')        
           }
         } 
-      }
+      } 
     } catch (err) {
       return;
     } 
-           
+          
   }
 
   async function loadNFTs(userAddress) { 
@@ -664,7 +617,7 @@ const Cues = (props) => {
         const { ethereum } = window;
         if (ethereum) {
           const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 3){
+          if(chainIDBuffer == 3){          
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
@@ -693,7 +646,7 @@ const Cues = (props) => {
                 name: meta.data.name,
                 description: meta.data.description,
                 isActive: true,
-                level: meta.data.level,
+                yieldBonus: meta.data.yieldBonus,
                 strength: meta.data.strength,
                 accuracy: meta.data.accuracy,
                 control: meta.data.control,
@@ -720,15 +673,14 @@ const Cues = (props) => {
                 }
                 catch{
                   return 0;
-                }
-                
+                }                
               });
             }
             for (var i = 0; i < items.length; i++) {
               repeatOwnedCheck[i] = 1;
               for(var j = 0; j < i; j++){
                 if(items[i].lastPrice === items[j].lastPrice && items[i].image === items[j].image && items[i].name === items[j].name && items[i].description === items[j].description && 
-                  items[i].level === items[j].level &&
+                  items[i].yieldBonus === items[j].yieldBonus &&
                   items[i].strength === items[j].strength &&items[i].accuracy === items[j].accuracy &&items[i].control === items[j].control &&items[i].freeItemDropChance === items[j].freeItemDropChance &&repeatOwnedCheck[j] > 0){
                   repeatOwnedCheck[i] = 0;
                   repeatOwnedCheck[j]+= 1;
@@ -746,6 +698,7 @@ const Cues = (props) => {
     } catch (err) {
       return;
     } 
+   
           
   }
 
@@ -756,24 +709,24 @@ const Cues = (props) => {
     <>
       <div className={classes.hero}>
         { check === 1 &&
-          nfts.map((cue, index) =>(
+          nfts.map((card, index) =>(
             //if(repeatOwnedCheck[index] > 0){
-              <Cue 
+              <Card 
               key={index}
-              itemId = {cue.itemId}
-              tokenId = {cue.tokenId}
-              name={cue.name}
-              description = {cue.description}
-              level={cue.level}
-              image={cue.image}
-              strength={cue.strength}
-              accuracy={cue.accuracy}
-              control={cue.control}
-              freeItemDropChance={cue.freeItemDropChance}
-              isActive={cue.isActive}
-              price={cue.price}
-              lastPrice={cue.lastPrice}
-              isAuto={cue.isAuto}
+              itemId = {card.itemId}
+              tokenId = {card.tokenId}
+              name={card.name}
+              description = {card.description}
+              yieldBonus={card.yieldBonus}
+              image={card.image}
+              strength={card.strength}
+              accuracy={card.accuracy}
+              control={card.control}
+              freeItemDropChance={card.freeItemDropChance}
+              isActive={card.isActive}
+              price={card.price}
+              lastPrice={card.lastPrice}
+              isAuto={card.isAuto}
               count = {index}
               check = {0}
               isSelected={selected === index}
@@ -786,23 +739,23 @@ const Cues = (props) => {
           ))
         }
         { check === 0 &&
-          marketNftsOwned.map((cue, index) => (
-            <Cue 
+          marketNftsOwned.map((card, index) => (
+            <Card 
             key={nfts.length+index}
-            itemId = {cue.itemId}
-            tokenId = {cue.tokenId}
-            name={cue.name}
-            description = {cue.description}
-            owned = {cue.owned}
-            level={cue.level}
-            image={cue.image}
-            strength={cue.strength}
-            accuracy={cue.accuracy}
-            control={cue.control}
-            freeItemDropChance={cue.freeItemDropChance}
-            isActive={cue.isActive}
-            price={cue.price}
-            lastPrice={cue.lastPrice}
+            itemId = {card.itemId}
+            tokenId = {card.tokenId}
+            name={card.name}
+            description = {card.description}
+            owned = {card.owned}
+            yieldBonus={card.yieldBonus}
+            image={card.image}
+            strength={card.strength}
+            accuracy={card.accuracy}
+            control={card.control}
+            freeItemDropChance={card.freeItemDropChance}
+            isActive={card.isActive}
+            price={card.price}
+            lastPrice={card.lastPrice}
             count = {index}
             check = {1}
             isSelected={selected === nfts.length+index}
@@ -811,23 +764,23 @@ const Cues = (props) => {
           ))
         }
         { check === 0 &&
-          marketNfts.map((cue, index) => (
-            <Cue 
+          marketNfts.map((card, index) => (
+            <Card 
             key={nfts.length+marketNftsOwned.length+index}
-            itemId = {cue.itemId}
-            tokenId = {cue.tokenId}
-            name={cue.name}
-            description = {cue.description}
-            owned = {cue.owned}
-            level={cue.level}
-            image={cue.image}
-            strength={cue.strength}
-            accuracy={cue.accuracy}
-            control={cue.control}
-            freeItemDropChance={cue.freeItemDropChance}
-            isActive={cue.isActive}
-            price={cue.price}
-            lastPrice={cue.lastPrice}
+            itemId = {card.itemId}
+            tokenId = {card.tokenId}
+            name={card.name}
+            description = {card.description}
+            owned = {card.owned}
+            yieldBonus={card.yieldBonus}
+            image={card.image}
+            strength={card.strength}
+            accuracy={card.accuracy}
+            control={card.control}
+            freeItemDropChance={card.freeItemDropChance}
+            isActive={card.isActive}
+            price={card.price}
+            lastPrice={card.lastPrice}
             count = {index}
             check = {2}
             isSelected={selected === nfts.length+marketNftsOwned.length+index}
@@ -838,6 +791,6 @@ const Cues = (props) => {
       </div>
     </>
   );
-}
+ }
 
-export default Cues;
+export default Cards;

@@ -1,0 +1,7 @@
+json format is ok, I have 1 query, due to the expense in time of retrieving the data, would it be possible to just call the api to get the NFT's and also pass an nft type.  We are going to need an NFT type field for the marketplace eventually also for the other games.
+Otherwise it's a 1 call to retrieve a list of nft's in the wallet (could potentially be hundreds) and then as many calls as the user has nft's to retrieve each ones data and see what it actually is.
+
+I'd like to see some further methods to just give back the json for each CUE owned or each Avater etc.
+So a new method where the input params are (address, type), this then returns a collection of json tokens containing an array of all nft's with that type (type = "CUE" / "AVATAR" / "CLUB" Etc Etc.
+
+Actually might be an idea to include in all calls the game type also, so the post would be something like (address, gametype,type)

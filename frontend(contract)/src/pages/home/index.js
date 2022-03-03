@@ -2,19 +2,18 @@
 import React from 'react';
 import { Button, makeStyles } from '@material-ui/core';
 import Cues from '../../components/Cues';
-// import Chalks from '../../components/Chalks';
-import Hall from '../../components/Hall';
-import LifesAndTokens from '../../components/LifesAndTokens';
+import Cards from '../../components/Card';
 import styles from './style';
 import { useEffect, useState } from "react";
-// import { connectWallet} from "../../components/Cues/index.js";
 import { ethers } from 'ethers'
 // import { SpaOutlined } from '@material-ui/icons';
 // import Link from 'next/link';
 import { useRouter } from 'next/router';
 const NFTcontractABI = require('../../NFT.json');
-const NFTcontractAddress = "0xF1f88246D1809D520b89E5470F07beD7Ae9451e9";
-const sportTokenAddress = "0x19330E3C89c9AFB1581c7a16a863f1c5Bd489F46";
+const CardNFTcontractABI = require('../../NFT_CARD.json');
+const NFTcontractAddress = "0x4e3ec2260c79369319b322808c084886849E81EC";
+const CardNFTcontractAddress = "0x4Add67aC56C4DC86B87C7e4B73FE9495f7d0FF65";
+const sportTokenAddress = "0x8603f5D95e463dAfcec01a03aAE8F93b199c7f65";
 const Web3 = require("web3");
 
 let web3 = new Web3(
@@ -57,8 +56,8 @@ function HomePage() {
   ];
 
   const titles = [
-    "AVATARS",
-    "EQUIPMENT",
+    "CARDS",
+    "CUES",
     "TOKENS",
     "Connect Wallet",
   ];
@@ -71,139 +70,158 @@ function HomePage() {
   const [loaded, setLoaded] = useState(0)
 
   var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
+  var CardTokenContract = new web3.eth.Contract(CardNFTcontractABI,CardNFTcontractAddress);
   var sportContract = new web3.eth.Contract(minABI, sportTokenAddress);
   if(loaded == 0){
     setLoaded(1);
     TokenContract.events.Transfer((err, events)=>{
       eventListened();      
     });
+    CardTokenContract.events.Transfer((err, events)=>{
+      eventListened();      
+    });
   }
   async function eventListened() {
-    if (window.ethereum) {
-      try {
-        const addressArray = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        var web3Window = new Web3(window.ethereum);
-        const chainIDBuffer = await web3Window.eth.net.getId();
-        if(addressArray.length > 0){
-          if(chainIDBuffer == 3){
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-              setBalance(String(balETH).substring(0, 6) + " ETH");
-            });
-            sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
-              if(res.length>7){
-                setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
-              }
-              else{
-                setSportBalance("0.00 SPORT");
-              }              
-            });
-              
-          }          
-        } 
+    try {
+      if (window.ethereum) {
         
-      } catch (err) {
-        return {
-          address: ""        
-        };
-      }
-    } 
-    
+          const addressArray = await window.ethereum.request({
+            method: "eth_accounts",
+          });
+          var web3Window = new Web3(window.ethereum);
+          const chainIDBuffer = await web3Window.eth.net.getId();
+          if(addressArray.length > 0){
+            if(chainIDBuffer == 3){
+              web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                setBalance(String(balETH).substring(0, 6) + " ETH");
+              });
+              sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
+                if(res.length>7){
+                  setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
+                }
+                else{
+                  setSportBalance("0.00 SPORT");
+                }              
+              });
+                
+            }          
+          } 
+          
+        
+      } 
+    } catch (err) {
+      return {
+        address: ""        
+      };
+    }
   }
 
   useEffect(() => {
-    if(window.ethereum) {
-      window.ethereum.on('chainChanged', () => {
-        router.reload();
-      })
-      window.ethereum.on('accountsChanged', () => {
-        router.reload();
-      })
+    try{
+      if(window.ethereum) {
+        window.ethereum.on('chainChanged', () => {
+          router.reload();
+        })
+        window.ethereum.on('accountsChanged', () => {
+          router.reload();
+        })
+      }
+      getCurrentWalletConnected(); 
     }
-    getCurrentWalletConnected(); 
+    catch{
+      return;
+    }
+    
     
   }, [])
 
   async function getCurrentWalletConnected() {
-    if (window.ethereum) {
-      try {
-        const addressArray = await window.ethereum.request({
-          method: "eth_accounts",
-        });        
-        var web3Window = new Web3(window.ethereum);
-        const chainIDBuffer = await web3Window.eth.net.getId();        
-        if(addressArray.length > 0){
-          setAdress(addressArray[0]);
-          if(chainIDBuffer == 3){
-            setNetName("");
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-              setBalance(String(balETH).substring(0, 6) + " ETH");
-            });            
-            sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
-              if(res.length>7){
-                setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
-              }
-              else{
-                setSportBalance("0.00 SPORT");
-              }         
-            });
-          }
-          else{  
-            setNetName("Wrong NET(DisConnect)");  
-          }
-        }         
-      } catch (err) {
-        return {
-          address: ""        
-        };
-      }
-    } 
+    try {
+      if (window.ethereum) {
+        
+          const addressArray = await window.ethereum.request({
+            method: "eth_accounts",
+          });        
+          var web3Window = new Web3(window.ethereum);
+          const chainIDBuffer = await web3Window.eth.net.getId();        
+          if(addressArray.length > 0){
+            setAdress(addressArray[0]);
+            if(chainIDBuffer == 3){
+              setNetName("");
+              web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                setBalance(String(balETH).substring(0, 6) + " ETH");
+              });            
+              sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
+                if(res.length>7){
+                  setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
+                }
+                else{
+                  setSportBalance("0.00 SPORT");
+                }         
+              });
+            }
+            else{  
+              setNetName("Wrong NET(DisConnect)");  
+            }
+          }         
+        
+      } 
+    } catch (err) {
+      return {
+        address: ""        
+      };
+    }
   };
 
   async function connect_Wallet() {
-    if (window.ethereum) {
-      var web3Window = new Web3(window.ethereum);          
-      if(address== ""){
-        await window.ethereum.request({
-          method: "wallet_requestPermissions",
-          params: [{
-              eth_accounts: {}
-          }]
-        });
-        const addressArray = await window.ethereum.request({method: "eth_accounts",});
-        const chainIDBuffer = await ethereum.networkVersion;
-        if(addressArray.length > 0){
-          setAdress(addressArray[0]);
-          if(chainIDBuffer == 3){        
-            setNetName("");
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-              setBalance(String(balETH).substring(0, 6) + " ETH");
-            }); 
-            sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
-              if(res.length>7){
-                setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
-              }
-              else{
-                setSportBalance("0.00 SPORT");
-              }         
-            });
+    try{
+      if (window.ethereum) {
+        var web3Window = new Web3(window.ethereum);          
+        if(address== ""){
+          await window.ethereum.request({
+            method: "wallet_requestPermissions",
+            params: [{
+                eth_accounts: {}
+            }]
+          });
+          const addressArray = await window.ethereum.request({method: "eth_accounts",});
+          const chainIDBuffer = await ethereum.networkVersion;
+          if(addressArray.length > 0){
+            setAdress(addressArray[0]);
+            if(chainIDBuffer == 3){        
+              setNetName("");
+              web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                setBalance(String(balETH).substring(0, 6) + " ETH");
+              }); 
+              sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
+                if(res.length>7){
+                  setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
+                }
+                else{
+                  setSportBalance("0.00 SPORT");
+                }         
+              });
+            }
+            else{
+              setNetName("Wrong NET(DisConnect)");
+            }     
           }
-          else{
-            setNetName("Wrong NET(DisConnect)");
-          }     
         }
-      }
-      else{
-        setAdress("");
-        setNetName("");
-        setBalance("");
-        setSportBalance("");  
-      }
-    }    
+        else{
+          setAdress("");
+          setNetName("");
+          setBalance("");
+          setSportBalance("");  
+        }
+      }  
+    }
+    catch{
+      return;
+    }
+      
   };
 
   return (
@@ -258,6 +276,9 @@ function HomePage() {
                   if(index === 3){
                     connect_Wallet();
                   }
+                  else if(index == 2){
+                    router.push('/token')
+                  }
                   else{
                     setSelected(index);
                   }
@@ -268,7 +289,14 @@ function HomePage() {
               </Button>
             ))}
             </div>
-            { selected === 0 && <Hall /> }
+            { selected === 0 && byAndSellSelected === 1 && sortValue ==1 && address == ""&& <Cards check = {1} sortVal = {1} connected = {0}/>}
+            { selected === 0 && byAndSellSelected === 1 && sortValue ==0 && address == ""&& <Cards check = {1} sortVal = {0} connected = {0}/>}
+            { selected === 0 && byAndSellSelected === 0 && sortValue ==1 && address == ""&& <Cards check = {0} sortVal = {1} connected = {0}/>}
+            { selected === 0 && byAndSellSelected === 0 && sortValue ==0 && address == ""&& <Cards check = {0} sortVal = {0} connected = {0}/>}
+            { selected === 0 && byAndSellSelected === 1 && sortValue ==1 && address != ""&& <Cards check = {1} sortVal = {1} connected = {1}/>}
+            { selected === 0 && byAndSellSelected === 1 && sortValue ==0 && address != ""&& <Cards check = {1} sortVal = {0} connected = {1}/>}
+            { selected === 0 && byAndSellSelected === 0 && sortValue ==1 && address != ""&& <Cards check = {0} sortVal = {1} connected = {1}/>}
+            { selected === 0 && byAndSellSelected === 0 && sortValue ==0 && address != ""&& <Cards check = {0} sortVal = {0} connected = {1}/>}
             { selected === 1 && byAndSellSelected === 1 && sortValue ==1 && address == ""&& <Cues check = {1} sortVal = {1} connected = {0}/> }
             { selected === 1 && byAndSellSelected === 1 && sortValue ==0 && address == ""&& <Cues check = {1} sortVal = {0} connected = {0}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==1 && address == ""&& <Cues check = {0} sortVal = {1} connected = {0}/> }
@@ -277,7 +305,7 @@ function HomePage() {
             { selected === 1 && byAndSellSelected === 1 && sortValue ==0 && address != ""&& <Cues check = {1} sortVal = {0} connected = {1}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==1 && address != ""&& <Cues check = {0} sortVal = {1} connected = {1}/> }
             { selected === 1 && byAndSellSelected === 0 && sortValue ==0 && address != ""&& <Cues check = {0} sortVal = {0} connected = {1}/> }            
-            { selected === 2 && <LifesAndTokens /> }
+            {/* { selected === 2 && <LifesAndTokens /> } */}
           </div> 
         
     </>

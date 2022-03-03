@@ -20,7 +20,9 @@ const ipfsC = IpfsHttpClient.create({
 });
 
 const NFTcontractABI = require('../../NFT.json');
-const NFTcontractAddress = "0xF1f88246D1809D520b89E5470F07beD7Ae9451e9";
+const NFTcontractAddress = "0x4e3ec2260c79369319b322808c084886849E81EC";
+const CardNFTcontractABI = require('../../NFT_CARD.json');
+const CardNFTcontractAddress = "0x4Add67aC56C4DC86B87C7e4B73FE9495f7d0FF65";
 const Web3 = require("web3");
 
 let web3 = new Web3(
@@ -48,13 +50,10 @@ function MintPage() {
   const [imgNameUpload, setImgNameUpload] = React.useState("");
   const [imgName, setImageName] = React.useState("");
   const [imgLevel, setImageLevel] = React.useState("");
-  const [imgExp, setImageExp] = React.useState("");
-  const [imgCurrentPower, setImageCurrentPower] = React.useState("");
-  const [imgTotalPower, setImagePower] = React.useState("");
-  const [imgForce, setImageForce] = React.useState("");
-  const [imgAim, setImageAim] = React.useState("");
-  const [imgSpin, setImageSpin] = React.useState("");
-  const [imgTime, setImageTime] = React.useState("");
+  const [imgStrength, setImageStrength] = React.useState("");
+  const [imgAccuracy, setImageAccuracy] = React.useState("");
+  const [imgControl, setImageControl] = React.useState("");
+  const [imgFreeItemDropChance, setImageFreeItemDropChance] = React.useState("");
   const [imgDescription, setImageDescription] = React.useState("");
   const [metadaState, setMetadaState] = React.useState("");
   const [beforeTokenURI, setBeforeTokenURI] = React.useState("");
@@ -62,127 +61,88 @@ function MintPage() {
   const [address, setAdress] = React.useState("");
   const [netName, setNetName] = React.useState("");
   const [balance, setBalance] = useState("");
+  const [equipType, setEquipType] = useState(0);
 
   const router = useRouter();
   Modal.setAppElement("#__next");
-  
   const upload = async (e) => {    
-    
-    setMetaDatachanged(0);
-    if(imgHash !="Pending"){
-      var _URL = window.URL || window.webkitURL;
-      var file, img;      
-      var image = document.getElementById('output');
-      if(e.target.files.length>0){
-        file = e.target.files[0];        
-        if(file.type == "image/png" || file.type == "image/jpeg"){
-          img = new Image();
-          var objectUrl = _URL.createObjectURL(file);
-          img.onload = async function () {  
-            if(this.width<=1024 && this.height<=1024){            
-              image.src = objectUrl;
-              _URL.revokeObjectURL(objectUrl);                
-              setImgHash("Pending");
-              setImgNameUpload("Pending");
-              const addedToIPFS = await ipfsC.add(file);
-              setImgHash(addedToIPFS.path);
-              setImgNameUpload(file.name);    
-            } 
-            else{
-              image.src = "";
-              setImgNameUpload("Image size is big than 1024 X 1024");
-            }              
-          };          
-          img.src = objectUrl;  
+    try{
+      setMetaDatachanged(0);
+      if(imgHash !="Pending"){
+        var _URL = window.URL || window.webkitURL;
+        var file, img;      
+        var image = document.getElementById('output');
+        if(e.target.files.length>0){
+          file = e.target.files[0];        
+          if(file.type == "image/png" || file.type == "image/jpeg"){
+            img = new Image();
+            var objectUrl = _URL.createObjectURL(file);
+            img.onload = async function () {  
+              if(this.width<=1024 && this.height<=1024){            
+                image.src = objectUrl;
+                _URL.revokeObjectURL(objectUrl);                
+                setImgHash("Pending");
+                setImgNameUpload("Pending");
+                const addedToIPFS = await ipfsC.add(file);
+                setImgHash(addedToIPFS.path);
+                setImgNameUpload(file.name);    
+              } 
+              else{
+                image.src = "";
+                setImgNameUpload("Image size is bigger than 1024 X 1024");
+              }              
+            };          
+            img.src = objectUrl;  
+          }
+          else{
+            setImgHash("Pending");
+            setImgNameUpload("Pending");
+            const addedToIPFS = await ipfsC.add(file);
+            setImgHash(addedToIPFS.path);
+            setImgNameUpload(file.name);              
+          }
         }
         else{
-          setImgHash("Pending");
-          setImgNameUpload("Pending");
-          const addedToIPFS = await ipfsC.add(file);
-          setImgHash(addedToIPFS.path);
-          setImgNameUpload(file.name);              
+            image.src = "";
+            setImgHash("");
+            setImgNameUpload("");
         }
       }
-      else{
-          image.src = "";
-          setImgHash("");
-          setImgNameUpload("");
-      }
     }
-    // if(e.target.files[0].type == "image/png" || e.target.files[0].type == "image/jpeg"){
-    //   if ((file = e.target.files[0])) {
-    //     img = new Image();
-    //     var objectUrl = _URL.createObjectURL(file);
-    //     img.onload = async function () {  
-    //       var image = document.getElementById('output');        
-    //       if(this.width<=1024 && this.height<=1024){            
-    //         image.src = objectUrl;
-    //         _URL.revokeObjectURL(objectUrl);
-    //         setMetaDatachanged(0);
-    //         if(imgHash !="Pending"){
-    //           if(e.target.files.length>0){
-    //             setImgHash("Pending");
-    //             setImgNameUpload("Pending");
-    //             const addedToIPFS = await ipfsC.add(e.target.files[0]);
-    //             setImgHash(addedToIPFS.path);
-    //             setImgNameUpload(e.target.files[0].name);  
-    //           }
-    //           else{
-    //             setImgHash("");
-    //             setImgNameUpload("");
-    //           }
-    //         } 
-    //       } 
-    //       else{
-    //         image.src = "";
-    //         setImgNameUpload("Image size is big than 1024 X 1024");
-    //       }              
-    //     };          
-    //     img.src = objectUrl;             
-    //   }  
-    // }
-    // else{
-    //   setMetaDatachanged(0);
-    //   if(imgHash !="Pending"){
-    //     if(e.target.files.length>0){
-    //       setImgHash("Pending");
-    //       setImgNameUpload("Pending");
-    //       const addedToIPFS = await ipfsC.add(e.target.files[0]);
-    //       setImgHash(addedToIPFS.path);
-    //       setImgNameUpload(e.target.files[0].name);  
-    //     }
-    //     else{
-    //       setImgHash("");
-    //       setImgNameUpload("");
-    //     }
-    //   } 
-    // }
+    catch{
+      return;
+    }
+        
        
    };
 
    const uploadMetaData = async () => {
-    if (imgName.toString().trim() == "" || imgDescription.toString().trim() == "" || imgHash.toString().trim() == "" || imgHash.toString().trim() == "Pending" ||imgLevel.toString().trim() == "" ||imgExp.toString().trim() == "" ||imgCurrentPower.toString().trim() == "" ||imgTotalPower.toString().trim() == "" ||imgForce.toString().trim() == "" ||imgAim.toString().trim() == "" ||imgSpin.toString().trim() == "" ||imgTime.toString().trim() == "") { 
+     try{
+      if (imgName.toString().trim() == "" || imgDescription.toString().trim() == "" || imgHash.toString().trim() == "" || imgHash.toString().trim() == "Pending" ||imgLevel.toString().trim() == "" ||imgStrength.toString().trim() == "" ||imgAccuracy.toString().trim() == "" ||imgControl.toString().trim() == "" ||imgFreeItemDropChance.toString().trim() == "" ) { 
         setMetadaState("❗Please make sure all fields are completed before minting.");      
-    }
-    else{
-      if(parseInt(imgLevel) > 0 && parseInt(imgExp) > 0 && parseInt(imgCurrentPower) > 0 && parseInt(imgTotalPower) > 0 && parseInt(imgForce) > 0 && parseInt(imgAim) > 0 && parseInt(imgSpin) > 0 &&parseInt(imgTime) > 0){
-        if(parseInt(imgCurrentPower) <= parseInt(imgTotalPower)){
+      }
+      else{
+        if(parseInt(imgLevel) > 0 && parseInt(imgStrength) > 0 && parseInt(imgAccuracy) > 0 && parseInt(imgControl) > 0 && parseInt(imgFreeItemDropChance) > 0 ){
+          
           if(address!=""){
             // make metaData
             const metadata = new Object();
             metadata.name = imgName;
             metadata.image_url = "https://gateway.pinata.cloud/ipfs/" + imgHash;
             metadata.description = imgDescription;   
-            metadata.level = imgLevel;
-            metadata.exp = imgExp;
-            metadata.currentPower = imgCurrentPower;
-            metadata.totalPower = imgTotalPower;
-            metadata.force = imgForce;
-            metadata.aim = imgAim;
-            metadata.spin = imgSpin;
-            metadata.time = imgTime;
+            if(equipType == 0){
+              metadata.level = imgLevel;
+            }
+            else{
+              metadata.yieldBonus = imgLevel;
+            }
+            
+            metadata.strength = imgStrength;
+            metadata.accuracy = imgAccuracy;
+            metadata.control = imgControl;
+            metadata.freeItemDropChance = imgFreeItemDropChance;
             if(metaDatachanged > 0) {
-              mintNft(beforeTokenURI, metadata);
+              mintNft(beforeTokenURI);
             }
             else{
               if(metadaState != "Pending"){
@@ -206,18 +166,19 @@ function MintPage() {
           else{
             window.alert("Connect to the MetaMask");
           }
+                
+          
         }
-        else{
-          setMetadaState("❗TotalPower must be bigger than CurrentPower.");
+        else {
+          setMetadaState("❗Please make sure all fields of Attributes are Integers and none zero.");
         }
         
-      }
-      else {
-        setMetadaState("❗Please make sure all fields of Attributes are Integers and none zero.");
-      }
-      
-            
-    }  
+              
+      }  
+     }catch{
+       return;
+     }
+    
   };
 
   const pinJSONToIPFS = async(JSONBody) => {
@@ -247,127 +208,155 @@ function MintPage() {
   };
 
   async function mintNft(_tokenUri) {    
-    
-    const { ethereum } = window;
-    if (ethereum) {
-      const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 3){
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const contractNFT = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
-        try {
-          let nftTxn = await contractNFT.createTokens(_tokenUri, quantity);
-          await nftTxn.wait(); 
-          setImageName("");
-          setImageDescription("");
-          setImgNameUpload("");
-          setImageLevel("");
-          setImageExp("");
-          setImageCurrentPower("");
-          setImagePower("");
-          setImageForce("");
-          setImageAim("");
-          setImageSpin("");
-          setImageTime("");
-          setImgHash("");
-          var image = document.getElementById('output');
-          image.src = "";
-          if(quantity ==1){
-            window.alert("1 NFT minted successfully");   
-          }
-          else{
-            window.alert(quantity + " NFTs minted successfully");
-          }             
-        } catch (err) {          
-          window.alert("Minting of the NFT failed");
-        }            
-      }   
+    try{
+      const { ethereum } = window;
+      if (ethereum) {
+        const chainIDBuffer = await ethereum.networkVersion;
+        if(chainIDBuffer == 3){
+          
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          let contractNFT = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
+          if(equipType == 1){
+            contractNFT = new ethers.Contract(CardNFTcontractAddress, CardNFTcontractABI, signer);
+          }        
+          try {
+            let nftTxn = await contractNFT.createTokens(_tokenUri, quantity);
+            await nftTxn.wait(); 
+            setImageName("");
+            setImageDescription("");
+            setImgNameUpload("");
+            setImageLevel("");
+            setImageStrength("");
+            setImageAccuracy("");
+            setImageControl("");
+            setImageFreeItemDropChance("");
+            setImgHash("");
+            var image = document.getElementById('output');
+            image.src = "";
+            if(equipType == 0){
+              if(quantity ==1){
+                window.alert("1 Cue minted successfully");   
+              }
+              else{
+                window.alert(quantity + " Cues minted successfully");
+              }
+            }
+            else{
+              if(quantity ==1){
+                window.alert("1 Card minted successfully");   
+              }
+              else{
+                window.alert(quantity + " Cards minted successfully");
+              }
+            }
+                        
+          } catch (err) {          
+            window.alert("Minting of the NFT failed");
+          }            
+        }   
+      }
+    }catch{
+      return;
     }
+    
   }
 
   useEffect(() => {
-    if(window.ethereum) {
-      window.ethereum.on('chainChanged', () => {
-        //router.reload();
-        router.push('/mint');
-      })
-      window.ethereum.on('accountsChanged', () => {
-        //router.reload();
-        router.push('/mint');
-      })
+    try{
+      if(window.ethereum) {
+        window.ethereum.on('chainChanged', () => {
+          //router.reload();
+          router.push('/mint');
+        })
+        window.ethereum.on('accountsChanged', () => {
+          //router.reload();
+          router.push('/mint');
+        })
+      }
+      getCurrentWalletConnected(); 
     }
-    getCurrentWalletConnected(); 
+    catch{
+      return;
+    }
+    
     
   }, [])
 
   async function getCurrentWalletConnected() {
-    if (window.ethereum) {
-      try {
-        const addressArray = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        var web3Window = new Web3(window.ethereum);
-        const chainIDBuffer = await web3Window.eth.net.getId();
-        if(addressArray.length > 0){
-          setAdress(addressArray[0]);
-          if(chainIDBuffer == 3){
-            setNetName("");  
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-              setBalance(String(balETH).substring(0, 6) + " ETH");
-            });           
-          }
-          else{  
-            setNetName("Wrong NET(DisConnect)");  
-          }
-        }         
-      } catch (err) {
-        return {
-          address: ""        
-        };
-      }
-    } 
-  };
-
-  async function connect_Wallet() {
-    
-    if (window.ethereum) {
-      if(address== ""){
-        try {          
-          await window.ethereum.request({
-            method: "wallet_requestPermissions",
-            params: [{
-                eth_accounts: {}
-            }]
+    try {
+      if (window.ethereum) {
+        
+          const addressArray = await window.ethereum.request({
+            method: "eth_accounts",
           });
-          const addressArray = await window.ethereum.request({method: "eth_accounts",});
           var web3Window = new Web3(window.ethereum);
-          const chainIDBuffer = await web3Window.eth.net.getId();        
-          //setChainID(chainIDBuffer);
+          const chainIDBuffer = await web3Window.eth.net.getId();
           if(addressArray.length > 0){
             setAdress(addressArray[0]);
             if(chainIDBuffer == 3){
-              setNetName("");    
+              setNetName("");  
               web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
                 let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
                 setBalance(String(balETH).substring(0, 6) + " ETH");
-              });          
+              });           
             }
             else{  
               setNetName("Wrong NET(DisConnect)");  
             }
-          }        
-        } catch (err) {
-          return {
-            address: ""        
-          };
+          }         
+        
+      } 
+    } catch (err) {
+      return {
+        address: ""        
+      };
+    }
+  };
+
+  async function connect_Wallet() {
+    try{
+      if (window.ethereum) {
+        if(address== ""){
+          try {          
+            await window.ethereum.request({
+              method: "wallet_requestPermissions",
+              params: [{
+                  eth_accounts: {}
+              }]
+            });
+            const addressArray = await window.ethereum.request({method: "eth_accounts",});
+            var web3Window = new Web3(window.ethereum);
+            const chainIDBuffer = await web3Window.eth.net.getId();        
+            //setChainID(chainIDBuffer);
+            if(addressArray.length > 0){
+              setAdress(addressArray[0]);
+              if(chainIDBuffer == 3){
+                setNetName("");    
+                web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                  let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                  setBalance(String(balETH).substring(0, 6) + " ETH");
+                });          
+              }
+              else{  
+                setNetName("Wrong NET(DisConnect)");  
+              }
+            }        
+          } catch (err) {
+            return {
+              address: ""        
+            };
+          }
         }
-      }
-      else{
-        setAdress("");
-        setNetName(""); 
-      }   
-    } 
+        else{
+          setAdress("");
+          setNetName(""); 
+        }   
+      } 
+    }catch{
+      return;
+    }
+    
   };
 
   return (
@@ -376,6 +365,13 @@ function MintPage() {
         <div>
           <Button className={classes.circle_btn} onClick={() => router.push('/')}>
             {'<'}
+          </Button>
+          <Button style={{position:"absolute",left :"150px", top : "50px"}} className={`${classes.btn} ${equipType === 0 ? classes.selected_btn : ''}`} onClick={() => {setEquipType(0);}}>              
+            {"CUE"}
+          </Button>
+          <div style={{width:"32px",flexShrink:"0%"}}></div>
+          <Button style={{position:"absolute",left :"600px", top : "50px"}} className={`${classes.btn} ${equipType === 1 ? classes.selected_btn : ''}`} onClick={() => {setEquipType(1);}}>              
+            {"CARD"}
           </Button>
         </div>
         
@@ -404,14 +400,14 @@ function MintPage() {
       </div>
       
       <div className={classes.hero}>   
-        <img src="/images/mint_logo.png" alt="" />
+        <img src="/images/mint_logo.png" alt=""/>
         <div className={classes.infos}>
           <span>Title</span>
           <TextField
-            placeholder="Hall of fame"
-            variant="filled"      
+            placeholder="name of NFT"
+            variant="filled"  
             value = {imgName}      
-            onChange={(event) => {setImageName(event.target.value); setMetaDatachanged(0);}}
+            onChange={(event) => {setImageName(event.target.value.substring(0,30)); setMetaDatachanged(0);}}
           />
           <span>Description</span>
           <TextField
@@ -420,85 +416,58 @@ function MintPage() {
             multiline
             rows={4}   
             value = {imgDescription}         
-            onChange={(event) => {setImageDescription(event.target.value);setMetaDatachanged(0);}}
+            onChange={(event) => {setImageDescription(event.target.value.substring(0,256));setMetaDatachanged(0);}}
           />
           
           <div className="titles"> 
             <div>
-              <span>Level</span>
+              <span>{equipType ==0 ? 'Level' : 'Yield Bonus'}</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
                 value = {imgLevel}  
-                onChange={(event) => {setImageLevel(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}    
+                onChange={(event) => {setImageLevel(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}    
               />
             </div>
             <div>
-              <span>Exp</span>
+              <span>Strength</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgExp}
-                onChange={(event) => {setImageExp(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
+                value = {imgStrength}
+                onChange={(event) => {setImageStrength(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
               />   
-            </div>
-            <div>
-              <span>CurrentPower</span>
-              <TextField
-                placeholder="0"
-                variant="filled"      
-                value = {imgCurrentPower}  
-                onChange={(event) => {setImageCurrentPower(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
-              />
-            </div>
-            <div>
-              <span>TotalPower</span>
-              <TextField
-                placeholder="0"
-                variant="filled"      
-                value = {imgTotalPower}  
-                onChange={(event) => {setImagePower(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}     
-              />
-            </div>
+            </div>            
           </div>
 
           <div className="titles"> 
             <div>
-              <span>Force</span>
+              <span>Accuracy</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgForce}  
-                onChange={(event) => {setImageForce(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
+                value = {imgAccuracy}  
+                onChange={(event) => {setImageAccuracy(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
               />
             </div>
             <div>
-              <span>Aim</span>
+              <span>Control</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgAim}  
-                onChange={(event) => {setImageAim(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}       
+                value = {imgControl}  
+                onChange={(event) => {setImageControl(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}       
               />
             </div>
             <div>
-              <span>Spin</span>
+              <span style={{marginLeft: "10px"}}>Free Item Drop Chance</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
-                value = {imgSpin}  
-                onChange={(event) => {setImageSpin(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}     
+                value = {imgFreeItemDropChance}  
+                onChange={(event) => {setImageFreeItemDropChance(Number(event.target.value) > -1 && Number(event.target.value) < 101 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}     
               />
-            </div>
-            <div>
-              <span>Time</span>
-              <TextField
-                placeholder="0"
-                variant="filled"      
-                value = {imgTime}  
-                onChange={(event) => {setImageTime(Number(event.target.value) > -1 && Number(event.target.value) < 11 ? Number(event.target.value) : 0); setMetaDatachanged(0);}}      
-              />
-            </div>
+            </div>            
           </div>
           
           <div id="toggles">
@@ -540,7 +509,7 @@ function MintPage() {
           <div>
           <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="CloudUploadIcon"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"></path></svg>
           <span style={{paddingBottom:"4px",color:"white",textTransform: "uppercase",}}>Upload your file here</span>
-          <span>JPG, PNG or MP4 videos accepted. 10MB limit.</span>
+          <span>JPG, PNG or MP4 videos accepted. 1024x1024 limit.</span>
           <input
             type="file"
             accept={['image/jpeg', 'image/png', 'video/mp4']}

@@ -95,6 +95,20 @@ const styles = createStyles({
     fontFamily: 'monospace',
     fontSize: '24px',
   },
+  btn: {
+    width: '24%',
+    height: '40px',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    color: 'white',
+    '& img': {
+      margin: '0 8px 4px 0',
+    },
+  },
+  selected_btn: {
+    background: 'linear-gradient(180deg, rgba(45, 191, 223, 0.2) 0%, #2DBFDF 100%)',
+    border: '1px solid #2DBFDF',
+  },
   infos: {
     width: 'calc(50% - 40px)',
     display: 'flex',

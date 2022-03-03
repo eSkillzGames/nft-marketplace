@@ -7,7 +7,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract NFTMarket",
+        "internalType": "contract NFTMarket_Card",
         "name": "_nFTMarket",
         "type": "address"
       }
@@ -267,7 +267,7 @@
     "name": "nFTMarket",
     "outputs": [
       {
-        "internalType": "contract NFTMarket",
+        "internalType": "contract NFTMarket_Card",
         "name": "",
         "type": "address"
       }

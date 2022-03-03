@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 const PresaleContractABI = require('../../Presale.json');
 const PresaleContractAddress = "0x97BBF34109875FEe6dB01b055d64dFe7d32EA4C4";
+
 const Web3 = require("web3");
 
 const useStyles = makeStyles(styles);
@@ -25,152 +26,172 @@ function ESGPage() {
   
   const router = useRouter();
   const buy = async () => {  
-    const { ethereum } = window;
-    if(address!=""){
-      if(ethereum){
-        if (parseFloat(ethAmount) > 0) {
-          const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 3){
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const signer = provider.getSigner();
-            const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);
-            try {
-              let nftTxn = await PresaleContract.buy(
-                {
-                  value: ethers.utils.parseUnits(ethAmount.toString(), 'ether')._hex,
-                }        
-              ); 
-              await nftTxn.wait();  
-              let esgBuffer = esgAmount;
-              setEsgAmount("");
-              setEthAmount("");    
-              window.alert("You recieved "+esgBuffer+ " ESG");    
-            } catch (err) {          
-              window.alert("Buy of the ESG failed");
-            }            
-          }   
+    try{
+      const { ethereum } = window;
+      if(address!=""){
+        if(ethereum){
+          if (parseFloat(ethAmount) > 0) {
+            const chainIDBuffer = await ethereum.networkVersion;
+            if(chainIDBuffer == 3){
+              const provider = new ethers.providers.Web3Provider(ethereum);
+              const signer = provider.getSigner();
+              const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);
+              try {
+                let nftTxn = await PresaleContract.buy(
+                  {
+                    value: ethers.utils.parseUnits(ethAmount.toString(), 'ether')._hex,
+                  }        
+                ); 
+                await nftTxn.wait();  
+                let esgBuffer = esgAmount;
+                setEsgAmount("");
+                setEthAmount("");    
+                window.alert("You recieved "+esgBuffer+ " ESG");    
+              } catch (err) {          
+                window.alert("Buy of the ESG failed");
+              }            
+            }   
+          }
+          else{
+            window.alert("ETH Amount must be Float.");
+          }
         }
         else{
-          window.alert("ETH Amount must be Float.");
-        }
+          window.alert("Install MetaMask.");
+        }      
       }
       else{
-        window.alert("Install MetaMask.");
-      }      
+        window.alert("Connect to the MetaMask");
+      }
     }
-    else{
-      window.alert("Connect to the MetaMask");
-    }
+    catch{
+      return;
+    }   
     
   }
 
   useEffect(() => {
-    if(window.ethereum) {
-      window.ethereum.on('chainChanged', () => {
-        //router.reload();
-        router.push('/esg');
-      })
-      window.ethereum.on('accountsChanged', () => {
-        //router.reload();
-        router.push('/esg');
-      })
+    try{
+      if(window.ethereum) {
+        window.ethereum.on('chainChanged', () => {
+          //router.reload();
+          router.push('/esg');
+        })
+        window.ethereum.on('accountsChanged', () => {
+          //router.reload();
+          router.push('/esg');
+        })
+      }
+      getCurrentWalletConnected(); 
+      init();
     }
-    getCurrentWalletConnected(); 
-    init();
+    catch{
+      return;
+    }
+    
     
   }, [])
   async function init() {
-    if (window.ethereum) {
-      try {
-        const addressArray = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        var web3Window = new Web3(window.ethereum);
-        const chainIDBuffer = await web3Window.eth.net.getId();
-        if(addressArray.length > 0){
-          if(chainIDBuffer == 3){
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const signer = provider.getSigner();
-            const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);      
-            const price = await PresaleContract.price(); 
-            setEsgPricePerETH(parseInt(price._hex));   
-          }          
-        }         
-      } catch (err) {
-        return {
-          address: ""        
-        };
-      }
-    } 
+    try {
+      if (window.ethereum) {
+        
+          const addressArray = await window.ethereum.request({
+            method: "eth_accounts",
+          });
+          var web3Window = new Web3(window.ethereum);
+          const chainIDBuffer = await web3Window.eth.net.getId();
+          if(addressArray.length > 0){
+            if(chainIDBuffer == 3){
+              const provider = new ethers.providers.Web3Provider(ethereum);
+              const signer = provider.getSigner();
+              const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);      
+              const price = await PresaleContract.price(); 
+              setEsgPricePerETH(parseInt(price._hex));   
+            }          
+          }         
+        
+      } 
+    } catch (err) {
+      return {
+        address: ""        
+      };
+    }
   }
   async function getCurrentWalletConnected() {
-    if (window.ethereum) {
-      try {
-        const addressArray = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        var web3Window = new Web3(window.ethereum);
-        const chainIDBuffer = await web3Window.eth.net.getId();
-        if(addressArray.length > 0){
-          setAdress(addressArray[0]);
-          if(chainIDBuffer == 3){
-            setNetName("");  
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-              setBalance(String(balETH).substring(0, 6) + " ETH");
-            });           
-          }
-          else{  
-            setNetName("Wrong NET(DisConnect)");  
-          }
-        }         
-      } catch (err) {
-        return {
-          address: ""        
-        };
-      }
-    } 
-  };
-
-  async function connect_Wallet() {
-    
-    if (window.ethereum) {
-      if(address== ""){
-        try {          
-          await window.ethereum.request({
-            method: "wallet_requestPermissions",
-            params: [{
-                eth_accounts: {}
-            }]
+    try {
+      if (window.ethereum) {
+        
+          const addressArray = await window.ethereum.request({
+            method: "eth_accounts",
           });
-          const addressArray = await window.ethereum.request({method: "eth_accounts",});
           var web3Window = new Web3(window.ethereum);
-          const chainIDBuffer = await web3Window.eth.net.getId();        
-          //setChainID(chainIDBuffer);
+          const chainIDBuffer = await web3Window.eth.net.getId();
           if(addressArray.length > 0){
             setAdress(addressArray[0]);
             if(chainIDBuffer == 3){
-              setNetName("");    
+              setNetName("");  
               web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
                 let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
                 setBalance(String(balETH).substring(0, 6) + " ETH");
-              });          
+              });           
             }
             else{  
               setNetName("Wrong NET(DisConnect)");  
             }
-          }        
-        } catch (err) {
-          return {
-            address: ""        
-          };
+          }         
+      
+      } 
+    } catch (err) {
+      return {
+        address: ""        
+      };
+    }
+  };
+
+  async function connect_Wallet() {
+    try{
+      if (window.ethereum) {
+        if(address== ""){
+          try {          
+            await window.ethereum.request({
+              method: "wallet_requestPermissions",
+              params: [{
+                  eth_accounts: {}
+              }]
+            });
+            const addressArray = await window.ethereum.request({method: "eth_accounts",});
+            var web3Window = new Web3(window.ethereum);
+            const chainIDBuffer = await web3Window.eth.net.getId();        
+            //setChainID(chainIDBuffer);
+            if(addressArray.length > 0){
+              setAdress(addressArray[0]);
+              if(chainIDBuffer == 3){
+                setNetName("");    
+                web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                  let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                  setBalance(String(balETH).substring(0, 6) + " ETH");
+                });          
+              }
+              else{  
+                setNetName("Wrong NET(DisConnect)");  
+              }
+            }        
+          } catch (err) {
+            return {
+              address: ""        
+            };
+          }
         }
-      }
-      else{
-        setAdress("");
-        setNetName(""); 
-      }   
-    } 
+        else{
+          setAdress("");
+          setNetName(""); 
+        }   
+      } 
+    }
+    catch{
+      return;
+    }
+    
   };
 
   return (

@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import 'r-range-slider/index.css';
 import theme from '../src/theme';
+import 'bootstrap/dist/css/bootstrap.css';
+import '../node_modules/r-range-slider/index.css';
 import './app.css';
 
 export default function MyApp(props) {
