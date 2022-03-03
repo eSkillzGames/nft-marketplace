@@ -1,0 +1,187 @@
+@import "src/constant/color";
+
+.token {
+    padding: 5rem;
+    @media (max-width: 1024px) {
+        padding: 4rem 5rem 3rem 5rem;
+        @media (max-width: 425px) {
+            padding: 4rem 1.5rem 3rem 1.5rem;
+        }
+    }
+    .color_blue {
+        color: $blue;
+    }
+    .color_white {
+        color: $white;
+    }
+    .color_light_green {
+        color: $light_green;
+    }
+    .color_middle_green {
+        color: $middle_green;
+    }
+    .bg_green {
+        background-color: $bg_green !important;
+    }
+    .bg_dark_green {
+        background-color: $dark_green !important;
+    }
+    .btn_outline_primary {
+        border-color: $blue;
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+        &:hover {
+            background-color: $blue;
+            border-color: $blue;
+            color: $bg_green !important;
+        }
+        &:focus {
+            box-shadow: 0 0 0 0.25rem rgba(40, 186, 224, 0.2);
+        }
+    }
+    .form_control {
+        border-width: 0;
+        color: $white;
+        padding: 1rem 1.5rem;
+        border-radius: 2rem;
+        &:focus {
+            background-color: $dark_green;
+            border-color: transparent;
+            box-shadow: unset;
+            color: $white;
+        }
+    }
+    .logo {
+        position: absolute;
+        left: calc(50% - 5vw);
+        top: 2.5rem;
+        @media (max-width: 1024px) {
+            display: flex;
+            position: unset;
+            justify-content: center;
+        }
+        img {
+            @media (max-width: 1023px) {
+                @media (max-width: 768px) {
+                    width: 10rem;
+                }
+            }
+        }
+    }
+    .header_content {
+        flex-direction: row;
+        @media (max-width: 1023px) {
+            flex-direction: column;
+            margin-top: 3rem;
+        }
+        .header_middle_content {
+            display: none;
+            @media (max-width: 1023px) {
+                display: block;
+                margin: 2rem 0;
+                width: 100%;
+            }
+        }
+        .btn_container {
+            @media (max-width: 1023px) {
+                width: 100%;
+            }
+        }
+        .link {
+            @media (max-width: 1023px) {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
+    .first_container {
+        margin-top: 7.5rem;
+        padding: 0;
+        @media (max-width: 1023px) {
+            display: none;
+        }
+    }
+    .second_container {
+        margin-top: 7.5rem;
+        padding: 0;
+        @media (max-width: 1023px) {
+            margin-top: 2.5rem;
+            flex-direction: column;
+        }
+    }
+    .total_earned {
+        color: $light_green;
+        background-color: $bg-dark;
+        padding: 2rem;
+        border-radius: 2rem;
+        .copy{
+            cursor: pointer;
+        }
+        .textoverflow{
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    .content {
+        text-align: -webkit-center;
+        .calculator {
+            .my-slider {
+                .r-range-slider-value {
+                    background: #05252f;
+                    width: 36px;
+                    height: 36px;
+                    top: -22px;
+                    padding: 0;
+                    border: 2px solid $blue;
+                    border-width: 4px;
+                    border-radius: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                // .r-range-slider-fill[data-index="0"] {
+                //   background: "dodgerblue";
+                // }
+            }
+            .subtitle{
+                font-size: 1.25rem;
+                @media (max-width: 768px) {
+                    font-size: 0.8rem;
+                }
+            }
+            .refresh {
+                right: 1rem;
+                cursor: pointer;
+            }
+        }
+    }
+    .token_buy_container {
+        @media (max-width: 1023px) {
+            width: 100%;
+            margin-top: 2rem;
+        }
+        .token_buy {
+            border-radius: 2rem;
+            background-color: $bg_dark;
+            flex-direction: row;
+            @media (max-width:425px) {
+                flex-direction: column;;
+            }
+            .sub_container {
+                width: 70%;
+                border-radius: 2rem;
+                padding: 2rem;
+                @media (max-width:425px) {
+                    width: 100%;
+                }
+            }
+        }
+    }
+    .calc_container {
+        display: none;
+        @media (max-width: 1023px) {
+            margin-top: 2rem;
+            display: block;
+        }
+    }
+}
