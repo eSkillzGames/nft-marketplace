@@ -11,9 +11,9 @@ import { ethers } from 'ethers'
 import { useRouter } from 'next/router';
 const NFTcontractABI = require('../../NFT.json');
 const CardNFTcontractABI = require('../../NFT_CARD.json');
-const NFTcontractAddress = "0x4e3ec2260c79369319b322808c084886849E81EC";
-const CardNFTcontractAddress = "0x4Add67aC56C4DC86B87C7e4B73FE9495f7d0FF65";
-const sportTokenAddress = "0x8603f5D95e463dAfcec01a03aAE8F93b199c7f65";
+const NFTcontractAddress = "0xa279Cd797ea9048A58a29535140f96e20B053b60";
+const CardNFTcontractAddress = "0x396546019940B5e8779fA83C04B42B50A8d7fa2c";
+const sportTokenAddress = "0x297A580ccF736D5535401B9C8159F6F3e663949F";
 const Web3 = require("web3");
 
 let web3 = new Web3(
@@ -262,7 +262,7 @@ function HomePage() {
                 {'>'}
             </Button>
           </Link> */}
-          <Button className={classes.circle_btn} style={{position: 'relative', marginLeft : '20px'}} onClick={() => router.push('/mint')}>
+          <Button className={classes.circle_btn} style={{position: 'relative', marginLeft : '20px'}} /*onClick={() => router.push('/mint')}*/>
               {'>'}
           </Button>          
       </div>

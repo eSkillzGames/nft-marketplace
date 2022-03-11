@@ -7,10 +7,10 @@ import style from "./style.module.scss";
 import { useRouter } from 'next/router';
 import tokenPriceABI from '../../GetTokenPrice.json';
 const Web3 = require("web3");
-const sportTokenAddress = "0x8603f5D95e463dAfcec01a03aAE8F93b199c7f65";
+const sportTokenAddress = "0x297A580ccF736D5535401B9C8159F6F3e663949F";
 //const esgTokenAddress = "0x8C534C9aa8d6cDB75d139caF5aD9716Db25eB628";
 const esgTokenAddress = "0x630C101AD79971AAC25Aed0A3bE9bcf9bD49fA08";
-const tokenPriceAddress = "0xf48eD7f89f81973C48E0275002c23b82eDE795F3";
+const tokenPriceAddress = "0x9D46b2D90b8a1a4b69A35e935703f8860b210823";
 var minABI = [
     // balanceOf
     {
@@ -28,20 +28,24 @@ const initialData = [{
     totalPrice: "0.00",
     btnTitle: "BUY ESG",
     priceTitle: "ESG PRICE",
-    price: "0.00"
+    price: "0.00",
+    ethPrice : "0.00"
 }, {
     title: "Your SPORT",
     balance: "0.00",
     totalPrice: "0.00",
     btnTitle: "BUY SPORT",
     priceTitle: "SPORT PRICE",
-    price: "0.00"
+    price: "0.00",
+    ethPrice : "0.00"
 }]
 const Token = () => {
     const [sportBalance, setSportBalance] = useState("");
     const [esgBalance, setEsgBalance] = useState("");
     const [esgPrice, setEsgPrice] = useState("");
     const [sportPrice, setSportPrice] = useState("");
+    const [ethSportPrice, setEthSportPrice] = useState("");
+    const [ethEsgPrice, setEthEsgPrice] = useState("");
     const [address, setAdress] = useState(null);
     useEffect(() => {        
         init();        
@@ -64,11 +68,29 @@ const Token = () => {
                         var tokenPriceContract = new web3.eth.Contract(tokenPriceABI,tokenPriceAddress);
                         tokenPriceContract.methods.getPrice(sportTokenAddress).call(function (err, res) {
                             initialData[1].totalPrice = String(res[0] * res[2] / (res[1]*10**6));
+                            
+                            //console.log(initialData[1].ethPrice);
                             setSportPrice(String(res[0] * res[2] / (res[1]*10**6)));
+                        });
+                        tokenPriceContract.methods.getETHPrice(sportTokenAddress).call(function (err, res) {
+                            
+                            initialData[1].ethPrice = String(res/(10**9));
+                            setEthSportPrice(String(res/(10**9)));
+                            //console.log(initialData[1].ethPrice);
+                            
                         });
                         tokenPriceContract.methods.getPrice(esgTokenAddress).call(function (err, res) {
                             initialData[0].totalPrice = String(res[0] * res[2] / (res[1]*10**6));
+                            initialData[0].ethPrice = String(10**18/res[0]);
+                            //console.log(initialData[1].ethPrice);
                             setEsgPrice(String(res[0] * res[2] / (res[1]*10**6)));
+                        });
+                        tokenPriceContract.methods.getETHPrice(esgTokenAddress).call(function (err, res) {
+                            
+                            initialData[0].ethPrice = String(res/(10**9));
+                            setEthEsgPrice(String(res/(10**9)));
+                            //console.log(initialData[1].ethPrice);
+                            
                         });
                         sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
                         if(res.length>7){

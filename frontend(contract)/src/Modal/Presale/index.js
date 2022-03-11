@@ -9,19 +9,20 @@ import { useEffect, useState } from "react";
 const PresaleSportContractABI = require('../../PresaleSport.json');
 const PresaleSportContractAddress = "0xB2C01519D42fEb1D77D4436ac84D316C9027b2A9";
 const PresaleContractABI = require('../../Presale.json');
+const UniswapABI = require('../../Uniswap.json');
+import tokenPriceABI from '../../GetTokenPrice.json';
+const UniswapAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 const PresaleContractAddress = "0x97BBF34109875FEe6dB01b055d64dFe7d32EA4C4";
+const tokenPriceAddress = "0x9D46b2D90b8a1a4b69A35e935703f8860b210823";
 const Web3 = require("web3");
 
 
-const Presale = ({ show, onHide ,id, walletAddress}) => {
-    const [sportPricePerETH, setSportPricePerETH] = useState("");
+const Presale = ({ show, onHide ,id, walletAddress,sportPricePerETH}) => {
     const [address, setAdress] = useState("");
     const [ethAmount, setEthAmount] = React.useState("");
     const [sportAmount, setSportAmount] = React.useState("0");    
     const router = useRouter();
-    useEffect(() => {        
-        init();        
-      }, []);
+    
     const buy = async () => {  
         try{
             const { ethereum } = window;
@@ -32,24 +33,30 @@ const Presale = ({ show, onHide ,id, walletAddress}) => {
                         if(chainIDBuffer == 3){
                             const provider = new ethers.providers.Web3Provider(ethereum);
                             const signer = provider.getSigner();
-                            var PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer); 
-                            if(id == 1){
-                                PresaleContract = new ethers.Contract(PresaleSportContractAddress, PresaleSportContractABI, signer); 
-                            }                        
+                            var PresaleContract = new ethers.Contract(UniswapAddress, UniswapABI, signer); 
+                            let dateInAWeek = new Date();
+                            const deadline = Math.floor(dateInAWeek.getTime() / 1000);
                             
                             try {
-                                let nftTxn = await PresaleContract.buy(
-                                {
-                                    value: ethers.utils.parseUnits(ethAmount.toString(), 'ether')._hex,
-                                }        
-                                ); 
-                                await nftTxn.wait();  
-                                if(id == 0){
-                                    window.alert("You recieved "+sportAmount + "ESG");
-                                }
-                                else{
+                                if (id == 1){
+                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0xc778417e063141139fce010982780140aa0cd5ab","0x297A580ccF736D5535401B9C8159F6F3e663949F"], walletAddress,deadline+1000,
+                                    {
+                                        value: ethers.utils.parseUnits(ethAmount.toString(), 'ether')._hex,
+                                    }        
+                                    ); 
+                                    await nftTxn.wait();
                                     window.alert("You recieved "+sportAmount + "SPORT");
                                 }
+                                else{
+                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0xc778417e063141139fce010982780140aa0cd5ab","0x630C101AD79971AAC25Aed0A3bE9bcf9bD49fA08"], walletAddress,deadline+1000,
+                                    {
+                                        value: ethers.utils.parseUnits(ethAmount.toString(), 'ether')._hex,
+                                    }        
+                                    ); 
+                                    await nftTxn.wait();     
+                                    window.alert("You recieved "+sportAmount + "ESG");                               
+                                }                                  
+                                
                                 setSportAmount("0");
                                 setEthAmount("");   
                                 //router.reload();                                             
@@ -76,41 +83,7 @@ const Presale = ({ show, onHide ,id, walletAddress}) => {
         }
           
     }
-    async function init() {
-        try {
-            if (window.ethereum) {
-            
-                const addressArray = await window.ethereum.request({
-                method: "eth_accounts",
-                });
-                var web3Window = new Web3(window.ethereum);
-                const chainIDBuffer = await web3Window.eth.net.getId();
-                if(addressArray.length > 0 && walletAddress!=""){
-                    setAdress(addressArray[0]); 
-                    if(chainIDBuffer == 3){
-                        const provider = new ethers.providers.Web3Provider(ethereum);
-                        const signer = provider.getSigner();
-                        if(id == 0){
-                            const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);      
-                            const price = await PresaleContract.price(); 
-                            setSportPricePerETH(parseInt(price._hex));
-                        }
-                        else{
-                            const PresaleSportContract = new ethers.Contract(PresaleSportContractAddress, PresaleSportContractABI, signer);      
-                            const price = await PresaleSportContract.price(); 
-                            setSportPricePerETH(parseInt(price._hex));
-                        }
-                    
-                    }          
-                }         
-            
-            } 
-        } catch (err) {
-            return {
-            address: ""        
-            };
-        }
-      }
+    
     return (
         <Modal
             show={show}

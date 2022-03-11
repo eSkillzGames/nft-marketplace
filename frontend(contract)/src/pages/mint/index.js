@@ -20,9 +20,9 @@ const ipfsC = IpfsHttpClient.create({
 });
 
 const NFTcontractABI = require('../../NFT.json');
-const NFTcontractAddress = "0x4e3ec2260c79369319b322808c084886849E81EC";
+const NFTcontractAddress = "0xa279Cd797ea9048A58a29535140f96e20B053b60";
 const CardNFTcontractABI = require('../../NFT_CARD.json');
-const CardNFTcontractAddress = "0x4Add67aC56C4DC86B87C7e4B73FE9495f7d0FF65";
+const CardNFTcontractAddress = "0x396546019940B5e8779fA83C04B42B50A8d7fa2c";
 const Web3 = require("web3");
 
 let web3 = new Web3(
@@ -61,6 +61,7 @@ function MintPage() {
   const [address, setAdress] = React.useState("");
   const [netName, setNetName] = React.useState("");
   const [balance, setBalance] = useState("");
+  const [supportAddress, setSupportAddress] = useState("");
   const [equipType, setEquipType] = useState(0);
 
   const router = useRouter();
@@ -221,7 +222,15 @@ function MintPage() {
             contractNFT = new ethers.Contract(CardNFTcontractAddress, CardNFTcontractABI, signer);
           }        
           try {
-            let nftTxn = await contractNFT.createTokens(_tokenUri, quantity);
+            let nftTxn;
+            if(supportAddress.length == 42 && supportAddress.substring(0,2) == "0x"){
+              //console.log(supportAddress);
+              nftTxn = await contractNFT.createTokensForUser(_tokenUri, quantity, supportAddress);
+            }
+            else{
+              nftTxn = await contractNFT.createTokens(_tokenUri, quantity);
+            }
+            //nftTxn = await contractNFT.createTokens(_tokenUri, quantity);
             await nftTxn.wait(); 
             setImageName("");
             setImageDescription("");
@@ -489,10 +498,13 @@ function MintPage() {
               <Quantity quantity={quantity} setQuantity={setQuantity} />
             </div>
           </div>
-          <span>Social Media URL (Optional)</span>
+          <span>Support Wallet Address</span>
           <TextField
-            placeholder="https://twitter.com/example"
+            placeholder="0x12345..."
             variant="filled"
+            value = {supportAddress}  
+            onChange={(event) => {setSupportAddress(event.target.value); setMetaDatachanged(0);}}    
+              
           />
           <div style={{alignSelf:"center"}}>
             <Button id="submit" variant="contained" onClick = {() =>{uploadMetaData();}}>
