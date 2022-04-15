@@ -20,13 +20,13 @@ const ipfsC = IpfsHttpClient.create({
 });
 
 const NFTcontractABI = require('../../NFT.json');
-const NFTcontractAddress = "0xa279Cd797ea9048A58a29535140f96e20B053b60";
+const NFTcontractAddress = "0x80EaA1ed894566e9772187943E4DFC9740Ec9d3F";
 const CardNFTcontractABI = require('../../NFT_CARD.json');
-const CardNFTcontractAddress = "0x396546019940B5e8779fA83C04B42B50A8d7fa2c";
+const CardNFTcontractAddress = "0x9a14420A44D3BD7074B8bAfE96Ab5538EF0B1ABD";
 const Web3 = require("web3");
 
 let web3 = new Web3(
-    new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/acc8266b5baf41c5ad44a05fe4a49925")
+    new Web3.providers.WebsocketProvider("wss://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93")
 );
 const useStyles = makeStyles(styles);
 
@@ -123,7 +123,7 @@ function MintPage() {
         setMetadaState("❗Please make sure all fields are completed before minting.");      
       }
       else{
-        if(parseInt(imgLevel) > 0 && parseInt(imgStrength) > 0 && parseInt(imgAccuracy) > 0 && parseInt(imgControl) > 0 && parseInt(imgFreeItemDropChance) > 0 ){
+        if(parseInt(imgLevel) > 0 && parseInt(imgStrength) > 0 && parseInt(imgAccuracy) > 0 && parseInt(imgControl) > 0 && parseInt(imgFreeItemDropChance) >= 0 ){
           
           if(address!=""){
             // make metaData
@@ -211,11 +211,11 @@ function MintPage() {
   async function mintNft(_tokenUri) {    
     try{
       const { ethereum } = window;
-      if (ethereum) {
-        const chainIDBuffer = await ethereum.networkVersion;
-        if(chainIDBuffer == 3){
+      if (window.ethereum) {
+        const chainIDBuffer = await window.ethereum.networkVersion;
+        if(chainIDBuffer == 80001){
           
-          const provider = new ethers.providers.Web3Provider(ethereum);
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
           let contractNFT = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
           if(equipType == 1){
@@ -303,11 +303,11 @@ function MintPage() {
           const chainIDBuffer = await web3Window.eth.net.getId();
           if(addressArray.length > 0){
             setAdress(addressArray[0]);
-            if(chainIDBuffer == 3){
+            if(chainIDBuffer == 80001){
               setNetName("");  
               web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
                 let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-                setBalance(String(balETH).substring(0, 6) + " ETH");
+                setBalance(String(balETH).substring(0, 6) + " MATIC");
               });           
             }
             else{  
@@ -324,81 +324,128 @@ function MintPage() {
   };
 
   async function connect_Wallet() {
+    const chainId = 80001;
     try{
       if (window.ethereum) {
-        if(address== ""){
-          try {          
+        var web3Window = new Web3(window.ethereum);     
+        if (window.ethereum.networkVersion != chainId) {
+          
+          try {            
             await window.ethereum.request({
-              method: "wallet_requestPermissions",
-              params: [{
-                  eth_accounts: {}
-              }]
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: "0x"+chainId.toString(16)}],
             });
-            const addressArray = await window.ethereum.request({method: "eth_accounts",});
-            var web3Window = new Web3(window.ethereum);
-            const chainIDBuffer = await web3Window.eth.net.getId();        
-            //setChainID(chainIDBuffer);
-            if(addressArray.length > 0){
-              setAdress(addressArray[0]);
-              if(chainIDBuffer == 3){
-                setNetName("");    
-                web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-                  let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-                  setBalance(String(balETH).substring(0, 6) + " ETH");
-                });          
+            if(address== ""){
+              try {          
+                await window.ethereum.request({
+                  method: "wallet_requestPermissions",
+                  params: [{
+                      eth_accounts: {}
+                  }]
+                });
+                const addressArray = await window.ethereum.request({method: "eth_accounts",});
+                var web3Window = new Web3(window.ethereum);
+                //setChainID(chainIDBuffer);
+                if(addressArray.length > 0){
+                  setAdress(addressArray[0]);
+                    setNetName("");    
+                    web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                      let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                      setBalance(String(balETH).substring(0, 6) + " MATIC");
+                    }); 
+                }        
+              } catch (err) {
+                return {
+                  address: ""        
+                };
               }
-              else{  
-                setNetName("Wrong NET(DisConnect)");  
-              }
-            }        
+            }
+            else{
+              setAdress("");
+              setNetName(""); 
+            }   
           } catch (err) {
-            return {
-              address: ""        
-            };
+              // This error code indicates that the chain has not been added to MetaMask.
+            if (err.code === 4902) {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainName: 'Polygon Mumbai',
+                    chainId: web3.utils.toHex(chainId),
+                    nativeCurrency: { name: 'Matic', decimals: 18, symbol: 'Matic' },
+                    rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+                  },
+                ],
+              });
+            }
           }
         }
         else{
-          setAdress("");
-          setNetName(""); 
-        }   
-      } 
-    }catch{
-      return;
+          if(address== ""){
+            try {          
+              await window.ethereum.request({
+                method: "wallet_requestPermissions",
+                params: [{
+                    eth_accounts: {}
+                }]
+              });
+              const addressArray = await window.ethereum.request({method: "eth_accounts",});
+              var web3Window = new Web3(window.ethereum);
+              //setChainID(chainIDBuffer);
+              if(addressArray.length > 0){
+                setAdress(addressArray[0]);
+                  setNetName("");    
+                  web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+                    let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+                    setBalance(String(balETH).substring(0, 6) + " MATIC");
+                  }); 
+              }        
+            } catch (err) {
+              return {
+                address: ""        
+              };
+            }
+          }
+          else{
+            setAdress("");
+            setNetName(""); 
+          }   
+        }     
+        
+      }  
     }
+    catch{
+      return;
+    }      
     
   };
 
   return (
-    <>      
-      <div style={{flex:"row",display:"flex"}}>
+    <>
+      <div className={classes.header}>
         <div>
           <Button className={classes.circle_btn} onClick={() => router.push('/')}>
             {'<'}
           </Button>
-          <Button style={{position:"absolute",left :"150px", top : "50px"}} className={`${classes.btn} ${equipType === 0 ? classes.selected_btn : ''}`} onClick={() => {setEquipType(0);}}>              
+          <Button style={{position:"absolute",left :"150px", top : "50px"}} className={`${classes.btn} ${equipType === 0 ? classes.selected_btn : ''} rect-btn`} onClick={() => {setEquipType(0);}}>              
             {"CUE"}
           </Button>
-          <div style={{width:"32px",flexShrink:"0%"}}></div>
-          <Button style={{position:"absolute",left :"600px", top : "50px"}} className={`${classes.btn} ${equipType === 1 ? classes.selected_btn : ''}`} onClick={() => {setEquipType(1);}}>              
+          <div className="seperator" style={{width:"32px",flexShrink:"0%"}}></div>
+          <Button style={{position:"absolute",left :"600px", top : "50px"}} className={`${classes.btn} ${equipType === 1 ? classes.selected_btn : ''} rect-btn`} onClick={() => {setEquipType(1);}}>              
             {"CARD"}
           </Button>
         </div>
         
-        <div style={{flex:"1 0 0%"}}></div>
-        <div style={{marginLeft:"20px",display:"flex",flexDirection:"row"}}>
+        <div className="seperator" style={{flex:"1 0 0%"}}></div>
+        <div className="last-row" style={{marginLeft:"20px",display:"flex",flexDirection:"row"}}>
           <div style = {{flexDirection : 'column', display : 'flex',marginTop:"24px"}}>
               <span style={{color : 'white'}}>
-                &nbsp;
-                &nbsp;
-                ADDRESS :
-                &nbsp;
+                ADDRESS:&nbsp;
               {address.length> 0 ? (String(address).substring(0, 8) + "..." + String(address).substring(36)) : ("")}
               </span>
               <span style={{color : '#06f506'}}>
-                &nbsp;
-                &nbsp;
-                ETHER BALANCE :
-                &nbsp;
+                MATIC BALANCE:&nbsp;
                 {address.length> 0 ? balance : ""}            
               </span>            
           </div>

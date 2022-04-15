@@ -124,6 +124,52 @@ const styles = createStyles({
         },
       },
     },
+
+    [theme.breakpoints.down('600')]: {
+      display: 'block !important',
+      padding: '15px 10px',
+      
+      '& > div': {
+        display: 'block !important',
+        width: '100%',
+        padding: '0px !important',
+
+        '& > div': {
+          display: 'block !important',
+        },
+
+        '& $power': {
+          display: 'block !important',
+
+          '& > div, & > p': {
+            display: 'inline-block !important',
+          }
+        },
+
+        '& > span': {
+          paddingTop: '10px !important',
+        },
+      },
+
+      '& > .first-div': {
+        minWidth: '0px !important',
+
+        '& > div': {
+          '& > h3': {
+            display: 'inline-flex !important',
+          },
+
+          '& > img': {
+            maxWidth: '100% !important',
+          },
+
+          '& > div': {
+            display: 'inline-flex !important',
+            float: 'right',
+          },
+        },
+      },
+    }
   },
   power: {
     display: 'flex',

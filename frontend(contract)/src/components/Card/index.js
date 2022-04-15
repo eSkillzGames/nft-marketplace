@@ -12,7 +12,7 @@ const { EventEmitter } = require("events");
 // import { useRouter } from 'next/router';
 // import Router from 'next/router'
 // import { Height } from '@material-ui/icons';
-//const alchemyKey = "https://eth-ropsten.alchemyapi.io/v2/O1zFXAP1hugb6q3Iti5B8uFXtBbejZuc";
+//const alchemyKey = "https://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93";
 //require('dotenv').config();
 //const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY;
 //const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
@@ -21,14 +21,14 @@ const NFTcontractABI = require('../../NFT_CARD.json');
 const MarketcontractABI = require('../../Marketplace_CARD.json');
 // const NFTcontractAddress = "0xd95D493b5B048bE25bA70a89AD2360AC5f653a68";
 // const MarketcontractAddress = "0x2c8a4c0B41300Df687DFd0c1931AECe146BAE559";
-const NFTcontractAddress = "0x396546019940B5e8779fA83C04B42B50A8d7fa2c";
-const MarketcontractAddress = "0x921A02fa5F357CeAbCDD8D244BD43015C356bcBf";
+const NFTcontractAddress = "0x9a14420A44D3BD7074B8bAfE96Ab5538EF0B1ABD";
+const MarketcontractAddress = "0x93756a1BD465971bC5d0E1384d959A2E1d1A6E43";
 var pendingArray = new Array(100000);
 
 const Web3 = require("web3");
 
 let web3 = new Web3(
-    new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/acc8266b5baf41c5ad44a05fe4a49925")
+    new Web3.providers.WebsocketProvider("wss://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93")
 );
 
 
@@ -72,7 +72,7 @@ const Card = (props) => {
   return (  
      
     <div className={`${classes.card} ${isSelected ? classes.selected_card : ''}`} {...rest}>      
-      <div>                        
+      <div className="first-div">                        
         <div>        
           <h3 onMouseOver={showDescription} onMouseOut = {hideDescription}>{name}</h3>
           <div>
@@ -101,7 +101,7 @@ const Card = (props) => {
         
       </div>
       <div>
-        <span style={{margin : "0px 50%", color : "white", fontSize : "20px",paddingTop:"30px"}}>
+        <span style={{width : "100%", textAlign: 'center', color : "white", fontSize : "20px",display:"block", paddingTop: '30px'}}>
           {countReal > 1 ? countReal : ""}
         </span> 
       </div>
@@ -125,12 +125,12 @@ const Card = (props) => {
                 value={""}               
                 style = {{width : "50px", height : "20px", margin : "5px 5px"}}
               />
-              <label style = {{width : "30px", height : "20px", margin : "5px 0px"}}>{"ETH"}</label>
+              <label style = {{width : "30px", height : "20px", margin : "5px 0px"}}>{"MATIC"}</label>
             </div>
             <div style = {{paddingTop : '5px'}}>              
               <span>{"Last Price : "}</span>
               <img src="/images/token.png" alt="" />
-              <span>{lastPrice+" eth"}</span>              
+              <span>{lastPrice+" MATIC"}</span>              
             </div>
             <div>
                 <Button id="upgrade" style = {{width : "10px",background : "#752f2f", width :"140px"}} >{pendingArray[itemId] == 2 ? "Pending": "Remove Cue"}</Button>
@@ -138,10 +138,10 @@ const Card = (props) => {
               </div>
             </>
           ) : (
-            <Button id="buy" onClick={() => {}}>
+            <Button id="buy">
               Pending
               <img src="/images/token.png" alt="" />
-              <span>{price+" eth"}</span>
+              <span>{price+" MATIC"}</span>
             </Button>
           )}
         </div>          
@@ -150,19 +150,19 @@ const Card = (props) => {
             {isActive ? (
               <>
               <div>
-                <Button id="upgrade" style = {{width : "10px"}} onClick={() => {eventvariable = 0;pendingArray[itemId] = 1;setIsPending(1-isPending);sellNft(itemId,tokenId,sellprice);}}>Sell</Button>
+                <Button id="upgrade" style = {{width : "10px"}} onClick={() => {if(Number(sellprice) > 0) {eventvariable = 0;pendingArray[itemId] = 1;setIsPending(1-isPending);sellNft(itemId,tokenId,sellprice);setPrice(0);}}}>Sell</Button>
                 <input
                   type="text"
                   placeholder="0.00"
                   onChange={(event) => setPrice(event.target.value)}
                   style = {{width : "50px", height : "20px", margin : "5px 5px"}}
                 />
-                <label style = {{width : "30px", height : "20px", margin : "5px 0px"}}>{"ETH"}</label>
+                <label style = {{width : "30px", height : "20px", margin : "5px 0px"}}>{"MATIC"}</label>
               </div>
               <div style = {{paddingTop : '5px'}}>
                   <span >{"Last Price : "}</span>
                   <img src="/images/token.png" alt="" />
-                  <span>{lastPrice+" ETH"}</span>              
+                  <span>{lastPrice+" MATIC"}</span>              
               </div>
               <div>
                 <Button id="upgrade" style = {{width : "10px",background : "#752f2f", width :"140px"}} onClick={() => {eventvariable = 0;pendingArray[itemId] = 2;setIsPending(1-isPending);removeNft(itemId,tokenId);}}>Remove Cue</Button>
@@ -175,14 +175,14 @@ const Card = (props) => {
                 <Button id="buy" onClick={() => {eventvariable = 0;pendingArray[itemId] = 1; setIsPending(1-isPending); cancelNft(itemId);}}>                
                 Cancel
                 <img src="/images/token.png" alt="" />
-                <span>{price+" eth"}</span>
+                <span>{price+" MATIC"}</span>
                 </Button>
               ) :(
                 <Button id="buy" onClick={() => {eventvariable = 0;pendingArray[itemId] = 1; setIsPending(1-isPending); buyNft(itemId,price);}}>
                 Buy
                 <img src="/images/token.png" alt="" />
                 <span>{price}</span>
-                <span>&nbsp;ETH</span>
+                <span>&nbsp;MATIC</span>
                 </Button> 
               )}
               </div>
@@ -218,7 +218,7 @@ async function sellNft(id,tokenID, price) {
     const { ethereum } = window;
     if (ethereum) {
       const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 3){
+      if(chainIDBuffer == 80001){
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);  
@@ -230,8 +230,8 @@ async function sellNft(id,tokenID, price) {
             }
           );   
           await nftTxn.wait(); 
-          pendingArray[id] = 0;               
-          eventEmit();            
+          //pendingArray[id] = 0;                
+          //eventEmit();            
         } catch (err) {
           pendingArray[id] = 0;
           eventEmit();        
@@ -254,15 +254,15 @@ async function removeNft(id,tokenID) {
     const { ethereum } = window;
     if (ethereum) {
       const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 3){
+      if(chainIDBuffer == 80001){
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);  
         try {
           let nftTxn = await nftContract.deleteNFT(id, tokenID);   
           await nftTxn.wait(); 
-          pendingArray[id] = 0;               
-          eventEmit();            
+          //pendingArray[id] = 0;               
+          //eventEmit();            
         } catch (err) {
           pendingArray[id] = 0;
           eventEmit();              
@@ -284,7 +284,7 @@ async function buyNft(id,price) {
     const { ethereum } = window;
     if (ethereum) {
       const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 3){
+      if(chainIDBuffer == 80001){
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const contractMark = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
@@ -295,8 +295,8 @@ async function buyNft(id,price) {
             }        
           ); 
           await nftTxn.wait();
-          pendingArray[id] = 0;
-          eventEmit();
+          //pendingArray[id] = 0;
+          //eventEmit();
           //cards();
         } catch (err) {
           pendingArray[id] = 0;
@@ -319,15 +319,15 @@ async function cancelNft(id) {
     const { ethereum } = window;
     if (ethereum) {
       const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 3){
+      if(chainIDBuffer == 80001){
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const contractMark = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
         try {
           let nftTxn = await contractMark.listItemCancelOnSale(id, NFTcontractAddress); 
           await nftTxn.wait();
-          pendingArray[id] = 0;
-          eventEmit();
+          //pendingArray[id] = 0;
+          //eventEmit();
           //cards();
         } catch (err) {
           pendingArray[id] = 0;
@@ -371,8 +371,13 @@ const Cards = (props) => {
       eventListened();      
     });    
   }
- 
+  function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
   async function eventListened() {
+    await sleep(15000);
     try{
       if (window.ethereum) {
         try {
@@ -436,20 +441,22 @@ const Cards = (props) => {
         const { ethereum } = window;
         if (ethereum) {
           const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 3){
+          if(chainIDBuffer == 80001){
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
             const marketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
             let data = await marketContract.fetchAllItemsOnSaleOfOwner(userAddress); 
-            const items = await Promise.all(data.map(async i => {
+            const realItems = await Promise.all(data.map(async i => {
               let tokenUri;
+              let meta;
               try{
                 tokenUri = await nftContract.tokenURI(i.tokenId);  
+                meta = await axios.get(tokenUri);
               } catch (err) {
                 return;
-              }        
-              const meta = await axios.get(tokenUri);
+              }           
+              
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
               // let ownedMarketItem = i.owner == address ? 1 : 0;
@@ -474,6 +481,12 @@ const Cards = (props) => {
               }
               return item
             }))
+            var items = []; 
+            for (var i = 0; i < realItems.length; i++) { 
+              if(realItems[i]!=null){
+                items.push(realItems[i]);
+              }
+            }
   
             if(sortVal> 0){
               items.sort(function (a, b) {
@@ -527,20 +540,22 @@ const Cards = (props) => {
         const { ethereum } = window;
         if (ethereum) {
           const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 3){
+          if(chainIDBuffer == 80001){
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
             const marketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
             let data = await marketContract.fetchAllItemsOnSaleOfNotOwner(userAddress); 
-            const items = await Promise.all(data.map(async i => {
+            const realItems = await Promise.all(data.map(async i => {
               let tokenUri;
+              let meta;
               try{
-                tokenUri = await nftContract.tokenURI(i.tokenId);  
+                tokenUri = await nftContract.tokenURI(i.tokenId);
+                meta = await axios.get(tokenUri);
               } catch (err) {
                 return;
-              }            
-              const meta = await axios.get(tokenUri);
+              }     
+              
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
               // let ownedMarketItem = i.owner == address ? 1 : 0;
@@ -565,6 +580,12 @@ const Cards = (props) => {
               }
               return item
             }))
+            var items = []; 
+            for (var i = 0; i < realItems.length; i++) { 
+              if(realItems[i]!=null){
+                items.push(realItems[i]);
+              }
+            }
             if(sortVal> 0){
               items.sort(function (a, b) {
                 try{
@@ -617,20 +638,23 @@ const Cards = (props) => {
         const { ethereum } = window;
         if (ethereum) {
           const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 3){          
+          if(chainIDBuffer == 80001){          
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
             const marketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
             let data = await marketContract.fetchAllItemsOnUseOfOwner(userAddress);         
-            const items = await Promise.all(data.map(async i => {
+            const realItems = await Promise.all(data.map(async i => {
               let tokenUri;
+              let meta;
               try{
                 tokenUri = await nftContract.tokenURI(i.tokenId);  
+                
+                meta = await axios.get(tokenUri);
               } catch (err) {
                 return;
               } 
-              const meta = await axios.get(tokenUri);
+              
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
               //let price = parseInt(i.price);
@@ -656,6 +680,12 @@ const Cards = (props) => {
               
               return item
             }))
+            var items = []; 
+            for (var i = 0; i < realItems.length; i++) { 
+              if(realItems[i]!=null){
+                items.push(realItems[i]);
+              }
+            }
             if(sortVal> 0){
               items.sort(function (a, b) {
                 try{

@@ -13,6 +13,11 @@ const styles = createStyles({
       flexDirection: 'column',
       paddingTop: '130px',
     },
+
+    [theme.breakpoints.down('600')]: {
+      padding: '80px 15px',
+    },
+
     '& > img': {
       position: 'absolute',
       top: '40px',
@@ -20,6 +25,10 @@ const styles = createStyles({
       transform: 'translateX(-50%)',
       [theme.breakpoints.down('1024')]: {
         width: '124px',
+      },
+
+      [theme.breakpoints.down('600')]: {
+        top: '20px',
       },
     },
     '& > .MuiBox-root': {
@@ -96,7 +105,7 @@ const styles = createStyles({
     fontSize: '24px',
   },
   btn: {
-    width: '24%',
+    width: '23%',
     height: '40px',
     background: 'rgba(255, 255, 255, 0.02)',
     border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -286,6 +295,11 @@ const styles = createStyles({
     paddingBottom: "24px",
     paddingLeft: "8px",
     paddingRight: "8px",
+
+    [theme.breakpoints.down('600')]: {
+      width: '100% !important'
+    },
+
     '& > div' : {
       position: "relative",
       minWidth: "0",
@@ -393,6 +407,10 @@ const styles = createStyles({
     fontWeight:"bold",
     fontSize:"16px",
     cursor:"pointer",
+
+    [theme.breakpoints.down('600')]: {
+      margin: '0px !important',
+    }
   },
   
   modal_content: {
@@ -465,6 +483,53 @@ const styles = createStyles({
       }
     }
   },
+
+  header: {
+    flex:"row",
+    display:"flex",
+
+    [theme.breakpoints.down('600')]: {
+      display: 'block',
+
+      '& > div': {
+        display: 'block',
+        padding: '10px',
+
+        '& > button': {
+          display: 'inline-flex',
+          top: '0px !important',
+          left: '0px !important',
+          position: 'initial !important',
+          marginRight: '5px !important',
+        },
+
+        '& > .rect-btn': {
+          width: 'calc(50vw - 50px)',
+        },
+
+        '& > .seperator': {
+          display: 'none',
+        },
+      },
+
+      '& > .seperator': {
+        display: 'none',
+      },
+
+      '& > .last-row': {
+        margin: '0px !important',
+
+        '& > div': {
+          margin: '0px !important',
+          width: 'calc(100% - 135px)'
+        },
+
+        '& > button': {
+          margin: '0px !important',
+        },
+      },
+    },
+  }
 
 });
 

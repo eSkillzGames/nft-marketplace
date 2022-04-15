@@ -8,6 +8,41 @@
             padding: 4rem 1.5rem 3rem 1.5rem;
         }
     }
+    @media (max-width: 600px) {
+        padding: 10px;
+        
+        .backDiv {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+
+            &>button {
+                left: 10px !important;
+                top: 10px !important;
+            }
+        }
+        .buttonDiv {
+            display: block !important;
+
+            &>div {
+                display: block !important;
+                position: initial !important;
+                text-align: center;
+                margin-top: 5px;
+
+                &>span {
+                    display: block !important;
+                }
+            }
+
+            &>button {
+                display: block !important;
+                width: 100%;
+                position: initial !important;
+                margin-top: 5px;
+            }
+        }
+    }
     .color_blue {
         color: $blue;
     }
@@ -153,6 +188,10 @@
                 right: 1rem;
                 cursor: pointer;
             }
+        }
+
+        @media (max-width: 600px) {
+            margin-top: -60px;
         }
     }
     .token_buy_container {

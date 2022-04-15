@@ -84,7 +84,7 @@ const styles = createStyles({
   circle_btn: {
     position: 'absolute',
     zIndex: '9999',
-    top: '50px',
+    top: '25px',
     left: '50px',
     minWidth: 'auto',
     width: '40px',
@@ -460,9 +460,62 @@ const styles = createStyles({
           }
         }
       }
-    }
+    },
+
+    [theme.breakpoints.down('600')]: {
+      '& > div': {
+        width: '90%',
+      },
+
+      '& .infor1': {
+        width: '100%',
+      },
+
+      '& .infor2': {
+        display: 'none !important',
+      }
+    },
   },
 
+  header: {
+    [theme.breakpoints.down('600')]: {
+      display: 'block !important',
+      padding: '10px',
+
+      '& > div': {
+        display: 'block !important',
+
+        '& > button': {
+          position: 'initial !important',
+        },
+      },
+
+      '& > .seperator': {
+        display: 'none !important',
+      },
+
+      '& > .last-div': {
+        marginLeft: '0px !important',
+        display: 'flex !important',
+        marginTop: '10px',
+
+        '& > div': {
+          margin: '0px !important',
+          display: 'inline-flex !important',
+          width: 'calc(100% - 135px)',
+
+          '& > span': {
+            display: 'block !important',
+          }
+        },
+
+        '& > button': {
+          margin: '0px !important',
+          display: 'inline-flex !important',
+        },
+      }
+    },
+  }
 });
 
 export default styles;

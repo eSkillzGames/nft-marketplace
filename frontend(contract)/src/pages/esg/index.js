@@ -29,11 +29,11 @@ function ESGPage() {
     try{
       const { ethereum } = window;
       if(address!=""){
-        if(ethereum){
+        if(window.ethereum){
           if (parseFloat(ethAmount) > 0) {
-            const chainIDBuffer = await ethereum.networkVersion;
-            if(chainIDBuffer == 3){
-              const provider = new ethers.providers.Web3Provider(ethereum);
+            const chainIDBuffer = await window.ethereum.networkVersion;
+            if(chainIDBuffer == 80001){
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
               const signer = provider.getSigner();
               const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);
               try {
@@ -53,7 +53,7 @@ function ESGPage() {
             }   
           }
           else{
-            window.alert("ETH Amount must be Float.");
+            window.alert("MATIC Amount must be Float.");
           }
         }
         else{
@@ -101,8 +101,8 @@ function ESGPage() {
           var web3Window = new Web3(window.ethereum);
           const chainIDBuffer = await web3Window.eth.net.getId();
           if(addressArray.length > 0){
-            if(chainIDBuffer == 3){
-              const provider = new ethers.providers.Web3Provider(ethereum);
+            if(chainIDBuffer == 80001){
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
               const signer = provider.getSigner();
               const PresaleContract = new ethers.Contract(PresaleContractAddress, PresaleContractABI, signer);      
               const price = await PresaleContract.price(); 
@@ -128,11 +128,11 @@ function ESGPage() {
           const chainIDBuffer = await web3Window.eth.net.getId();
           if(addressArray.length > 0){
             setAdress(addressArray[0]);
-            if(chainIDBuffer == 3){
+            if(chainIDBuffer == 80001){
               setNetName("");  
               web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
                 let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-                setBalance(String(balETH).substring(0, 6) + " ETH");
+                setBalance(String(balETH).substring(0, 6) + " MATIC");
               });           
             }
             else{  
@@ -165,11 +165,11 @@ function ESGPage() {
             //setChainID(chainIDBuffer);
             if(addressArray.length > 0){
               setAdress(addressArray[0]);
-              if(chainIDBuffer == 3){
+              if(chainIDBuffer == 80001){
                 setNetName("");    
                 web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
                   let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
-                  setBalance(String(balETH).substring(0, 6) + " ETH");
+                  setBalance(String(balETH).substring(0, 6) + " MATIC");
                 });          
               }
               else{  
@@ -196,28 +196,22 @@ function ESGPage() {
 
   return (
     <>      
-      <div style={{flex:"row",display:"flex"}}>
+      <div className={classes.header} style={{flex:"row",display:"flex"}}>
         <div>
           <Button className={classes.circle_btn} onClick={() => router.push('/')}>
             {'<'}
           </Button>
         </div>
         
-        <div style={{flex:"1 0 0%"}}></div>
-        <div style={{marginLeft:"20px",display:"flex",flexDirection:"row"}}>
+        <div className="seperator" style={{flex:"1 0 0%"}}></div>
+        <div className="last-div" style={{marginLeft:"20px",display:"flex",flexDirection:"row"}}>
           <div style = {{flexDirection : 'column', display : 'flex',marginTop:"24px"}}>
               <span style={{color : 'white'}}>
-                &nbsp;
-                &nbsp;
-                ADDRESS :
-                &nbsp;
+                ADDRESS:&nbsp;
               {address.length> 0 ? (String(address).substring(0, 8) + "..." + String(address).substring(36)) : ("")}
               </span>
               <span style={{color : '#06f506'}}>
-                &nbsp;
-                &nbsp;
-                ETHER BALANCE :
-                &nbsp;
+                MATIC BALANCE:&nbsp;
                 {address.length> 0 ? balance : ""}            
               </span>            
           </div>          
@@ -230,7 +224,7 @@ function ESGPage() {
         <div>
         <div className="infor1">
           <span className="amount_eth">
-            Amount of ETH being spent
+            Amount of MATIC being spent
           </span>
           <input
             placeholder="0"
@@ -249,7 +243,7 @@ function ESGPage() {
             <span className="content">{address.length> 0 ? (String(address).substring(0, 8) + "..." + String(address).substring(36)) : ("")}</span>
           </div>
           <div>
-            <span className="title">Amount of ETH</span>
+            <span className="title">Amount of MATIC</span>
             <span className="content">1x{esgPricePerETH}</span>
           </div>
         </div>

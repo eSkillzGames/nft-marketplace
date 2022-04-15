@@ -4,11 +4,11 @@ import CustomSlider from '../CustomSlider';
 import { RiRefreshLine } from "react-icons/ri";
 import style from "../../pages/token/style.module.scss";
 const Web3 = require("web3");
-const distributeAddress = "0x93ed733aE86FB5DecCBB3E2660bfCEcf1788FC73";
+const distributeAddress = "0x4A2ee758C760c66a43262732c612555D7C90F2D0";
 import distributeeABI from '../../Distribute.json';
 const Calculator = ({price}) => {
     const [value, setValue] = useState(1);
-    const [amount, setAmount] = useState(416);
+    const [amount, setAmount] = useState(0);
     const [lastAmount, setLastAmount] = useState(0);
     const [earning, setEarning] = useState(Number(price)*amount);
     const [sliderVal,setSliderVal] = useState(1);
@@ -28,14 +28,13 @@ const Calculator = ({price}) => {
                 var web3 = new Web3(window.ethereum);
                 const chainIDBuffer = await web3.eth.net.getId();
                 if(addressArray.length > 0){
-                    if(chainIDBuffer == 3){
+                    if(chainIDBuffer == 80001){
                     
                         var distributeContract = new web3.eth.Contract(distributeeABI,distributeAddress);
                         distributeContract.methods.getYesterdayYield(addressArray[0]).call(function (err, res) {
                             setLastAmount(res/10**9);
                             setAmount(res/10**9);
                         });                  
-                        
                     }          
                 } 
                 

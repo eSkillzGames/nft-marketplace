@@ -2,8 +2,8 @@ import React, { createContext, useEffect , useState} from "react";
 import Header from '../../components/Header';
 import TotalEarned from '../../components/TotalEarned';
 import Calculator from '../../components/Calculator';
-import TokenBuy from '../../components/TokenBuy';
-import style from "./style.module.scss";
+import PresaleBuy from '../../components/PresaleBuy';
+import style from "../token/style.module.scss";
 import { useRouter } from 'next/router';
 import tokenPriceABI from '../../GetTokenPrice.json';
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -12,7 +12,6 @@ const sportTokenAddress = "0x6D586a553563C84222bE782F13de3d720a30Cdc0";
 //const esgTokenAddress = "0x8C534C9aa8d6cDB75d139caF5aD9716Db25eB628";
 const esgTokenAddress = "0xc44B158B2D55783e38F0Cf701657658D61b0C970";
 const tokenPriceAddress = "0x6b186a04C801A3D717621b0B19D018375161bFF8";
-
 var minABI = [
     // balanceOf
     {
@@ -30,7 +29,7 @@ const initialData = [{
     totalPrice: "0.00",
     btnTitle: "BUY ESG",
     priceTitle: "ESG PRICE",
-    price: 0,
+    price: "0.00",
     ethPrice : "0.00"
 }, {
     title: "Your SPORT",
@@ -38,10 +37,10 @@ const initialData = [{
     totalPrice: "0.00",
     btnTitle: "BUY SPORT",
     priceTitle: "SPORT PRICE",
-    price: 0,
+    price: "0.00",
     ethPrice : "0.00"
 }]
-const Token = () => {
+const Presale = () => {
     const [sportBalance, setSportBalance] = useState("");
     const [esgBalance, setEsgBalance] = useState("");
     const [esgPrice, setEsgPrice] = useState("");
@@ -70,14 +69,14 @@ const Token = () => {
                         var tokenPriceContract = new web3.eth.Contract(tokenPriceABI,tokenPriceAddress);
                         tokenPriceContract.methods.getPrice(sportTokenAddress).call(function (err, res) {
                             initialData[1].totalPrice = toFixed(res[0] * res[2] / res[1]/10**6);
+                            
                             //console.log(initialData[1].ethPrice);
-                           
                             setSportPrice(toFixed(res[0] * res[2] / res[1]/10**6));
                         });
                         tokenPriceContract.methods.getETHPrice(sportTokenAddress).call(function (err, res) {
                             
                             initialData[1].ethPrice = String(res/(10**9));
-                            setEthSportPrice((res/(10**9)));
+                            setEthSportPrice(String(res/(10**9)));
                             //console.log(initialData[1].ethPrice);
                             
                         });
@@ -141,7 +140,7 @@ const Token = () => {
                         });
                         tokenPriceContract.methods.getETHPrice(sportTokenAddress).call(function (err, res) {
                             
-                            initialData[1].ethPrice = (res/(10**9));
+                            initialData[1].ethPrice = String(res/(10**9));
                             setEthSportPrice(String(res/(10**9)));
                             //console.log(initialData[1].ethPrice);
                             
@@ -210,15 +209,12 @@ const Token = () => {
         <div className={style.token}>
             <Header getAddress={getAddress}/>
             <div className={`w-100 ${style.content}`}>
-                <div className={`row row-cols-md-2 row-cols-sm-1 ${style.first_container}`}>
-                    <div className="col" ><TotalEarned address = {address} price = {sportPrice}/></div>
-                    <div className="col" ><Calculator price = {sportPrice}/></div>
-                </div>
+                
                 <div className={`row row-cols-md-2 row-cols-sm-1 ${style.second_container}`}>
                     {
                         (Number(esgBalance) >= 0 || Number(sportBalance) >= 0 )&& initialData.map((e, i) =>
                             
-                            <div className={`col ${style.token_buy_container}`} key={i}><TokenBuy address = {address} data={e} id = {i} /></div>
+                            <div className={`col ${style.token_buy_container}`} key={i}><PresaleBuy address = {address} data={e} id = {i} /></div>
                             
                         )
                     }
@@ -231,4 +227,4 @@ const Token = () => {
     )
 }
 
-export default Token;
+export default Presale;

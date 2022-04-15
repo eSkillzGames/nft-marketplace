@@ -12,6 +12,30 @@ const styles = createStyles({
     [theme.breakpoints.down('768')]: {
       backgroundPosition: '38%',
     },
+
+    [theme.breakpoints.down('600')]: {
+      marginTop: '40px',
+      padding: '10px 20px',
+      alignItems: 'inherit !important',
+      display: 'block !important',
+
+      '& > $circle_btn': {
+        position: 'initial !important',
+        display: 'inline-flex !important',
+      },
+
+      '& > $buttons': {
+        display: 'inline-block !important',
+        width: 'calc(100vw - 90px)',
+        padding: '0px',
+        marginLeft: '10px',
+
+        '& > button': {
+          width: 'calc(50% - 2px) !important',
+          margin: '1px',
+        }
+      },
+    }
   },
   buttons: {
     width: '100%',
@@ -23,6 +47,38 @@ const styles = createStyles({
       position: 'absolute',
       left: '50px',
       borderRadius: '10px',
+    },
+    [theme.breakpoints.down('600')]: {
+      display: 'block !important',
+      padding: '10px',
+      marginTop: '0px !important',
+
+      '& > div': {
+        display: 'block !important',
+        textAlign: 'center',
+        marginTop: '10px',
+
+        '& > span': {
+          display: 'block !important',
+        }
+      },
+
+      '& > .seperator': {
+        display: 'none !important',
+      },
+
+      '& > button': {
+        display: 'inline-flex !important',
+        width: '33% !important',
+      },
+
+      '& > $circle_btn': {
+        width: '40px !important',
+        top: '125px',
+        left: 'calc(100vw - 60px) !important',
+        marginLeft: '0px !important',
+        position: 'absolute !important',
+      }
     },
   },
   btn: {

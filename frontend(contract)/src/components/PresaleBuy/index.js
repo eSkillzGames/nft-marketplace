@@ -1,6 +1,6 @@
 import React, { useContext, useState ,useEffect} from 'react';
 import { Button } from "react-bootstrap";
-import Presale from "../../Modal/Presale";
+import Presale from "../../Modal/PresaleReal";
 import { ethers } from 'ethers';
 import style from "../../pages/token/style.module.scss";
 import tokenPriceABI from '../../GetTokenPrice.json';
@@ -36,7 +36,7 @@ const TokenBuy = ({ data ,id,address}) => {
                 });
                 var web3 = new Web3(window.ethereum);
                 const chainIDBuffer = await web3.eth.net.getId();
-                if(addressArray.length > 0){
+                if(addressArray.length > 0 && address!=""){
                     if(chainIDBuffer == 80001){                        
                         var sportContract = new web3.eth.Contract(minABI, sportTokenAddress);
                         var esgContract = new web3.eth.Contract(minABI, esgTokenAddress);   
@@ -76,7 +76,7 @@ const TokenBuy = ({ data ,id,address}) => {
                   const addressMobile = await prov.enable();
                   var web3 = new Web3(prov); 
                 const chainIDBuffer = await web3.eth.net.getId();
-                if(addressMobile.length > 0){
+                if(addressMobile.length > 0 && address!=""){
                     if(chainIDBuffer == 80001){                        
                         var sportContract = new web3.eth.Contract(minABI, sportTokenAddress);
                         var esgContract = new web3.eth.Contract(minABI, esgTokenAddress);   
@@ -311,7 +311,6 @@ const TokenBuy = ({ data ,id,address}) => {
                     >
                         {id == 1 ? "ADD SPORT ADDRESS" : "ADD ESG ADDRESS"}
                     </Button>
-
                 </div>
                 <div className="m-4 text-start">
                     <p className={style.color_light_green}>{data.priceTitle}</p>
