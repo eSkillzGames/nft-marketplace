@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+require('dotenv').config();
 // const knex = require('knex')({
 //     client: 'mysql',
 //     connection: {
@@ -10,14 +11,15 @@ const router = express.Router();
 //         database : 'unityserver'
 //     }
 // })
+const infuraKey = process.env.REACT_INFURA_KEY;
 const knex = require('knex')({
     client: 'mysql',
     connection: {
         host : '127.0.0.1',
         port : 3306,
-        user : 'eskillzc_user',
-        password : 'Y]LS9JUlmw*8',
-        database : 'eskillzc_db'
+        user : process.env.user,
+        password : process.env.password,
+        database : process.env.database
     }
 })
 
