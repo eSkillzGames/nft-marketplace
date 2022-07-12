@@ -10,7 +10,7 @@ const Web3 = require("web3");
 import { useEffect, useState } from "react";
 import { cibWindows } from '@coreui/icons';
 const BetABI = require('../../ABIs/Bet.json');
-const BetAddress = "0x1ad645bC02016275D510Bf6E956e32660F7d0C8c";
+const BetAddress = "0x17baa27be6b64153ffa8e0e3754145c2edd271ba";
 
 const Betting = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)

@@ -1,14 +1,18 @@
 const express = require('express');
 //const connectDB = require('./config/db');
+const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-
+const PORT = process.env.PORT || 3000;
 // Connect Database
 //connectDB();
 
 // Init Middleware
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(cors);
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -19,10 +23,8 @@ app.use((req, res, next) => {
 
 
 // Define Routes
-app.use('/api/cues', require('./routes/api/cues'));
-//app.use('/api/wallet', require('./routes/api/wallet'));
-//app.use('/api/chalks', require('./routes/api/chalk'));
-//app.use('/api/halls', require('./routes/api/hall'));
+app.use('/api/v1', require('./routes/api/nft'));
+app.use('/sendTransaction/v1', require('./routes/api/bet'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
@@ -34,6 +36,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+

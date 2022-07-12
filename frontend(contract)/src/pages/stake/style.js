@@ -13,6 +13,11 @@ const styles = createStyles({
       flexDirection: 'column',
       paddingTop: '130px',
     },
+
+    [theme.breakpoints.down('600')]: {
+      padding: '80px 15px',
+    },
+
     '& > img': {
       position: 'absolute',
       top: '40px',
@@ -20,6 +25,10 @@ const styles = createStyles({
       transform: 'translateX(-50%)',
       [theme.breakpoints.down('1024')]: {
         width: '124px',
+      },
+
+      [theme.breakpoints.down('600')]: {
+        top: '20px',
       },
     },
     '& > .MuiBox-root': {
@@ -84,7 +93,7 @@ const styles = createStyles({
   circle_btn: {
     position: 'absolute',
     zIndex: '9999',
-    top: '25px',
+    top: '50px',
     left: '50px',
     minWidth: 'auto',
     width: '40px',
@@ -94,6 +103,20 @@ const styles = createStyles({
     borderRadius: '50%',
     fontFamily: 'monospace',
     fontSize: '24px',
+  },
+  btn: {
+    width: '23%',
+    height: '40px',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    color: 'white',
+    '& img': {
+      margin: '0 8px 4px 0',
+    },
+  },
+  selected_btn: {
+    background: 'linear-gradient(180deg, rgba(45, 191, 223, 0.2) 0%, #2DBFDF 100%)',
+    border: '1px solid #2DBFDF',
   },
   infos: {
     width: 'calc(50% - 40px)',
@@ -272,6 +295,11 @@ const styles = createStyles({
     paddingBottom: "24px",
     paddingLeft: "8px",
     paddingRight: "8px",
+
+    [theme.breakpoints.down('600')]: {
+      width: '100% !important'
+    },
+
     '& > div' : {
       position: "relative",
       minWidth: "0",
@@ -359,8 +387,7 @@ const styles = createStyles({
       backgroundColor: "#11313A",
       padding:"0px",
       border: "none",
-      borderRadius: "18px",
-      justifyContent: "center",
+      borderRadius: "18px"
     },
     overlay: {
         background: "rgba(5, 5, 5, 0.9)",
@@ -380,142 +407,130 @@ const styles = createStyles({
     fontWeight:"bold",
     fontSize:"16px",
     cursor:"pointer",
+
+    [theme.breakpoints.down('600')]: {
+      margin: '0px !important',
+    }
   },
   
   modal_content: {
     display:"flex",
     flexDirection:"row",
-    justifyContent: "center",
-    marginTop: "100px",
-     
-    '& > div': {
-      display: "flex",
-      flexDirection:"row",
-      background: "#11313A",
-      borderRadius: "18px",
-      '& > .infor1': {
-        display:"flex",
-        flexDirection:"column", 
-        padding:"24px",
-        borderRadius:"18px",
-        backgroundColor:"#031E26",
-        '& > .amount_eth': {
-          padding:"6px 12px", 
-          color:"#9BA5A9",
-        },
-        '& > input' : {
-          border:"none", 
-          padding:"18px 24px", 
-          borderRadius:"24px",
-          backgroundColor:"#11313A",
-          color:"white",
-          outlineStyle:"none"
-        },
-        '& > .token_purchased': {
-          padding:"18px 12px 4px 12px", 
-          color:"#9BA5A9"
-        },
-        '& > .value': {
-          fontSize:"24px",
-          fontWeight:"bold", 
-          color:"#28BAE0"
-        },
-        '& > .buy_btn': {
-          backgroundColor:"#28BAE0",
-          height:"40px",
-          padding:"8px 16px", 
-          borderRadius:"20px",
-          textAlign:"center", 
-          marginTop:"20px", 
-          fontWeight:"bold",
-          fontSize:"16px",
-          cursor:"pointer",
-          border: "none",
-          transition: "background 0.8s",
-          '&:hover': {
-            background: "#47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%",
-          },
-          '&:active': {
-            backgroundColor: "#6eb9f7",
-            backgroundSize: "100%",
-            transition: "background 0s",
-          },
-        }
+    '& > .infor1': {
+      display:"flex",
+      flexDirection:"column", 
+      padding:"24px",
+      borderRadius:"18px",
+      backgroundColor:"#031E26",
+      '& > .amount_eth': {
+        padding:"6px 12px", 
+        color:"#9BA5A9",
       },
-      '& > .infor2': {
+      '& > input' : {
+        border:"none", 
+        padding:"18px 24px", 
+        borderRadius:"24px",
+        backgroundColor:"#11313A",
+        color:"white",
+        outlineStyle:"none"
+      },
+      '& > .token_purchased': {
+        padding:"18px 12px 4px 12px", 
+        color:"#9BA5A9"
+      },
+      '& > .value': {
+        fontSize:"24px",
+        fontWeight:"bold", 
+        color:"#28BAE0"
+      },
+      '& > .buy_btn': {
+        backgroundColor:"#28BAE0",
+        height:"40px",
+        padding:"8px 16px", 
+        borderRadius:"20px",
+        textAlign:"center", 
+        marginTop:"20px", 
+        fontWeight:"bold",
+        fontSize:"16px",
+        cursor:"pointer",
+        border: "none",
+        transition: "background 0.8s",
+        '&:hover': {
+          background: "#47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%",
+        },
+        '&:active': {
+          backgroundColor: "#6eb9f7",
+          backgroundSize: "100%",
+          transition: "background 0s",
+        },
+      }
+    },
+    '& > .infor2': {
+      display:"flex",
+      flexDirection:"column",
+      padding:"24px",
+      '& > div': {
         display:"flex",
         flexDirection:"column",
-        padding:"24px",
-        
-        '& > div': {
-          display:"flex",
-          flexDirection:"column",
-          '& > .title': {
-            padding:"4px", 
-            color:"#9BA5A9"
-          },
-          '& > .content': {
-            padding:"4px 4px 16px 4px",
-            color:"#6BA5A9"
-          }
+        '& > .title': {
+          padding:"4px", 
+          color:"#9BA5A9"
+        },
+        '& > .content': {
+          padding:"4px 4px 16px 4px",
+          color:"#6BA5A9"
         }
       }
-    },
-
-    [theme.breakpoints.down('600')]: {
-      '& > div': {
-        width: '90%',
-      },
-
-      '& .infor1': {
-        width: '100%',
-      },
-
-      '& .infor2': {
-        display: 'none !important',
-      }
-    },
+    }
   },
 
   header: {
+    flex:"row",
+    display:"flex",
+
     [theme.breakpoints.down('600')]: {
-      display: 'block !important',
-      padding: '10px',
+      display: 'block',
 
       '& > div': {
-        display: 'block !important',
+        display: 'block',
+        padding: '10px',
 
         '& > button': {
+          display: 'inline-flex',
+          top: '0px !important',
+          left: '0px !important',
           position: 'initial !important',
+          marginRight: '5px !important',
+        },
+
+        '& > .rect-btn': {
+          width: 'calc(50vw - 50px)',
+        },
+
+        '& > .seperator': {
+          display: 'none',
         },
       },
 
       '& > .seperator': {
-        display: 'none !important',
+        display: 'none',
       },
 
-      '& > .last-div': {
-        marginLeft: '0px !important',
-        display: 'flex !important',
-        marginTop: '10px',
+      '& > .last-row': {
+        margin: '0px !important',
 
         '& > div': {
           margin: '0px !important',
-          display: 'inline-flex !important',
-          width: 'calc(100% - 135px)',
-
-          '& > span': {
-            display: 'block !important',
-          }
+          width: 'calc(100% - 135px)'
         },
 
         '& > button': {
           margin: '0px !important',
-          display: 'inline-flex !important',
         },
-      }
+      },
     },
   }
+
 });
 
 export default styles;

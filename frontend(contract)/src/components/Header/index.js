@@ -70,11 +70,12 @@ const Header = ({getAddress}) => {
         
       } 
       else{
+        
         const prov = new WalletConnectProvider({
-          infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-          qrcodeModalOptions: {
-            mobileLinks: ["metamask"],
+          rpc: {
+            80001: "https://matic-mumbai.chainstacklabs.com",
           },
+          chainId: 80001,
         });
         const addressMobile = await prov.enable();
         var web3Window = new Web3(prov);
@@ -99,140 +100,6 @@ const Header = ({getAddress}) => {
       };
     }
   };
-
-  // async function addSPORTToken(){
-  //   try{
-  //     if (window.ethereum) {
-  //       var web3Window = new Web3(window.ethereum);
-  //       const chainIDBuffer = await web3Window.eth.net.getId(); 
-  //       if(chainIDBuffer == 80001){
-  //         const SportTokenAddress = '0x6D586a553563C84222bE782F13de3d720a30Cdc0';
-  //         const SportTokenSymbol = 'SPORT';
-  //         const SportTokenDecimals = 9;
-  //         const tokenImage = '';          
-  //         const wasAdded = await window.ethereum.request({
-  //           method: 'wallet_watchAsset',
-  //           params: {
-  //             type: 'ERC20', // Initially only supports ERC20, but eventually more!
-  //             options: {
-  //               address: SportTokenAddress, // The address that the token is at.
-  //               symbol: SportTokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-  //               decimals: SportTokenDecimals, // The number of decimals in the token
-  //               image: tokenImage, // A string url of the token logo
-  //             },
-  //           },
-  //         });  
-                 
-  //       }
-  //       else{  
-  //         window.alert("Wrong Network");
-  //       }
-  //     } 
-  //     else{
-  //       const prov = new WalletConnectProvider({
-  //         infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-  //         qrcodeModalOptions: {
-  //           mobileLinks: ["metamask"],
-  //         },
-  //       });
-  //       const addressMobile = await prov.enable();
-  //      var web3Window = new Web3(prov);
-  //       const chainIDBuffer = await web3Window.eth.net.getId(); 
-  //       if(chainIDBuffer == 80001){
-  //         const SportTokenAddress = '0x6D586a553563C84222bE782F13de3d720a30Cdc0';
-  //         const SportTokenSymbol = 'SPORT';
-  //         const SportTokenDecimals = 9;
-  //         const tokenImage = '';          
-  //         const wasAdded = await prov.request({
-  //           method: 'wallet_watchAsset',
-  //           params: {
-  //             type: 'ERC20', // Initially only supports ERC20, but eventually more!
-  //             options: {
-  //               address: SportTokenAddress, // The address that the token is at.
-  //               symbol: SportTokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-  //               decimals: SportTokenDecimals, // The number of decimals in the token
-  //               image: tokenImage, // A string url of the token logo
-  //             },
-  //           },
-  //         });     
-  //       }
-  //       else{  
-  //         window.alert("Wrong Network");
-  //       }        
-
-  //     } 
-  //   }
-  //   catch{
-  //     return;
-  //   }
-  // }
-
-  // async function addESGToken(){
-  //   try{
-  //     if (window.ethereum) {
-  //       var web3Window = new Web3(window.ethereum);
-  //       const chainIDBuffer = await web3Window.eth.net.getId(); 
-  //       if(chainIDBuffer == 80001){
-  //         const EsgTokenAddress = '0xc44B158B2D55783e38F0Cf701657658D61b0C970';
-  //         const EsgTokenSymbol = 'ESG';
-  //         const EsgTokenDecimals = 9;
-  //         const tokenImage = '';          
-  //         const wasAdded = await window.ethereum.request({
-  //           method: 'wallet_watchAsset',
-  //           params: {
-  //             type: 'ERC20', // Initially only supports ERC20, but eventually more!
-  //             options: {
-  //               address: EsgTokenAddress, // The address that the token is at.
-  //               symbol: EsgTokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-  //               decimals: EsgTokenDecimals, // The number of decimals in the token
-  //               image: tokenImage, // A string url of the token logo
-  //             },
-  //           },
-  //         });            
-  //       }
-  //       else{  
-  //         window.alert("Wrong Network");
-  //       }
-  //     }  
-  //     else{
-  //       const prov = new WalletConnectProvider({
-  //         infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-  //         qrcodeModalOptions: {
-  //           mobileLinks: ["metamask"],
-  //         },
-  //       });
-  //       const addressMobile = await prov.enable();
-  //      var web3Window = new Web3(prov);
-  //       const chainIDBuffer = await web3Window.eth.net.getId(); 
-  //       if(chainIDBuffer == 80001){
-  //         const EsgTokenAddress = '0xc44B158B2D55783e38F0Cf701657658D61b0C970';
-  //         const EsgTokenSymbol = 'ESG';
-  //         const EsgTokenDecimals = 9;
-  //         const tokenImage = '';          
-  //         const wasAdded = await prov.request({
-  //           method: 'wallet_watchAsset',
-  //           params: {
-  //             type: 'ERC20', // Initially only supports ERC20, but eventually more!
-  //             options: {
-  //               address: EsgTokenAddress, // The address that the token is at.
-  //               symbol: EsgTokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-  //               decimals: EsgTokenDecimals, // The number of decimals in the token
-  //               image: tokenImage, // A string url of the token logo
-  //             },
-  //           },
-  //         });            
-  //       }
-  //       else{  
-  //         window.alert("Wrong Network");
-  //       }        
-
-  //     }
-      
-  //   }
-  //   catch{
-  //     return;
-  //   }
-  // }
 
   async function connect_Wallet() {
     const chainId = 80001;
@@ -335,10 +202,10 @@ const Header = ({getAddress}) => {
       }  
       else{
         const prov = new WalletConnectProvider({
-          infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-          qrcodeModalOptions: {
-            mobileLinks: ["metamask"],
+          rpc: {
+            80001: "https://matic-mumbai.chainstacklabs.com",
           },
+          chainId: 80001,
         });
         const addressMobile = await prov.enable();
         var web3Window = new Web3(prov);  
@@ -456,12 +323,6 @@ const Header = ({getAddress}) => {
                 {address.length> 0 ? balance : balance}            
               </span>            
         </div>
-        {/* <Button style={{position: 'absolute', left: '70px', top: '80px'}} variant="outline-primary" className={`${style.color_blue} ${style.btn_outline_primary} rounded-pill`} onClick = {() =>{addESGToken();}}>
-            ADD ESG TOKEN
-        </Button>
-        <Button style={{position: 'absolute', left: '270px', top: '80px'}} variant="outline-primary" className={`${style.color_blue} ${style.btn_outline_primary} rounded-pill`} onClick = {() =>{addSPORTToken();}}>
-            ADD SPORT TOKEN
-        </Button> */}
         <Button style={{position: 'absolute', right: '70px', top: '80px'}} variant="outline-primary" className={`${style.color_blue} ${style.btn_outline_primary} rounded-pill`} onClick = {() =>{connect_Wallet();}}>
             {netName == "" ? (address.length == 0 ? "CONNECT WALLET" : "DISCONNECT") : netName}
         </Button>

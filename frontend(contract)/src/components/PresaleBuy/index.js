@@ -4,9 +4,9 @@ import Presale from "../../Modal/PresaleReal";
 import { ethers } from 'ethers';
 import style from "../../pages/token/style.module.scss";
 import tokenPriceABI from '../../GetTokenPrice.json';
-const sportTokenAddress = "0x6D586a553563C84222bE782F13de3d720a30Cdc0";
+const sportTokenAddress = "0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99";
 //const esgTokenAddress = "0x8C534C9aa8d6cDB75d139caF5aD9716Db25eB628";
-const esgTokenAddress = "0xc44B158B2D55783e38F0Cf701657658D61b0C970";
+const esgTokenAddress = "0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28";
 const tokenPriceAddress = "0x6b186a04C801A3D717621b0B19D018375161bFF8";
 const Web3 = require("web3");
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -68,10 +68,10 @@ const TokenBuy = ({ data ,id,address}) => {
             }  
             else{
                 const prov = new WalletConnectProvider({
-                    infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-                    qrcodeModalOptions: {
-                      mobileLinks: ["metamask"],
+                    rpc: {
+                      80001: "https://matic-mumbai.chainstacklabs.com",
                     },
+                    chainId: 80001,
                   });
                   const addressMobile = await prov.enable();
                   var web3 = new Web3(prov); 
@@ -162,11 +162,11 @@ const TokenBuy = ({ data ,id,address}) => {
             else{
                 
                     const prov = new WalletConnectProvider({
-                        infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-                        qrcodeModalOptions: {
-                          mobileLinks: ["metamask"],
+                        rpc: {
+                        80001: "https://matic-mumbai.chainstacklabs.com",
                         },
-                      });
+                        chainId: 80001,
+                    });
                       const addressMobile = await prov.enable();
                       var web3Window = new Web3(prov);
                       const chainIDBuffer = await web3Window.eth.net.getId(); 
@@ -216,11 +216,11 @@ const TokenBuy = ({ data ,id,address}) => {
                 var SportTokenAddress;
                 var SportTokenSymbol;
                 if(id == 1){
-                    SportTokenAddress = '0x6D586a553563C84222bE782F13de3d720a30Cdc0';
+                    SportTokenAddress = '0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99';
                     SportTokenSymbol = 'SPORT';
                 }
                 else{
-                    SportTokenAddress = '0xc44B158B2D55783e38F0Cf701657658D61b0C970';
+                    SportTokenAddress = '0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28';
                     SportTokenSymbol = 'ESG';
                 }
               
@@ -246,11 +246,11 @@ const TokenBuy = ({ data ,id,address}) => {
           } 
           else{
             const prov = new WalletConnectProvider({
-              infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-              qrcodeModalOptions: {
-                mobileLinks: ["metamask"],
-              },
-            });
+                rpc: {
+                  80001: "https://matic-mumbai.chainstacklabs.com",
+                },
+                chainId: 80001,
+              });
             const addressMobile = await prov.enable();
            var web3Window = new Web3(prov);
             const chainIDBuffer = await web3Window.eth.net.getId(); 
@@ -258,11 +258,11 @@ const TokenBuy = ({ data ,id,address}) => {
                 var SportTokenAddress;
                 var SportTokenSymbol;
                 if(id == 1){
-                    SportTokenAddress = '0x6D586a553563C84222bE782F13de3d720a30Cdc0';
+                    SportTokenAddress = '0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99';
                     SportTokenSymbol = 'SPORT';
                 }
                 else{
-                    SportTokenAddress = '0xc44B158B2D55783e38F0Cf701657658D61b0C970';
+                    SportTokenAddress = '0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28';
                     SportTokenSymbol = 'ESG';
                 }
               const SportTokenDecimals = 9;

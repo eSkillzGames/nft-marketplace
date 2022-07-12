@@ -21,8 +21,8 @@ const NFTcontractABI = require('../../NFT_CARD.json');
 const MarketcontractABI = require('../../Marketplace_CARD.json');
 // const NFTcontractAddress = "0xd95D493b5B048bE25bA70a89AD2360AC5f653a68";
 // const MarketcontractAddress = "0x2c8a4c0B41300Df687DFd0c1931AECe146BAE559";
-const NFTcontractAddress = "0x9a14420A44D3BD7074B8bAfE96Ab5538EF0B1ABD";
-const MarketcontractAddress = "0x93756a1BD465971bC5d0E1384d959A2E1d1A6E43";
+const NFTcontractAddress = "0x4daf37319a02ae027b3165fd625fd5cf22ea622d";
+const MarketcontractAddress = "0x39ff109be68aee2dbba16d1acdddde957321303d";
 var pendingArray = new Array(100000);
 
 const Web3 = require("web3");

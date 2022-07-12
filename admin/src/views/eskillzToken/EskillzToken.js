@@ -9,7 +9,7 @@ import { ethers } from 'ethers'
 const Web3 = require("web3");
 import { useEffect, useState } from "react";
 const EsgABI = require('../../ABIs/Esg.json');
-const EsgAddress = "0xc44B158B2D55783e38F0Cf701657658D61b0C970";
+const EsgAddress = "0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28";
 const ESGToken = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 

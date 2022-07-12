@@ -49,14 +49,14 @@ const transporter = nodemailer.createTransport({
         user: process.env.MAIL_USERNAME,
         pass: process.env.MAIL_PASSWORD,
     },
-    secure: false,
+    secure: true,
     secureConnection: false,
     tls: {
         ciphers:'SSLv3'
     }
 })
 
-var web3 = new Web3(new Web3.providers.HttpProvider('https://rpc-mumbai.maticvigil.com/', options))
+var web3 = new Web3(new Web3.providers.HttpProvider('https://matic-mumbai.chainstacklabs.com/', options))
 const baseURL = ""
 
 function convertTimestampToString(timestamp, flag = false) {
@@ -151,7 +151,6 @@ app.post('/login', async function(req, res) {
 	let username = req.body.username;
 	let password = md5(req.body.password);
     let email = req.body.email;
-    
 	// Ensure the input fields exists and are not empty
 	if (username && password) {
         var rows = await knex('tbl_users').where('username', username).where('password', password).select('*')
@@ -317,12 +316,12 @@ app.get('/getearngraph', async function (req, res) {
 
 app.listen(80);
 
-var FROMBLOCK = 25896382
+var FROMBLOCK = 27041584
 
-const sportTokenAddress = "0x6D586a553563C84222bE782F13de3d720a30Cdc0";
-const esgTokenAddress = "0xc44B158B2D55783e38F0Cf701657658D61b0C970";
+const sportTokenAddress = "0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99";
+const esgTokenAddress = "0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28";
 const tokenPriceAddress = "0x6b186a04C801A3D717621b0B19D018375161bFF8";
-const CUENftAddress = "0x80EaA1ed894566e9772187943E4DFC9740Ec9d3F"
+const CUENftAddress = "0xd7694bf6715dc2672c3c42558f09114e7a9fe6c3"
 
 var minABI = [
     // balanceOf
@@ -345,6 +344,7 @@ async function getUSDPrices() {
     
     res = await tokenPriceContract.methods.getPrice(sportTokenAddress).call()
     sportUSDPrice = res[0] * res[2] / res[1] / 10**6
+
     res = await tokenPriceContract.methods.getPrice(esgTokenAddress).call()
     esgUSDPrice = res[0] * res[2] / res[1] / 10**6
 }
@@ -352,15 +352,13 @@ async function getUSDPrices() {
 async function init() {
     try {
         myLogger.log(FROMBLOCK)
-
         await getUSDPrices()
-
         var TOBLOCK = await web3.eth.getBlockNumber()
 
         if (TOBLOCK > FROMBLOCK + 999) {
             TOBLOCK = FROMBLOCK + 999
         }
-
+       
         var rows = await web3.eth.getPastLogs({
             fromBlock: FROMBLOCK,
             toBlock: TOBLOCK,
@@ -371,15 +369,29 @@ async function init() {
             address: CUENftAddress
         })
 
+        var rows_inserted = await knex('tbl_mint')
+            .where('type', 'CUE')
+            .select(knex.raw('blockNumber as BLOCKNUM'))
+        
+        var latestBlockNum;
+        if(rows_inserted.length == 0 ){
+            latestBlockNum = 0;
+        }
+        else{
+            latestBlockNum = rows_inserted[rows_inserted.length-1].BLOCKNUM;
+        }
+
         for (var i = 0; i < rows.length; i ++) {
             var timestamp = (await web3.eth.getBlock(rows[i].blockNumber)).timestamp * 1000
-
-            await knex('tbl_mint').insert({
-                type: 'CUE',
-                swapAt: convertTimestampToString(timestamp, true),
-                transactionHash: rows[i].transactionHash,
-                blockNumber: rows[i].blockNumber
-            })
+            
+            if(latestBlockNum < rows[i].blockNumber){
+                await knex('tbl_mint').insert({
+                    type: 'CUE',
+                    swapAt: convertTimestampToString(timestamp, true),
+                    transactionHash: rows[i].transactionHash,
+                    blockNumber: rows[i].blockNumber
+                })
+            }
         }
 
         var rows = await web3.eth.getPastLogs({
@@ -393,20 +405,35 @@ async function init() {
             address: esgTokenAddress
         })
 
+        var rows_inserted2 = await knex('tbl_earns')
+            .where('type', 'CUE')
+            .select(knex.raw('blockNumber as BLOCKNUM'))
+
+        var latestBlockNum2;
+        if(rows_inserted2.length == 0 ){
+            latestBlockNum2 = 0;
+        }
+        else{
+            latestBlockNum2 = rows_inserted2[rows_inserted2.length-1].BLOCKNUM;
+        }
+
         for (var i = 0; i < rows.length; i ++) {
             if (rows[i].topics[1] == '0x0000000000000000000000000000000000000000000000000000000000000000') continue
             var amount = Number.parseInt(hexToBn(rows[i].data.substr(2, 64))) / 10 ** 9
             var timestamp = (await web3.eth.getBlock(rows[i].blockNumber)).timestamp * 1000
-
-            await knex('tbl_earns').insert({
-                type: 'CUE',
-                swapAt: convertTimestampToString(timestamp, true),
-                amount: amount,
-                amountUSD: amount * esgUSDPrice,
-                amountType: 'ESG',
-                blockNumber: rows[i].blockNumber,
-                transactionHash: rows[i].transactionHash,
-            })
+            
+            if(latestBlockNum2 < rows[i].blockNumber){
+                await knex('tbl_earns').insert({
+                    type: 'CUE',
+                    swapAt: convertTimestampToString(timestamp, true),
+                    amount: amount,
+                    amountUSD: amount * esgUSDPrice,
+                    amountType: 'ESG',
+                    blockNumber: rows[i].blockNumber,
+                    transactionHash: rows[i].transactionHash,
+                })
+            }
+            
         }
 
         var rows = await web3.eth.getPastLogs({
@@ -424,16 +451,18 @@ async function init() {
             if (rows[i].topics[1] == '0x0000000000000000000000000000000000000000000000000000000000000000') continue
             var amount = Number.parseInt(hexToBn(rows[i].data.substr(2, 64))) / 10 ** 9
             var timestamp = (await web3.eth.getBlock(rows[i].blockNumber)).timestamp * 1000
-
-            await knex('tbl_earns').insert({
-                type: 'CUE',
-                swapAt: convertTimestampToString(timestamp, true),
-                amount: amount,
-                amountUSD: amount * sportUSDPrice,
-                amountType: 'SPORT',
-                blockNumber: rows[i].blockNumber,
-                transactionHash: rows[i].transactionHash,
-            })
+                       
+            if(latestBlockNum2 < rows[i].blockNumber){
+                await knex('tbl_earns').insert({
+                    type: 'CUE',
+                    swapAt: convertTimestampToString(timestamp, true),
+                    amount: amount,
+                    amountUSD: amount * sportUSDPrice,
+                    amountType: 'SPORT',
+                    blockNumber: rows[i].blockNumber,
+                    transactionHash: rows[i].transactionHash,
+                })
+            }            
         }
 
         if (TOBLOCK - FROMBLOCK == 999) {

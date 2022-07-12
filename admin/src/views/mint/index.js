@@ -10,17 +10,17 @@ import { useEffect, useState } from "react";
 import { blue } from '@material-ui/core/colors';
 
 const axios = require('axios');
-const IpfsHttpClient = require("ipfs-http-client");
-const ipfsC = IpfsHttpClient.create({
-  host: "ipfs.infura.io",
-  port: "5001",
-  protocol: "https",
-});
+// const IpfsHttpClient = require("ipfs-http-client");
+// const ipfsC = IpfsHttpClient.create({
+//   host: "ipfs.infura.io",
+//   port: "5001",
+//   protocol: "https",
+// });
 
 const NFTcontractABI = require('../../ABIs/NFT.json');
-const NFTcontractAddress = "0x80EaA1ed894566e9772187943E4DFC9740Ec9d3F";
+const NFTcontractAddress = "0xd7694bf6715dc2672c3c42558f09114e7a9fe6c3";
 const CardNFTcontractABI = require('../../ABIs/NFT_CARD.json');
-const CardNFTcontractAddress = "0x9a14420A44D3BD7074B8bAfE96Ab5538EF0B1ABD";
+const CardNFTcontractAddress = "0x4daf37319a02ae027b3165fd625fd5cf22ea622d";
 const Web3 = require("web3");
 
 let web3 = new Web3(
@@ -82,8 +82,23 @@ function MintPage() {
                 _URL.revokeObjectURL(objectUrl);                
                 setImgHash("Pending");
                 setImgNameUpload("Pending");
-                const addedToIPFS = await ipfsC.add(file);
-                setImgHash(addedToIPFS.path);
+
+                // const addedToIPFS = await ipfsC.add(file);
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const resFile = await axios({
+                    method: "post",
+                    url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+                    data: formData,
+                    headers: {
+                      'pinata_api_key': "17ee866f4a92583500ae",
+                      'pinata_secret_api_key': "04a0885ff6a11e37ce5177c068bf05c21cb335c0da45bce0e2aa2332072986eb",
+                        // "Content-Type": "multipart/form-data"
+                      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                    },
+                });
+                setImgHash(resFile.data.IpfsHash);
                 setImgNameUpload(file.name);    
               } 
               else{
@@ -96,8 +111,21 @@ function MintPage() {
           else{
             setImgHash("Pending");
             setImgNameUpload("Pending");
-            const addedToIPFS = await ipfsC.add(file);
-            setImgHash(addedToIPFS.path);
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const resFile = await axios({
+                method: "post",
+                url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+                data: formData,
+                headers: {
+                  'pinata_api_key': "17ee866f4a92583500ae",
+                  'pinata_secret_api_key': "04a0885ff6a11e37ce5177c068bf05c21cb335c0da45bce0e2aa2332072986eb",
+                    // "Content-Type": "multipart/form-data"
+                  'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                },
+            });
+            setImgHash(resFile.data.IpfsHash);
             setImgNameUpload(file.name);              
           }
         }
@@ -127,7 +155,7 @@ function MintPage() {
             // make metaData
             const metadata = new Object();
             metadata.name = imgName;
-            metadata.image_url = "https://gateway.pinata.cloud/ipfs/" + imgHash;
+            metadata.image_url = "https://eskillzpool.mypinata.cloud/ipfs/" + imgHash;
             metadata.description = imgDescription;   
             if(equipType == 0){
               metadata.level = imgLevel;
@@ -186,14 +214,14 @@ function MintPage() {
     return axios 
         .post(url, JSONBody, {
             headers: {
-                pinata_api_key: "238047f870c7ab07af4b",
-                pinata_secret_api_key: "1b57450a5dc199dd620cca759bf665c8abc323278469baf2368cb3d8372d9a6f",
+                pinata_api_key: "17ee866f4a92583500ae",
+                pinata_secret_api_key: "04a0885ff6a11e37ce5177c068bf05c21cb335c0da45bce0e2aa2332072986eb",
             }
         })
         .then(function (response) {
            return {
                success: true,
-               pinataUrl: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
+               pinataUrl: "https://eskillzpool.mypinata.cloud/ipfs/" + response.data.IpfsHash
            };
         })
         .catch(function (error) {
@@ -370,7 +398,7 @@ function MintPage() {
                     chainName: 'Polygon Mumbai',
                     chainId: web3.utils.toHex(chainId),
                     nativeCurrency: { name: 'Matic', decimals: 18, symbol: 'Matic' },
-                    rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+                    rpcUrls: ['https://matic-mumbai.chainstacklabs.com/'],
                   },
                 ],
               });

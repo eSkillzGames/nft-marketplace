@@ -31,7 +31,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Game Settings',
-    to: '/tournaments',
+    to: '/gameSettings',
     icon: <CIcon icon={cilBirthdayCake} customClassName="nav-icon" />,
   },
   {

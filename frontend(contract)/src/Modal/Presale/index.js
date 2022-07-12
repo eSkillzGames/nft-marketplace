@@ -10,8 +10,8 @@ const UniswapABI = require('../../Uniswap.json');
 import tokenPriceABI from '../../GetTokenPrice.json';
 const UniswapAddress = "0x8954AfA98594b838bda56FE4C12a09D7739D179b";
 const tokenPriceAddress = "0x6b186a04C801A3D717621b0B19D018375161bFF8";
-const sportTokenAddress = "0x6D586a553563C84222bE782F13de3d720a30Cdc0";
-const esgTokenAddress = "0xc44B158B2D55783e38F0Cf701657658D61b0C970";
+const sportTokenAddress = "0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99";
+const esgTokenAddress = "0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28";
 const Web3 = require("web3");
 
 
@@ -40,7 +40,7 @@ const Presale = (props) => {
                                 hideModel();
                                 if (id == 1){
 
-                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889" ,"0x6D586a553563C84222bE782F13de3d720a30Cdc0"], walletAddress,deadline,
+                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889" ,"0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99"], walletAddress,deadline,
                                     {
                                         value: ethers.utils.parseUnits((Number(ethAmount)).toString(), 'ether')._hex,
                                     }       
@@ -50,7 +50,7 @@ const Presale = (props) => {
                                     // window.alert("You recieved "+sportAmount + "SPORT");
                                 }
                                 else{
-                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889","0xc44B158B2D55783e38F0Cf701657658D61b0C970"], walletAddress,deadline,
+                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889","0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28"], walletAddress,deadline,
                                     {
                                         value: ethers.utils.parseUnits((Number(ethAmount)).toString(), 'ether')._hex,
                                     }        
@@ -79,10 +79,10 @@ const Presale = (props) => {
             }
             else{
                 const prov = new WalletConnectProvider({
-                    infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-                    qrcodeModalOptions: {
-                      mobileLinks: ["metamask"],
+                    rpc: {
+                      80001: "https://matic-mumbai.chainstacklabs.com",
                     },
+                    chainId: 80001,
                   });
                   const addressMobile = await prov.enable();
                 if(walletAddress!=""){            
@@ -99,7 +99,7 @@ const Presale = (props) => {
                             try {
                                 hideModel();
                                 if (id == 1){
-                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889","0x6D586a553563C84222bE782F13de3d720a30Cdc0"], walletAddress,deadline,
+                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889","0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99"], walletAddress,deadline,
                                     {
                                         value: ethers.utils.parseUnits((Number(ethAmount)).toString(), 'ether')._hex,
                                     }        
@@ -109,7 +109,7 @@ const Presale = (props) => {
                                     // window.alert("You recieved "+sportAmount + "SPORT");
                                 }
                                 else{
-                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889","0xc44B158B2D55783e38F0Cf701657658D61b0C970"], walletAddress,deadline,
+                                    let nftTxn = await PresaleContract.swapExactETHForTokensSupportingFeeOnTransferTokens(0, ["0x9c3c9283d3e44854697cd22d3faa240cfb032889","0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28"], walletAddress,deadline,
                                     {
                                         value: ethers.utils.parseUnits((Number(ethAmount)).toString(), 'ether')._hex,
                                     }        
@@ -193,10 +193,10 @@ const Presale = (props) => {
             } 
             else{
                 const prov = new WalletConnectProvider({
-                    infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-                    qrcodeModalOptions: {
-                      mobileLinks: ["metamask"],
+                    rpc: {
+                      80001: "https://matic-mumbai.chainstacklabs.com",
                     },
+                    chainId: 80001,
                   });
                   const addressMobile = await prov.enable();
                   var web3Window = new Web3(prov);

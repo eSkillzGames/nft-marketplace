@@ -109,7 +109,7 @@ const routes = [
   { path: '/arcade', name: 'Arcade Mode', element: Arcade },
   { path: '/betting', name: 'Betting', element: Betting },
   { path: '/eskillzToken', name: 'EskillzToken', element: EskillzToken },
-  { path: '/tournaments', name: 'Game Settings', element: Tournaments },
+  { path: '/gameSettings', name: 'Game Settings', element: Tournaments },
   { path: '/mint', name: 'NFT Mint', element: Mint },
 ]
 

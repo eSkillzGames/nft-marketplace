@@ -49,6 +49,7 @@
     "ethers": "^5.6.1",
     "express": "^4.17.3",
     "express-session": "^1.17.2",
+    "firebase": "^9.6.11",
     "ipfs-http-client": "^56.0.2",
     "knex": "^1.0.4",
     "md5": "^2.3.0",

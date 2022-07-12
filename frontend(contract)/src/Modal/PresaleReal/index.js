@@ -7,9 +7,9 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 const PresaleSportContractABI = require('../../PresaleSport.json');
-const PresaleSportContractAddress = "0x15fe1C3e289998916F17F165D6e82f80711042F4";
+const PresaleSportContractAddress = "0x0002746e28a35d0b9113b12ccdf5ad2ca488e6a3";
 const PresaleContractABI = require('../../Presale.json');
-const PresaleContractAddress = "0x7b534dB47b3A749690E94e687a1421e0519d0f4b";
+const PresaleContractAddress = "0x7a63d32124af1654863621afa0073efa26587351";
 const Web3 = require("web3");
 
 
@@ -70,10 +70,10 @@ const Presale = (props) => {
             }
             else{
                 const prov = new WalletConnectProvider({
-                    infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-                    qrcodeModalOptions: {
-                      mobileLinks: ["metamask"],
+                    rpc: {
+                      80001: "https://matic-mumbai.chainstacklabs.com",
                     },
+                    chainId: 80001,
                   });
                   const addressMobile = await prov.enable();
                 if(walletAddress!=""){            
@@ -159,10 +159,10 @@ const Presale = (props) => {
         else{
             try {
                 const prov = new WalletConnectProvider({
-                    infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-                    qrcodeModalOptions: {
-                      mobileLinks: ["metamask"],
+                    rpc: {
+                      80001: "https://matic-mumbai.chainstacklabs.com",
                     },
+                    chainId: 80001,
                   });
                   const addressMobile = await prov.enable();
                 

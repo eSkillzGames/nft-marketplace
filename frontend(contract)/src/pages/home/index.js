@@ -12,13 +12,14 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useRouter } from 'next/router';
 const NFTcontractABI = require('../../NFT.json');
 const CardNFTcontractABI = require('../../NFT_CARD.json');
-const NFTcontractAddress = "0x80EaA1ed894566e9772187943E4DFC9740Ec9d3F";
-const CardNFTcontractAddress = "0x9a14420A44D3BD7074B8bAfE96Ab5538EF0B1ABD";
-const sportTokenAddress = "0x6D586a553563C84222bE782F13de3d720a30Cdc0";
+const NFTcontractAddress = "0xd7694bf6715dc2672c3c42558f09114e7a9fe6c3";
+const CardNFTcontractAddress = "0x4daf37319a02ae027b3165fd625fd5cf22ea622d";
+const sportTokenAddress = "0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99";
 const Web3 = require("web3");
 
 let web3 = new Web3(
     new Web3.providers.WebsocketProvider("wss://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93")
+    // new Web3.providers.HttpProvider("https://polygon-mumbai.infura.io/v3/4ee04b874a1b4ceeb448e8c8df37cdff")
 );
 
 var minABI = [
@@ -49,6 +50,7 @@ function HomePage() {
   const [sortValue, setSortValue] = React.useState(0);
   const [byAndSellSelected, setByAndSellSelected] = React.useState(0);
   const [presaleSelected, setPresaleSelected] = React.useState(0);
+  const [stakingSelected, setStakingSelected] = React.useState(0);
   const router = useRouter();
   const images = [    
     "hall.png",
@@ -70,7 +72,7 @@ function HomePage() {
   const [netName, setNetName] = useState("");
 
   const [loaded, setLoaded] = useState(0)
-
+  
   var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
   var CardTokenContract = new web3.eth.Contract(CardNFTcontractABI,CardNFTcontractAddress);
   var sportContract = new web3.eth.Contract(minABI, sportTokenAddress);
@@ -114,10 +116,36 @@ function HomePage() {
               });
                 
             }          
-          } 
-          
-        
+          }           
       } 
+      else{
+        const provider = new WalletConnectProvider({
+          rpc: {
+            80001: "https://matic-mumbai.chainstacklabs.com",
+          },
+          chainId: 80001,
+        });
+        const addressArray = await provider.enable();
+        
+        var web3Window = new Web3(provider);
+        if(addressArray.length > 0){
+          if(provider.chainId == 80001){
+            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+              setBalance(String(balETH).substring(0, 6) + " MATIC");
+            });
+            sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
+              if(res.length>7){
+                setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
+              }
+              else{
+                setSportBalance("0.00 SPORT");
+              }              
+            });
+              
+          }          
+        }       
+      }
       
     } catch (err) {
       return {
@@ -133,6 +161,20 @@ function HomePage() {
           router.reload();
         })
         window.ethereum.on('accountsChanged', () => {
+          router.reload();
+        })
+      }
+      else{
+        const provider = new WalletConnectProvider({
+          rpc: {
+            80001: "https://matic-mumbai.chainstacklabs.com",
+          },
+          chainId: 80001,
+        });
+        provider.on('chainChanged', () => {
+          router.reload();
+        })
+        provider.on('accountsChanged', () => {
           router.reload();
         })
       }
@@ -177,6 +219,41 @@ function HomePage() {
           }         
         
       } 
+      else{
+        const provider = new WalletConnectProvider({
+          rpc: {
+            80001: "https://matic-mumbai.chainstacklabs.com",
+          },
+          chainId: 80001,
+        });
+        const addressArray = await provider.enable();
+        
+        var web3Window = new Web3(provider);
+        
+        //const chainIDBuffer = await web3Window.eth.net.getId();        
+        if(addressArray.length > 0){
+          setAdress(addressArray[0]);
+          if(provider.chainId == 80001){
+            setNetName("");
+            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
+              let balETH = ethers.utils.formatUnits(balanceOf, 'ether');        
+              setBalance(String(balETH).substring(0, 6) + " MATIC");
+            });            
+            sportContract.methods.balanceOf(addressArray[0]).call(function (err, res) {
+              if(res.length>7){
+                setSportBalance(String(parseInt(String(res).substring(0,res.length-7))/100) + " SPORT");
+              }
+              else{
+                setSportBalance("0.00 SPORT");
+              }         
+            });
+          }
+          else{  
+            setNetName("Wrong NET(DisConnect)");  
+          }
+        }         
+
+      }
     } catch (err) {
       return {
         address: ""        
@@ -279,13 +356,13 @@ function HomePage() {
         }     
         
       }  
-      else{
+      else{        
         
           const prov = new WalletConnectProvider({
-            infuraId: "acc8266b5baf41c5ad44a05fe4a49925",
-            qrcodeModalOptions: {
-              mobileLinks: ["metamask"],
+            rpc: {
+              80001: "https://matic-mumbai.chainstacklabs.com",
             },
+            chainId: 80001,
           });
           const addressMobile = await prov.enable();
          var web3Window = new Web3(prov);  
@@ -381,9 +458,12 @@ function HomePage() {
   return (
     <>
       <div className={classes.buttons} style={{justifyContent:"center", marginTop:"24px"}}>
-          <Button style={{position: 'relative', width : '150px'}} className={`${classes.btn} ${presaleSelected === 1 ? classes.selected_btn : ''}`} onClick={() => {setPresaleSelected(1);router.push('/presale');}}>              
+          <Button style={{position: 'relative', width : '100px'}} className={`${classes.btn} ${presaleSelected === 1 ? classes.selected_btn : ''}`} onClick={() => {setPresaleSelected(1);router.push('/presale');}}>              
             {"Presale"}
           </Button>
+          {/* <Button style={{position: 'relative', width : '100px', left: '20px'}} className={`${classes.btn} ${stakingSelected === 1 ? classes.selected_btn : ''}`} onClick={() => {setStakingSelected(1);router.push('/stake');}}>              
+            {"Staking"}
+          </Button> */}
           <div className="seperator" style={{width:"32px",flexShrink:"0%"}}></div>
           <Button className={`${classes.btn} ${byAndSellSelected === 0 ? classes.selected_btn : ''}`} onClick={() => {setByAndSellSelected(0);}}>              
             {"BUY"}

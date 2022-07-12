@@ -4,7 +4,7 @@ import CustomSlider from '../CustomSlider';
 import { RiRefreshLine } from "react-icons/ri";
 import style from "../../pages/token/style.module.scss";
 const Web3 = require("web3");
-const distributeAddress = "0x4A2ee758C760c66a43262732c612555D7C90F2D0";
+const distributeAddress = "0x025F0aeEE1D58Af5f51f8EAA27779Bf484eF5012";
 import distributeeABI from '../../Distribute.json';
 const Calculator = ({price}) => {
     const [value, setValue] = useState(1);
