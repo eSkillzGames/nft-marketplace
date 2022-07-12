@@ -25,9 +25,9 @@ const knex = require('knex')({
         // user : 'root',
         // password : '',
         // database : 'db_eskills'
-        user : 'eskillza_user',
-        password : 'asdfQWER1234!@#$',
-        database : 'eskillza_db'
+        user : process.env.DB_USER,
+        password : process.env.DB_PASS,
+        database : process.env.DB_NAME
     }
 })
 const options = {
