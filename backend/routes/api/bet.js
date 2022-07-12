@@ -15,21 +15,21 @@ const privateKeyToAddress = require('ethereum-private-key-to-address')
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyCbHhwS7kjq3s-zidpdk0THPugYTyzSqhI",
+  apiKey: process.env.apiKey,
 
-  authDomain: "eskillz-pool.firebaseapp.com",
+  authDomain: process.env.authDomain,
 
-  databaseURL: "https://eskillz-pool-default-rtdb.firebaseio.com",
+  databaseURL: process.env.databaseURL,
 
-  projectId: "eskillz-pool",
+  projectId: process.env.projectId,
 
-  storageBucket: "eskillz-pool.appspot.com",
+  storageBucket: process.env.storageBucket,
 
-  messagingSenderId: "285834418480",
+  messagingSenderId: process.env.messagingSenderId,
 
-  appId: "1:285834418480:web:86863685fac50c99e950f5",
+  appId: process.env.appId,
 
-  measurementId: "G-7C45NW1VCC"
+  measurementId: process.env.measurementId
 
 };
 
@@ -53,7 +53,7 @@ const sportABI = require('../../abi/Sport.json');
 
 // var sportContract = new web3.eth.Contract(sportABI,SportTokenAddress);                        
 // var betContract = new web3.eth.Contract(betABI,betAddress);
-var PRIVATE_KEY = "9cc02444163355273705cccc39684d9df3e933034ef1e681d3f04afbd16ffc5e";
+var PRIVATE_KEY = process.env.PRIVATE_KEY;
 var PUBLIC_KEY = privateKeyToAddress(PRIVATE_KEY);
 const provider = new ethers.providers.JsonRpcProvider(infuraKey);
 const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
