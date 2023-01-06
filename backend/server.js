@@ -23,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 
+
 // Define Routes
 app.use('/api/v1', require('./routes/api/nft'));
 app.use('/sendTransaction/v1', require('./routes/api/bet'));

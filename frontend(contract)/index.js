@@ -17,6 +17,7 @@ admin.initializeApp({
 
 global.adminAuth = admin.auth();
 
+
 app.use("/api/user", require("./server/routes/api/user"));
 
 // app.use(express.static('public'));

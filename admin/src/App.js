@@ -20,6 +20,7 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
 const baseURL = ''
 
+
 class App extends Component {
   constructor (props) {
     super(props)
