@@ -44,7 +44,7 @@ class App extends Component {
       this.response = res
       this.setState({isFetching: false})
 
-      console.log(res)
+      //console.log(res)
     })
     .catch((err) => {
       this.response = 0

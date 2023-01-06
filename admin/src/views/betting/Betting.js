@@ -10,7 +10,7 @@ const Web3 = require("web3");
 import { useEffect, useState } from "react";
 import { cibWindows } from '@coreui/icons';
 const BetABI = require('../../ABIs/Bet.json');
-const BetAddress = "0x17baa27be6b64153ffa8e0e3754145c2edd271ba";
+const BetAddress = "0x389B71DF19F0c7478a253Fc07dC32F62c9d8DDe0";
 
 const Betting = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
@@ -28,7 +28,7 @@ const Betting = () => {
   const [address, setAdress] = useState("");
 
   async function setFee() {
-    setTaxFee(parseInt(Number(taxFee)));
+    setTaxFee(parseInt(Number(taxFee) * 100) / 100);
     try{
       const { ethereum } = window;
       if(ethereum){
@@ -40,7 +40,7 @@ const Betting = () => {
               var BetContract = new ethers.Contract(BetAddress, BetABI, signer); 
               let ownerAddress = await BetContract.owner();
               if(ownerAddress.toLowerCase() == address.toLowerCase()){
-                await BetContract.setFee(parseInt(Number(taxFee)));
+                await BetContract.setFee(parseInt(Number(taxFee) * 100));
               }
               else{
                 window.alert("You are not owner of Betting Contract.");
@@ -268,7 +268,7 @@ const Betting = () => {
         <CCardBody>   
           <CRow>
             <CCol xs={2}>            
-              <CFormInput type="text" size="sm" id="fee" placeholder="5"
+              <CFormInput type="text" size="sm" id="fee" placeholder="5.5"
                   value = {taxFee} 
                   onChange={(event) => {Number(event.target.value) >= 0 && Number(event.target.value)<= 25 ? setTaxFee(event.target.value) : ''}}
               />

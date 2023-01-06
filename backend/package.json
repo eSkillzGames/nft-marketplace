@@ -16,7 +16,7 @@
     "config": "^3.3.3",
     "dotenv": "^10.0.0",
     "ethereum-private-key-to-address": "^0.0.7",
-    "ethers": "^5.5.2",
+    "ethers": "^5.6.9",
     "express": "^4.17.1",
     "express-validator": "^6.8.1",
     "firebase": "^9.6.11",
@@ -24,7 +24,9 @@
     "ipfs-core": "^0.14.1",
     "ipfs-http-client": "^56.0.1",
     "jsonwebtoken": "^8.5.1",
+    "knex": "^2.3.0",
     "mongoose": "^5.11.8",
+    "mysql": "^2.18.1",
     "normalize-url": "^5.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"

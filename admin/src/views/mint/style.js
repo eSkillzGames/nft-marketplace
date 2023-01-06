@@ -9,6 +9,7 @@ const styles = createStyles({
     alignItems: 'center',
     minHeight: '100vh',
     padding: '2% 2%',
+    backgroundColor:"#072b36",
     [theme.breakpoints.down('1024')]: {
       flexDirection: 'column',
       paddingTop: '130px',
@@ -37,7 +38,7 @@ const styles = createStyles({
       justifyContent: 'center',
       width: 'calc(50% - 40px)',
       minHeight: '520px',
-      backgroundColor: '#11313A',
+      backgroundColor: '#072b36',
       border: '1.5px dashed #41585F',
       borderRadius: '25px',
       '& .MuiTypography-root': {
@@ -109,7 +110,7 @@ const styles = createStyles({
     height: '40px',
     background: 'rgba(101, 158, 191, 0.2)',
     border: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#9d00ff',
+    color: 'white',
     '& img': {
       margin: '0 8px 4px 0',
     },
@@ -485,8 +486,10 @@ const styles = createStyles({
   },
 
   header: {
+    padding:"10px",
     flex:"row",
     display:"flex",
+    backgroundColor:"#072b36",
 
     [theme.breakpoints.down('600')]: {
       display: 'block',

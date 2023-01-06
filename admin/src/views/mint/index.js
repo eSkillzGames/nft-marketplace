@@ -7,8 +7,7 @@ import { ethers } from 'ethers';
 // import Modal from "react-modal";
 // import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
-import { blue } from '@material-ui/core/colors';
-
+import { white } from '@material-ui/core/colors';
 const axios = require('axios');
 // const IpfsHttpClient = require("ipfs-http-client");
 // const ipfsC = IpfsHttpClient.create({
@@ -61,7 +60,7 @@ function MintPage() {
   const [balance, setBalance] = useState("");
   const [supportAddress, setSupportAddress] = useState("");
   const [equipType, setEquipType] = useState(0);
-
+  
   // const router = useRouter();
   // Modal.setAppElement("#__next");
   const upload = async (e) => {    
@@ -92,8 +91,8 @@ function MintPage() {
                     url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
                     data: formData,
                     headers: {
-                      'pinata_api_key': "17ee866f4a92583500ae",
-                      'pinata_secret_api_key': "04a0885ff6a11e37ce5177c068bf05c21cb335c0da45bce0e2aa2332072986eb",
+                      'pinata_api_key': process.env.REACT_APP_PINATA_API_KEY,
+                      'pinata_secret_api_key': process.env.REACT_APP_PINATA_SECRET_API_KEY,
                         // "Content-Type": "multipart/form-data"
                       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
                     },
@@ -119,8 +118,8 @@ function MintPage() {
                 url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
                 data: formData,
                 headers: {
-                  'pinata_api_key': "17ee866f4a92583500ae",
-                  'pinata_secret_api_key': "04a0885ff6a11e37ce5177c068bf05c21cb335c0da45bce0e2aa2332072986eb",
+                  'pinata_api_key': process.env.REACT_APP_PINATA_API_KEY,
+                  'pinata_secret_api_key': process.env.REACT_APP_PINATA_SECRET_API_KEY,
                     // "Content-Type": "multipart/form-data"
                   'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
                 },
@@ -214,8 +213,8 @@ function MintPage() {
     return axios 
         .post(url, JSONBody, {
             headers: {
-                pinata_api_key: "17ee866f4a92583500ae",
-                pinata_secret_api_key: "04a0885ff6a11e37ce5177c068bf05c21cb335c0da45bce0e2aa2332072986eb",
+                pinata_api_key: process.env.REACT_APP_PINATA_API_KEY,
+                pinata_secret_api_key: process.env.REACT_APP_PINATA_SECRET_API_KEY,
             }
         })
         .then(function (response) {
@@ -446,7 +445,7 @@ function MintPage() {
   };
 
   return (
-    <>
+    <div >
       <div className={classes.header}>
         <div style={{marginLeft:"20px",display:"flex",flexDirection:"row"}}>          
           <Button className={`${classes.btn} ${equipType === 0 ? classes.selected_btn : ''} rect-btn`} onClick={() => {setEquipType(0);}}>              
@@ -465,7 +464,7 @@ function MintPage() {
                 ADDRESS:&nbsp;
               {address.length> 0 ? (String(address).substring(0, 8) + "..." + String(address).substring(36)) : ("")}
               </span>
-              <span style={{color : 'blue'}}>
+              <span style={{color : 'white'}}>
                 MATIC BALANCE:&nbsp;
                 {address.length> 0 ? balance : ""}            
               </span>            
@@ -479,14 +478,14 @@ function MintPage() {
       <div className={classes.hero} style = {{marginTop:"-20px"}}>   
         {/* <img src="/images/mint_logo.png" alt=""/> */}
         <div className={classes.infos}>
-          <span style={{color : 'blue'}}>Title</span>
+          <span style={{color : 'white'}}>Title</span>
           <TextField
             placeholder="name of NFT"
             variant="filled"  
             value = {imgName}      
             onChange={(event) => {setImageName(event.target.value.substring(0,30)); setMetaDatachanged(0);}}
           />
-          <span style={{color : 'blue'}}>Description</span>
+          <span style={{color : 'white'}}>Description</span>
           <TextField
             placeholder="A description about your NFT"
             variant="filled"
@@ -498,7 +497,7 @@ function MintPage() {
           
           <div className="titles"> 
             <div>
-              <span style={{color : 'blue'}}>{equipType ==0 ? 'Level' : 'Yield Bonus'}</span>
+              <span style={{color : 'white'}}>{equipType ==0 ? 'Level' : 'Yield Bonus'}</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
@@ -507,7 +506,7 @@ function MintPage() {
               />
             </div>
             <div>
-              <span style={{color : 'blue'}}>Strength</span>
+              <span style={{color : 'white'}}>Strength</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
@@ -519,7 +518,7 @@ function MintPage() {
 
           <div className="titles"> 
             <div>
-              <span style={{color : 'blue'}}>Accuracy</span>
+              <span style={{color : 'white'}}>Accuracy</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
@@ -528,7 +527,7 @@ function MintPage() {
               />
             </div>
             <div>
-              <span style={{color : 'blue'}}>Control</span>
+              <span style={{color : 'white'}}>Control</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
@@ -537,7 +536,7 @@ function MintPage() {
               />
             </div>
             <div>
-              <span style={{marginLeft: "10px", color : 'blue'}}>Free Item Drop Chance</span>
+              <span style={{marginLeft: "10px", color : 'white'}}>Free Item Drop Chance</span>
               <TextField
                 placeholder="0"
                 variant="filled"      
@@ -549,7 +548,7 @@ function MintPage() {
           
           <div id="toggles">
             <div>
-              <span style={{color : 'blue'}}>NFT Type</span>
+              <span style={{color : 'white'}}>NFT Type</span>
               <ToggleButtonGroup
                 size="small"
                 exclusive
@@ -562,11 +561,11 @@ function MintPage() {
             </div>
             <div style={{flex:"1 0 0%"}}></div>
             <div>
-              <span style={{color : 'blue'}}>Quantity</span>
+              <span style={{color : 'white'}}>Quantity</span>
               <Quantity quantity={quantity} setQuantity={setQuantity} />
             </div>
           </div>
-          <span style={{color : 'blue'}}>Support Wallet Address</span>
+          <span style={{color : 'white'}}>Support Wallet Address</span>
           <TextField
             placeholder="0x12345..."
             variant="filled"
@@ -580,7 +579,7 @@ function MintPage() {
             </Button>
           </div>
           
-          <span style={{margin : "20px 0px 0px 0px", color : 'blue'}}>
+          <span style={{margin : "20px 0px 0px 0px", color : 'white'}}>
             {metadaState}
           </span>
         </div>
@@ -611,7 +610,7 @@ function MintPage() {
           <ul></ul>
         </div>             
       </div>     
-    </>    
+    </div>    
   );
 }
 

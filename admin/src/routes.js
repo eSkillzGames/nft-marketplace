@@ -54,10 +54,11 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const Usage = React.lazy(() => import('./views/usage/Usage'))
 const Arcade = React.lazy(() => import('./views/arcade/Arcade'))
 const Betting = React.lazy(() => import('./views/betting/Betting'))
+const GameSettings = React.lazy(() => import('./views/gameSettings/GameSettings'))
 const Tournaments = React.lazy(() => import('./views/tournaments/Tournaments'))
 const EskillzToken = React.lazy(() => import('./views/eskillzToken/EskillzToken'))
 const Mint = React.lazy(() => import('./views/mint'))
-
+const Market = React.lazy(() => import('./views/market'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -109,8 +110,10 @@ const routes = [
   { path: '/arcade', name: 'Arcade Mode', element: Arcade },
   { path: '/betting', name: 'Betting', element: Betting },
   { path: '/eskillzToken', name: 'EskillzToken', element: EskillzToken },
-  { path: '/gameSettings', name: 'Game Settings', element: Tournaments },
+  { path: '/gameSettings', name: 'Game Settings', element: GameSettings },
+  { path: '/tournaments', name: 'Tournaments', element: Tournaments },
   { path: '/mint', name: 'NFT Mint', element: Mint },
+  { path: '/market', name: 'Market', element: Market }
 ]
 
 export default routes

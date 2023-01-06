@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
+
 // Connect Database
 //connectDB();
 
@@ -35,7 +36,10 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
+var serverApp = app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+serverApp.setTimeout(400 * 1000);
+console.log(serverApp.timeout);
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 

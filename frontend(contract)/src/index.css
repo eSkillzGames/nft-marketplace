@@ -1,0 +1,43 @@
+body {
+  background-color: #072b36 !important;
+  /*background-image: linear-gradient(180deg, #072B36 0%, #031E26 100%);*/
+}
+.modal-content {
+  border-radius: 2.5rem;
+}
+/* ::-webkit-scrollbar {
+  height: 6px;
+} */
+
+::-webkit-scrollbar-thumb:horizontal {
+  background: #6c6d6d;
+  border-radius: 3px;
+}
+
+input[type="range" i]::-webkit-slider-thumb {
+  appearance: slider-horizontal;
+  color: rgb(157, 150, 142);
+  cursor: pointer;
+  padding: initial;
+  border: 2px solid #28bae0;
+  margin: 0px;
+}
+
+output {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  top: -2px;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #e2e2e2;
+  background-color: #fff;
+  color: #000;
+  font-size: 0.8rem;
+  line-height: 35px;
+  text-align: center;
+  border: 0px;
+  pointer-events: none;
+  background: transparent;
+  text-align: center;
+}

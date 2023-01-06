@@ -11,7 +11,7 @@ const axios = require('axios');
 const BetcontractABI = require('../../Bet.json');
 const SportcontractABI = require('../../Sport.json');
 const BetcontractAddress = "0xCB5b5Fe891310386DBE6A976f424363eAc7Fd990";
-const SportcontractAddress = "0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99";
+const SportcontractAddress = "0x2caFAb766a586a09659a09E92e9f4005DF827512";
 const Web3 = require("web3");
 
 const useStyles = makeStyles(styles);

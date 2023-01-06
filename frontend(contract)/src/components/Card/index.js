@@ -2,36 +2,30 @@
 import React from 'react';
 import { Button, FormControlLabel, Checkbox, makeStyles, LinearProgress } from '@material-ui/core';
 import styles from './style';
-import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Directions } from '@material-ui/icons';
 import { element } from 'prop-types';
+import { ethers, providers } from "ethers";
+import { useDispatch, useSelector } from "react-redux";
+import * as homeActions from "../../pages/home/store/actions"
+const { default: axios } = require("axios");
 const { EventEmitter } = require("events");
-
-// import { useRouter } from 'next/router';
-// import Router from 'next/router'
-// import { Height } from '@material-ui/icons';
-//const alchemyKey = "https://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93";
-//require('dotenv').config();
-//const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY;
-//const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
-//const web3 = createAlchemyWeb3(alchemyKey); 
 const NFTcontractABI = require('../../NFT_CARD.json');
 const MarketcontractABI = require('../../Marketplace_CARD.json');
-// const NFTcontractAddress = "0xd95D493b5B048bE25bA70a89AD2360AC5f653a68";
-// const MarketcontractAddress = "0x2c8a4c0B41300Df687DFd0c1931AECe146BAE559";
 const NFTcontractAddress = "0x4daf37319a02ae027b3165fd625fd5cf22ea622d";
 const MarketcontractAddress = "0x39ff109be68aee2dbba16d1acdddde957321303d";
 var pendingArray = new Array(100000);
 
 const Web3 = require("web3");
 
-let web3 = new Web3(
-    new Web3.providers.WebsocketProvider("wss://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93")
-);
+// let web3 = new Web3(
+//     new Web3.providers.WebsocketProvider("wss://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93")
+// );
 
-
+const providerR = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com");
+// const providerW = new ethers.providers.JsonRpcProvider("https://polygon-mumbai.infura.io/v3/" + process.env.REACT_APP_INFURAID);
+const NFTContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, providerR);
+const MarketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, providerR);
 const useStyles = makeStyles(styles);
 
 const myEmitter = new EventEmitter();
@@ -48,6 +42,93 @@ const Card = (props) => {
   const { name, description, itemId, tokenId, yieldBonus, owned, image, strength, accuracy, control, freeItemDropChance, isActive, price, lastPrice, isAuto, isSelected,count,check, ...rest } = props;
   const imgRef = React.useRef(null);
   const [size, setSize] = useState({});
+  const { uid, address } = useSelector(({ authReducer }) => authReducer.auth);
+  const { balance } = useSelector(({ homeReducer }) => homeReducer.home);
+  const dispatch = useDispatch();
+  async function sellNft(id,tokenID, price) {
+    
+    try{  
+      const response = await axios.post(
+        "https://eskillzserver.net/sendtransaction/v1/SellNFT",
+        { Account: address, tokenID: tokenID, price: price, id: id, Type : "Card", UserID: uid}
+      );
+      console.log("response->", response.data);     
+      dispatch(homeActions.setBalance(address));
+      pendingArray[id] = 0;
+      eventEmit();  
+    }
+    catch{
+      pendingArray[id] = 0;
+      eventEmit();  
+      return;
+    }
+    
+  }
+  
+  async function removeNft(id,tokenID) {
+    try{  
+      const response = await axios.post(
+        "https://eskillzserver.net/sendtransaction/v1/RemoveNFT",
+        { Account: address, tokenID: tokenID, id: id, Type : "Card", UserID: uid}
+      );
+      console.log("response->", response.data);     
+      dispatch(homeActions.setBalance(address));
+      pendingArray[id] = 0;
+      eventEmit();  
+    }
+    catch{
+      pendingArray[id] = 0;
+      eventEmit();  
+      return;
+    }
+  }
+  
+  async function buyNft(id,price) {
+    try{  
+      const response = await axios.post(
+        "https://eskillzserver.net/sendtransaction/v1/BuyNFT",
+        { Account: address, price: price, id: id, Type : "Card", UserID: uid}
+      );
+      console.log("response->", response.data);     
+      dispatch(homeActions.setBalance(address));
+      pendingArray[id] = 0;
+      eventEmit();  
+    }
+    catch{
+      pendingArray[id] = 0;
+      eventEmit();  
+      return;
+    }
+    
+  }
+  
+  async function cancelNft(id) {
+    try{  
+      const response = await axios.post(
+        "https://eskillzserver.net/sendtransaction/v1/CancellNFT",
+        { Account: address, id: id, Type : "Card", UserID: uid}
+      );
+      console.log("response->", response.data);     
+      dispatch(homeActions.setBalance(address));
+      pendingArray[id] = 0;
+      eventEmit();  
+    }
+    catch{
+      pendingArray[id] = 0;
+      eventEmit();  
+      return;
+    }
+   
+      
+  }
+  
+  function eventEmit() {
+    if(eventvariable == 0 ){
+      eventvariable++;
+      myEmitter.emit('event'+eventvariable);
+    }
+    
+  }
   myEmitter.on('event1', () => {
     setIsPending(1-isPending);
   });
@@ -133,7 +214,7 @@ const Card = (props) => {
               <span>{lastPrice+" MATIC"}</span>              
             </div>
             <div>
-                <Button id="upgrade" style = {{width : "10px",background : "#752f2f", width :"140px"}} >{pendingArray[itemId] == 2 ? "Pending": "Remove Cue"}</Button>
+                <Button id="upgrade" style = {{width : "10px",background : "#752f2f", width :"140px"}} >{pendingArray[itemId] == 2 ? "Pending": "Remove Card"}</Button>
                 
               </div>
             </>
@@ -165,7 +246,7 @@ const Card = (props) => {
                   <span>{lastPrice+" MATIC"}</span>              
               </div>
               <div>
-                <Button id="upgrade" style = {{width : "10px",background : "#752f2f", width :"140px"}} onClick={() => {eventvariable = 0;pendingArray[itemId] = 2;setIsPending(1-isPending);removeNft(itemId,tokenId);}}>Remove Cue</Button>
+                <Button id="upgrade" style = {{width : "10px",background : "#752f2f", width :"140px"}} onClick={() => {eventvariable = 0;pendingArray[itemId] = 2;setIsPending(1-isPending);removeNft(itemId,tokenId);}}>Remove Card</Button>
                 
               </div>
               </>
@@ -213,147 +294,6 @@ const Power = (props) => {
   )
 }
 
-async function sellNft(id,tokenID, price) {
-  try{
-    const { ethereum } = window;
-    if (ethereum) {
-      const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 80001){
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);  
-        let sendprice = ethers.utils.parseUnits(price.toString(), 'ether')       
-        try {
-          let nftTxn = await nftContract.approveAndListOnsSale(id, parseInt(sendprice._hex).toString(), tokenID,
-            {
-              value: ethers.utils.parseUnits("0.0025", 'ether')._hex,
-            }
-          );   
-          await nftTxn.wait(); 
-          //pendingArray[id] = 0;                
-          //eventEmit();            
-        } catch (err) {
-          pendingArray[id] = 0;
-          eventEmit();        
-          //Cards();
-          return {
-            error: err        
-          };
-        }   
-      }
-    } 
-  }
-  catch{
-    return;
-  }
-  
-}
-
-async function removeNft(id,tokenID) {
-  try{
-    const { ethereum } = window;
-    if (ethereum) {
-      const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 80001){
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);  
-        try {
-          let nftTxn = await nftContract.deleteNFT(id, tokenID);   
-          await nftTxn.wait(); 
-          //pendingArray[id] = 0;               
-          //eventEmit();            
-        } catch (err) {
-          pendingArray[id] = 0;
-          eventEmit();              
-          //Cues();
-          return {
-            error: err        
-          };
-        }   
-      }
-    }
-  }catch{
-    return;
-  }
-   
-}
-
-async function buyNft(id,price) {
-  try{
-    const { ethereum } = window;
-    if (ethereum) {
-      const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 80001){
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const contractMark = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
-        try {
-          let nftTxn = await contractMark.sellMarketItem(id, NFTcontractAddress, 
-            {
-              value: ethers.utils.parseUnits(price.toString(), 'ether')._hex,
-            }        
-          ); 
-          await nftTxn.wait();
-          //pendingArray[id] = 0;
-          //eventEmit();
-          //cards();
-        } catch (err) {
-          pendingArray[id] = 0;
-          eventEmit();
-          //cards();
-          return {
-            error: err        
-          };
-        }            
-      }   
-    }
-  }catch{
-    return;
-  }
-  
-}
-
-async function cancelNft(id) {
-  try{
-    const { ethereum } = window;
-    if (ethereum) {
-      const chainIDBuffer = await ethereum.networkVersion;
-      if(chainIDBuffer == 80001){
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const contractMark = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
-        try {
-          let nftTxn = await contractMark.listItemCancelOnSale(id, NFTcontractAddress); 
-          await nftTxn.wait();
-          //pendingArray[id] = 0;
-          //eventEmit();
-          //cards();
-        } catch (err) {
-          pendingArray[id] = 0;
-          eventEmit();
-          //cards();
-          return {
-            error: err        
-          };
-        }            
-      }   
-    }
-  }
-  catch{
-    return;
-  }
-  
-}
-
-function eventEmit() {
-  if(eventvariable == 0 ){
-    eventvariable++;
-    myEmitter.emit('event'+eventvariable);
-  }
-  
-}
-
 const Cards = (props) => {
   const classes = useStyles();
   const [nfts, setNfts] = useState([])
@@ -361,102 +301,59 @@ const Cards = (props) => {
   const [marketNftsOwned, setMarketNftsOwned] = useState([])
   const [loadingState, setLoadingState] = useState('not-loaded')
   const [loaded, setLoaded] = useState(0)
-  const [walletAddress, setWalletAddress] = useState(0)
-  var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
-  const {check, sortVal, connected} = props;
+  const [selected, setSelected] = React.useState(0);
+  const { uid, address } = useSelector(({ authReducer }) => authReducer.auth);
+  const { balance } = useSelector(({ homeReducer }) => homeReducer.home);
+  //var TokenContract = new web3.eth.Contract(NFTcontractABI,NFTcontractAddress);
+  const {check, sortVal} = props;
   
   if(loaded == 0){
     setLoaded(1);
-    TokenContract.events.Transfer((err, events)=>{
-      eventListened();      
-    });    
+    // TokenContract.events.Transfer((err, events)=>{
+    //   eventListened();      
+    // });    
   }
-  function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
+  // function sleep(ms) {
+  //   return new Promise((resolve) => {
+  //     setTimeout(resolve, ms);
+  //   });
+  // }
   async function eventListened() {
-    await sleep(15000);
-    try{
-      if (window.ethereum) {
-        try {
-          const addressArray = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          if (addressArray.length > 0) {
-            setWalletAddress(addressArray[0]);
-            loadNFTs(addressArray[0]);
-            loadMarketOwned(addressArray[0]);
-            loadMarket(addressArray[0]);
-          } 
-        } catch (err) {
-          return {
-            address: ""        
-          };
-        }
-      }
-    }
-    catch{
-      return;
-    }
-    
-    
+    // await sleep(15000);
+    //loadNFTs(address);
+    // loadMarketOwned(address);
+    // loadMarket(address);    
   }
 
   useEffect(() => {
-    getCurrentWalletConnected();
-  }, [])
+    if(balance.SportBal !=null){
 
-  async function getCurrentWalletConnected() {
-    try{
-      if (window.ethereum) {
-        try {
-          const addressArray = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          
-          if (addressArray.length > 0) {
-            setWalletAddress(addressArray[0]);
-            loadNFTs(addressArray[0]);
-            loadMarketOwned(addressArray[0]);
-            loadMarket(addressArray[0]);
-          } 
-        } catch (err) {
-          return {
-            address: ""        
-          };
-        }
-      }
+      init();
     }
-    catch{
-      return;
-    }
-     
+  }, [balance, address]);
+  async function init() {
+    loadNFTs(address);
+    loadMarketOwned(address);
+    loadMarket(address);
   };
 
   async function loadMarketOwned(userAddress) {
+
     try{
-      if(!check && connected){
-        const { ethereum } = window;
-        if (ethereum) {
-          const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 80001){
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const signer = provider.getSigner();
-            const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
-            const marketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
-            let data = await marketContract.fetchAllItemsOnSaleOfOwner(userAddress); 
+      if(!check){
+            
+            let data = await MarketContract.fetchAllItemsOnSaleOfOwner(userAddress); 
+            console.log(data); 
             const realItems = await Promise.all(data.map(async i => {
               let tokenUri;
               let meta;
               try{
-                tokenUri = await nftContract.tokenURI(i.tokenId);  
+                tokenUri = await NFTContract.tokenURI(i.tokenId);  
                 meta = await axios.get(tokenUri);
               } catch (err) {
                 return;
               }           
-              
+              console.log(meta);
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
               // let ownedMarketItem = i.owner == address ? 1 : 0;
@@ -525,8 +422,9 @@ const Cards = (props) => {
             }
             setMarketNftsOwned(items)          
             setLoadingState('loaded')        
-          }
-        } 
+          
+        
+        
       }
     } catch (err) {
       return;
@@ -536,26 +434,21 @@ const Cards = (props) => {
 
   async function loadMarket(userAddress) {
     try{
-      if(!check && connected){
-        const { ethereum } = window;
-        if (ethereum) {
-          const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 80001){
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const signer = provider.getSigner();
-            const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
-            const marketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
-            let data = await marketContract.fetchAllItemsOnSaleOfNotOwner(userAddress); 
+      if(!check){
+          
+
+            let data = await MarketContract.fetchAllItemsOnSaleOfNotOwner(userAddress); 
+            console.log(data); 
             const realItems = await Promise.all(data.map(async i => {
               let tokenUri;
               let meta;
               try{
-                tokenUri = await nftContract.tokenURI(i.tokenId);
+                tokenUri = await NFTContract.tokenURI(i.tokenId);
                 meta = await axios.get(tokenUri);
               } catch (err) {
                 return;
               }     
-              
+              console.log(meta);
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
               // let ownedMarketItem = i.owner == address ? 1 : 0;
@@ -620,41 +513,35 @@ const Cards = (props) => {
               }
               
             }
-            
             setMarketNfts(items)
             setLoadingState('loaded')        
-          }
-        } 
-      } 
+            
+          
+        
+      }
     } catch (err) {
       return;
     } 
-          
+           
   }
 
   async function loadNFTs(userAddress) { 
     try{
-      if(check && connected){
-        const { ethereum } = window;
-        if (ethereum) {
-          const chainIDBuffer = await ethereum.networkVersion;
-          if(chainIDBuffer == 80001){          
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const signer = provider.getSigner();
-            const nftContract = new ethers.Contract(NFTcontractAddress, NFTcontractABI, signer);
-            const marketContract = new ethers.Contract(MarketcontractAddress, MarketcontractABI, signer);
-            let data = await marketContract.fetchAllItemsOnUseOfOwner(userAddress);         
+      if(check){
+            
+            let data = await MarketContract.fetchAllItemsOnUseOfOwner(userAddress);   
+            console.log(data);      
             const realItems = await Promise.all(data.map(async i => {
               let tokenUri;
               let meta;
               try{
-                tokenUri = await nftContract.tokenURI(i.tokenId);  
+                tokenUri = await NFTContract.tokenURI(i.tokenId);  
                 
                 meta = await axios.get(tokenUri);
               } catch (err) {
                 return;
               } 
-              
+              console.log(meta);
               let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
               let lastPrice = ethers.utils.formatUnits(i.lastPrice.toString(), 'ether')
               //let price = parseInt(i.price);
@@ -703,7 +590,8 @@ const Cards = (props) => {
                 }
                 catch{
                   return 0;
-                }                
+                }
+                
               });
             }
             for (var i = 0; i < items.length; i++) {
@@ -722,18 +610,16 @@ const Cards = (props) => {
             
             setNfts(items)
             setLoadingState('loaded')
-          }
-        }  
+          
+        
       }
     } catch (err) {
       return;
     } 
-   
           
   }
 
-  const [selected, setSelected] = React.useState(0);
-  //const [showDescription, setShowDescription] = React.useState(0);
+    //const [showDescription, setShowDescription] = React.useState(0);
   //if (loadingState === 'loaded' && !nfts.length&&!marketNfts.length) return (<h1>No items in marketplace</h1>)
   return (
     <>

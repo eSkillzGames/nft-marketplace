@@ -1,35 +1,14 @@
 [
   {
-    "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
         "internalType": "address",
-        "name": "previousAdmin",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newAdmin",
+        "name": "_sport",
         "type": "address"
       }
     ],
-    "name": "AdminChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "beacon",
-        "type": "address"
-      }
-    ],
-    "name": "BeaconUpgraded",
-    "type": "event"
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "anonymous": false,
@@ -54,19 +33,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "version",
-        "type": "uint8"
-      }
-    ],
-    "name": "Initialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -83,28 +49,10 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "implementation",
-        "type": "address"
-      }
-    ],
-    "name": "Upgraded",
-    "type": "event"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_creator",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_joiner",
+        "name": "_sender",
         "type": "address"
       },
       {
@@ -158,11 +106,16 @@
       },
       {
         "internalType": "uint256",
+        "name": "gameID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       }
     ],
-    "name": "SendSportToContract",
+    "name": "JoinMPGame",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -176,11 +129,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_sender",
-        "type": "address"
-      },
       {
         "internalType": "uint256",
         "name": "GameID",
@@ -207,11 +155,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_sender",
-        "type": "address"
-      },
       {
         "internalType": "uint256",
         "name": "GameID",
@@ -321,38 +264,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_player",
-        "type": "address"
-      }
-    ],
-    "name": "getStakingAmountsOfPlayer",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract SPORT",
-        "name": "_sport",
-        "type": "address"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "minBetAmounts",
     "outputs": [
@@ -373,19 +284,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "proxiableUUID",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -425,32 +323,26 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_sport",
+        "type": "address"
+      }
+    ],
+    "name": "setSportAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "sport",
     "outputs": [
       {
-        "internalType": "contract SPORT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "name": "staking",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -484,50 +376,6 @@
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newImplementation",
-        "type": "address"
-      }
-    ],
-    "name": "upgradeTo",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newImplementation",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "upgradeToAndCall",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withDrawSportFromContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

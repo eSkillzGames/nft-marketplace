@@ -193,6 +193,7 @@
         @media (max-width: 600px) {
             margin-top: -60px;
         }
+        
     }
     .token_buy_container {
         @media (max-width: 1023px) {
@@ -216,11 +217,5 @@
             }
         }
     }
-    .calc_container {
-        display: none;
-        @media (max-width: 1023px) {
-            margin-top: 2rem;
-            display: block;
-        }
-    }
+    
 }
