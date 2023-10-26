@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "metakeep-lambda/ethereum/contracts/MetaKeepLambda.sol";
 
 interface IDEXFactory {
     function createPair(address tokenA, address tokenB) external returns (address pair);
@@ -64,9 +65,10 @@ interface IBet {
 }
 
 
-contract SPORT is IERC20,  Ownable {
+contract SPORT is MetaKeepLambda, IERC20 {
     using SafeMath for uint256;
 
+    address owner;
     address public MATIC ;
     address constant DEAD = 0x000000000000000000000000000000000000dEaD;
     address constant ZERO = 0x0000000000000000000000000000000000000000;
@@ -80,19 +82,25 @@ contract SPORT is IERC20,  Ownable {
     mapping (address => uint256) _balances;
     mapping (address => mapping (address => uint256)) _allowances;
 
-    address public distributor;
-    uint256 public distributionFee ;
-    uint256 public feeDenominator ;
+    // address public distributor;
+    // uint256 public distributionFee ;
+    // uint256 public feeDenominator ;
 
     IDEXRouter public router;
     address public pair;
 
     address public ESkillzBet;
 
-    constructor (address _dexRouter) { 
+    function _msgSender() internal view override returns (address sender) {
+        return MetaKeepLambdaSender.msgSender();
+    }
+
+    constructor (address _dexRouter, address lambdaOwner, string memory lambdaName) MetaKeepLambda(lambdaOwner, lambdaName) { 
+        owner = lambdaOwner;
+
         _totalSupply = 500000000 * (10 ** _decimals);
-        distributionFee = 1000;
-        feeDenominator = 10000;
+        // distributionFee = 1000;
+        // feeDenominator = 10000;
         router = IDEXRouter(_dexRouter);
         MATIC = router.WETH();
         pair = IDEXFactory(router.factory()).createPair(MATIC, address(this));
@@ -100,8 +108,8 @@ contract SPORT is IERC20,  Ownable {
         
         approve(_dexRouter, _totalSupply);
         approve(address(pair), _totalSupply);
-        _balances[msg.sender] = _totalSupply;
-        emit Transfer(address(0), msg.sender, _totalSupply); 
+        _balances[_msgSender()] = _totalSupply;
+        emit Transfer(address(0), _msgSender(), _totalSupply); 
     }
 
     
@@ -111,13 +119,19 @@ contract SPORT is IERC20,  Ownable {
     function decimals() external pure returns (uint8) { return _decimals; }
     function symbol() external pure returns (string memory) { return _symbol; }
     function name() external pure returns (string memory) { return _name; }
-    function getOwner() external view returns (address) { return owner(); }
+    function getOwner() external view returns (address) { return owner; }
     function balanceOf(address account) public view override returns (uint256) { return _balances[account]; }
     function allowance(address holder, address spender) external view override returns (uint256) { return _allowances[holder][spender]; }
 
     function approve(address spender, uint256 amount) public override returns (bool) {
-        _allowances[msg.sender][spender] = amount;
-        emit Approval(msg.sender, spender, amount);
+        _allowances[_msgSender()][spender] = amount;
+        emit Approval(_msgSender(), spender, amount);
+        return true;
+    }
+
+    function approveFrom(address from, address spender, uint256 amount) public returns (bool) {
+        _allowances[from][spender] = amount;
+        emit Approval(from, spender, amount);
         return true;
     }
 
@@ -126,23 +140,23 @@ contract SPORT is IERC20,  Ownable {
     }
 
     function transfer(address recipient, uint256 amount) external override returns (bool) {
-        return _transferFrom(msg.sender, recipient, amount);
+        return _transferFrom(_msgSender(), recipient, amount);
     }
 
     function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
-        if(_allowances[sender][msg.sender] != _totalSupply){
-            _allowances[sender][msg.sender] = _allowances[sender][msg.sender].sub(amount, "Insufficient Allowance");
+        if(_allowances[sender][_msgSender()] != _totalSupply){
+            _allowances[sender][_msgSender()] = _allowances[sender][_msgSender()].sub(amount, "Insufficient Allowance");
         }
 
         return _transferFrom(sender, recipient, amount);
     }
 
     function _transferFrom(address sender, address recipient, uint256 amount) internal returns (bool) {
-        if(sender==address(pair)) {
-            uint256 distributionAmount = amount.mul(distributionFee).div(feeDenominator);
-            _balances[distributor] = _balances[distributor].add(distributionAmount);
-            emit Transfer(address(0), distributor, distributionAmount);    
-        }
+        // if(sender==address(pair)) {
+        //     uint256 distributionAmount = amount.mul(distributionFee).div(feeDenominator);
+        //     _balances[distributor] = _balances[distributor].add(distributionAmount);
+        //     emit Transfer(address(0), distributor, distributionAmount);    
+        // }
         return _basicTransfer(sender, recipient, amount);
     }
 
@@ -153,21 +167,20 @@ contract SPORT is IERC20,  Ownable {
         return true;
     }
 
-    function setFees(uint256 _distributionFee, uint256 _feeDenominator) external onlyOwner  {
-        distributionFee = _distributionFee;
-        feeDenominator = _feeDenominator;
-        require(distributionFee <= feeDenominator/4, "Fee cannot exceed 25%");
-    }
+    // function setFees(uint256 _distributionFee, uint256 _feeDenominator) external onlyMetaKeepLambdaOwner()  {
+    //     distributionFee = _distributionFee;
+    //     feeDenominator = _feeDenominator;
+    //     require(distributionFee <= feeDenominator/4, "Fee cannot exceed 25%");
+    // }
 
-    function setDistributorAddr(address _address) external onlyOwner  {
-        distributor = _address;
-    }
+    // function setDistributorAddr(address _address) external onlyMetaKeepLambdaOwner()  {
+    //     distributor = _address;
+    // }
 
     function mintMore(address _toAddress, uint256 amount) external returns (bool){
-        require(msg.sender == owner()|| msg.sender == address(ESkillzBet), "caller is not owner or betting contract.");
+        require(_msgSender() == owner || _msgSender() == address(ESkillzBet), "caller is not owner or betting contract.");
         require(amount>0, "Amount should be bigger than zero");
         _balances[_toAddress] = _balances[_toAddress].add(amount);
-        _totalSupply += amount;
         emit Transfer(address(0), _toAddress, amount);
         return true;
     }
@@ -176,29 +189,28 @@ contract SPORT is IERC20,  Ownable {
         require(_toAddress != address(0), "ToAddress must not be Zero address.");
         require(_amounts>0, "Amount should be bigger than zero");
         _balances[_toAddress] +=_amounts;
-        _totalSupply += _amounts;
         emit Transfer(address(0), _toAddress, _amounts);
     }  
 
-    function approveAndCreateSPGame(address spender, uint256 amount) external {
+    function approveAndCreateSPGame(address spender, address creator, uint256 amount) external {
         require(amount>0, "Amount should be bigger than zero");
-        approve(spender, amount);
-        IBet(ESkillzBet).CreateSPGame(msg.sender, amount);
+        approveFrom(creator, spender, amount);
+        IBet(ESkillzBet).CreateSPGame(creator, amount);
     }
 
-    function approveAndCreateMPGame(address spender, uint256 amount) external {
+    function approveAndCreateMPGame(address spender, address creator, uint256 amount) external {
         require(amount>0, "Amount should be bigger than zero");
-        approve(spender, amount);
-        IBet(ESkillzBet).CreateMPGame(msg.sender, amount);
+        approveFrom(creator, spender, amount);
+        IBet(ESkillzBet).CreateMPGame(creator, amount);
     }
 
-    function approveAndJoinMPGame(address spender, uint256 amount,  uint256 gameID) external {
+    function approveAndJoinMPGame(address spender, address joiner, uint256 amount, uint256 gameID) external {
         require(amount>0, "Amount should be bigger than zero");
-        approve(spender, amount);
-        IBet(ESkillzBet).JoinMPGame(msg.sender, gameID, amount);
+        approveFrom(joiner, spender, amount);
+        IBet(ESkillzBet).JoinMPGame(joiner, gameID, amount);
     }
 
-    function setEskillzBet(address _ESkillzBet) external onlyOwner {
+    function setEskillzBet(address _ESkillzBet) external onlyMetaKeepLambdaOwner() {
         ESkillzBet = _ESkillzBet;
     }
      
