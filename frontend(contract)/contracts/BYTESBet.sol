@@ -31,19 +31,18 @@ interface ISport {
     function mintMore(address _toAddress, uint256 amount) external returns (bool);
 }
 
-contract ESkillzStraightBet is MetaKeepLambda {
+contract BYTESBet {
     using SafeMath for uint256;
 
     address owner;
 
     uint256 public GameIDs;
     uint256 public minBetAmounts;
-    address public sport;
+    address public BYTES;
     struct Bet {
         address player;
         uint256 amount;
         uint256 gameType; // sp 0, mp 1
-        uint256 betType; // sport 0, other 1, nft 2
     }
     
     mapping(uint256 => Bet[]) public gamebetting;

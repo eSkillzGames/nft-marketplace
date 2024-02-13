@@ -6,33 +6,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-interface INFTMarket {
-    function createMarketItemFromNFTContract(
-        uint256 tokenId,
-        address _owner
-    ) external;
-
-    function getListingPrice() external view returns (uint256);
-
-    function getIdToMarketItemOwner(
-        uint itemId
-    ) external view returns (address);
-
-    function getIdToMarketItemTokenID(uint itemId) external view returns (uint);
-
-    function owner() external view returns (address);
-
-    function calcEarnedFeeAmounts(uint256 amount) external;
-
-    function listItemOnSaleFromNFTContract(
-        uint itemId,
-        uint price,
-        address _owner
-    ) external payable;
-
-    function deleteMarketItem(uint256 itemId) external;
-}
-
 contract VersusX721 is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -55,10 +28,6 @@ contract VersusX721 is ERC721URIStorage, Ownable {
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, uri);
         setApprovalForAll(MarketAddress, true);
-        INFTMarket(MarketAddress).createMarketItemFromNFTContract(
-            newItemId,
-            msg.sender
-        );
         return newItemId;
     }
 
@@ -72,10 +41,6 @@ contract VersusX721 is ERC721URIStorage, Ownable {
         _mint(to, newItemId);
         _setTokenURI(newItemId, uri);
         setApprovalForAll(MarketAddress, true);
-        INFTMarket(MarketAddress).createMarketItemFromNFTContract(
-            newItemId,
-            to
-        );
         return newItemId;
     }
 

@@ -108,9 +108,9 @@ contract ESkillzStraightBet is MetaKeepLambda {
         emit BetEvent(GameIDs, amount);
     }
     
-    function SetSPGameResult(address winner, uint256 GameID, uint256 result, uint256 reduction_fee) external {
+    function SetSPGameResult(address winner, uint256 GameID, uint256 result) external {
         
-        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsSPGameToDistribute(GameID, reduction_fee);
+        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsSPGameToDistribute(GameID);
         require(gamebetting[GameID][0].player == winner, "Other Players can not access.");
         require(gamebetting[GameID][0].gameType == 0, "You can set the SP game only");
         require(ISport(sport).balanceOf(address(this)) >= gamebetting[GameID][0].amount, "Dport Balance of Bet contract is not enough.");
@@ -129,8 +129,8 @@ contract ESkillzStraightBet is MetaKeepLambda {
         }
         delete(gamebetting[GameID]);
     }
-    function SetSPGameResultByToken(address winner, uint256 GameID, uint256 result, uint256 reduction_fee) external {       
-        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsSPGameToDistribute(GameID, reduction_fee);
+    function SetSPGameResultByToken(address winner, uint256 GameID, uint256 result) external {       
+        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsSPGameToDistribute(GameID);
         require(gamebetting[GameID][0].player == winner, "Other Players can not access.");
         require(gamebetting[GameID][0].gameType == 0, "You can set the SP game only");
         require(gamebetting[GameID][0].betType == 1, "You can set the SP game only");
@@ -197,8 +197,8 @@ contract ESkillzStraightBet is MetaKeepLambda {
         emit BetEvent(gameID, amount);
     }
 
-    function SetMPGameResult(address winner, uint256 GameID, uint reduction_fee) external {
-        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsMPGameToDistribute(GameID, reduction_fee);
+    function SetMPGameResult(address winner, uint256 GameID) external {
+        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsMPGameToDistribute(GameID);
         require(gamebetting[GameID][0].gameType == 1 && gamebetting[GameID][1].gameType == 1, "You can set the MP game only");
         require(winner == gamebetting[GameID][0].player || winner == gamebetting[GameID][1].player, "msg sender must includes in this game");
         require(ISport(sport).balanceOf(address(this)) >= gamebetting[GameID][0].amount *2, "Dport Balance of Bet contract is not enough.");
@@ -231,8 +231,8 @@ contract ESkillzStraightBet is MetaKeepLambda {
         delete(gamebetting[GameID]);
     }
 
-    function SetMPGameResultByToken(address winner, uint256 GameID, uint256 reduction_fee) external {
-        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsMPGameToDistribute(GameID, reduction_fee);
+    function SetMPGameResultByToken(address winner, uint256 GameID) external {
+        (uint256 amountToWinner,uint256 amountToESkillz) = getAmountsMPGameToDistribute(GameID);
         require(gamebetting[GameID][0].gameType == 1 && gamebetting[GameID][1].gameType == 1, "You can set the MP game only");
         require(winner == gamebetting[GameID][0].player || winner == gamebetting[GameID][1].player, "msg sender must includes in this game");
         require(ISport(sport).balanceOf(address(this)) >= gamebetting[GameID][0].amount *2, "Dport Balance of Bet contract is not enough.");
@@ -245,14 +245,14 @@ contract ESkillzStraightBet is MetaKeepLambda {
         delete(gamebetting[GameID]);
     }
 
-    function getAmountsSPGameToDistribute(uint256 game, uint256 reduction_fee) private view returns (uint256, uint256) {
-        uint256 amountToESkillz = gamebetting[game][0].amount * (eskillz_fee - eskillz_fee * (reduction_fee / 100)) / 10000;
+    function getAmountsSPGameToDistribute(uint256 game) private view returns (uint256, uint256) {
+        uint256 amountToESkillz = gamebetting[game][0].amount*eskillz_fee/10000;
         uint256 amountToWinner = gamebetting[game][0].amount - amountToESkillz;
         return(amountToWinner, amountToESkillz);
     }
 
-    function getAmountsMPGameToDistribute(uint256 game, uint256 reduction_fee) private view returns (uint256, uint256) {
-        uint256 amountToESkillz = gamebetting[game][0].amount * (eskillz_fee - eskillz_fee * (reduction_fee / 100)) / 10000;
+    function getAmountsMPGameToDistribute(uint256 game) private view returns (uint256, uint256) {
+        uint256 amountToESkillz = gamebetting[game][0].amount*eskillz_fee/10000;
         uint256 amountToWinner = 2 * gamebetting[game][0].amount - amountToESkillz;
         return(amountToWinner, amountToESkillz);
     }   
