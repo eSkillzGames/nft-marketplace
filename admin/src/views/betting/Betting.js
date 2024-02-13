@@ -212,19 +212,19 @@ const Betting = () => {
             }
           } catch (err) {
               // This error code indicates that the chain has not been added to MetaMask.
-            if (err.code === 4902) {
-              await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                  {
-                    chainName: 'Ropsten TestNet',
-                    chainId: web3.utils.toHex(chainId),
-                    nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
-                    rpcUrls: ['https://ropsten.infura.io/v3/'],
-                  },
-                ],
-              });
-            }
+            // if (err.code === 4902) {
+            //   await window.ethereum.request({
+            //     method: 'wallet_addEthereumChain',
+            //     params: [
+            //       {
+            //         chainName: 'Ropsten TestNet',
+            //         chainId: web3.utils.toHex(chainId),
+            //         nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+            //         rpcUrls: ['https://ropsten.infura.io/v3/'],
+            //       },
+            //     ],
+            //   });
+            // }
           }
         }
         else{

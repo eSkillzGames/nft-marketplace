@@ -24,7 +24,6 @@ import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
-const baseURL = ''
 
 const AppHeaderDropdown = () => {
   return (
@@ -86,7 +85,7 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownDivider /> */}
-        <CDropdownItem href={baseURL + "/logout"}>
+        <CDropdownItem href={process.env.REACT_APP_BASE_URL + "/logout"}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Lock Account
         </CDropdownItem>

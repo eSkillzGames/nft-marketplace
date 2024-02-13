@@ -13,9 +13,6 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser, cilEnvelopeClosed } from '@coreui/icons'
-
-const baseURL = ''
-
 const Login = () => {
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
@@ -24,7 +21,7 @@ const Login = () => {
           <CCol md={4}>
             <CCard className="p-4">
               <CCardBody>
-                <CForm action={baseURL + "/login"} method="post">
+                <CForm action={process.env.REACT_APP_BASE_URL + "/login"} method="post">
                   <h1>Login</h1>
                   <p className="text-medium-emphasis">Sign In to your account</p>
                   <CInputGroup className="mb-3">

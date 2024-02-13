@@ -14,8 +14,6 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser, cilEnvelopeClosed } from '@coreui/icons'
 
-const baseURL = ''
-
 const VerifyCode = () => {
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
@@ -24,7 +22,7 @@ const VerifyCode = () => {
           <CCol md={4}>
             <CCard className="p-4">
               <CCardBody>
-                <CForm action={baseURL + "/verifycode"} method="post">
+                <CForm action={process.env.REACT_APP_BASE_URL + "/verifycode"} method="post">
                   <h1>Verify Code</h1>
                   <p className="text-medium-emphasis">Please check your email and paste verify code to following input. If you haven't got verify code yet, please wait.</p>
                   <CInputGroup className="mb-3">

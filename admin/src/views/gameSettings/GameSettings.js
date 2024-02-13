@@ -7,7 +7,7 @@ import {
 import { initializeApp } from "firebase/app";
 
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, getDocs ,doc, addDoc,setDoc,updateDoc} from 'firebase/firestore';
+import { getFirestore, collection, getDocs ,doc, addDoc,setDoc,updateDoc, getDoc} from 'firebase/firestore';
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
@@ -52,6 +52,9 @@ const GameSettings = () => {
   const [ballCount2, setBallCount2] = useState("");
   const [ballCount3, setBallCount3] = useState("");
   const [timer0, setTimer0] = useState("");
+  const [prizePercentage, setPrizePercentage] = useState(0);
+  const [prizeAddress, setPrizeAddress] = useState("");
+  const [feeNFTBetting, setFeeNFTBetting] = useState(0);
   //const analytics = getAnalytics(app);
   // const database = getDatabase(app);
   //console.log(db);
@@ -61,7 +64,17 @@ const GameSettings = () => {
   }, [])
 
   async function init() {
-    
+    let prizedoc = await getDoc(doc(db, "eskillzGeneral", "PrizeSettings"));
+    if(prizedoc.exists()){
+      setPrizeAddress(prizedoc.data()["address"]);
+      setPrizePercentage(prizedoc.data()["percentage"]);
+    }
+
+    let nftBettingDoc = await getDoc(doc(db, "eskillzGeneral", "NFTBetting"));
+    if(nftBettingDoc.exists()){
+      setFeeNFTBetting(nftBettingDoc.data()["fee"]);
+    }
+
     const subColRef = collection(db, "eskillzpool", "GameSettings", "ArcadeMode");
    
     const qSnap = await getDocs(subColRef)
@@ -110,6 +123,36 @@ const GameSettings = () => {
     await updateDoc(doc(db, "eskillzpool", "GameSettings", "ArcadeMode","ColourPool"), {Timer : Number(timer0)> 0 ? Number(timer0) : timer});
     init();
     setTimer0("");
+  }
+
+  async function setPrizeInfo(){
+    if(prizePercentage == 0 || prizeAddress == ""){
+      alert("Please input perceange and address.")
+      return ;
+    }
+    let prizedoc = await getDoc(doc(db, "eskillzGeneral", "PrizeSettings"));
+    if(prizedoc.exists()){
+      await updateDoc(doc(db, "eskillzGeneral", "PrizeSettings"), {percentage: prizePercentage, address: prizeAddress});
+    }else{
+      await setDoc(doc(db, "eskillzGeneral", "PrizeSettings"), {percentage: prizePercentage, address: prizeAddress});
+    }
+    init();    
+    setPrizePercentage("0");
+    setPrizeAddress("");
+  }
+
+  async function setFeeForNFTBetting(){
+    if(feeNFTBetting == 0 || feeNFTBetting == ""){
+      alert("Please input fee correctly.")
+      return ;
+    }
+    let prizedoc = await getDoc(doc(db, "eskillzGeneral", "NFTBetting"));
+    if(prizedoc.exists()){
+      await updateDoc(doc(db, "eskillzGeneral", "NFTBetting"), {fee: feeNFTBetting});
+    }else{
+      await setDoc(doc(db, "eskillzGeneral", "NFTBetting"), {fee: feeNFTBetting});
+    }
+    init();
   }
 
   return (
@@ -223,7 +266,7 @@ const GameSettings = () => {
                   value = {winPercentage.length} 
               />              
             </CCol>  */}
-            <CCol xs={3}>            
+            <CCol xs={3}>
               <CFormLabel htmlFor="exampleFormControlInput1">Win Percentage :</CFormLabel>
             </CCol>
             <CCol xs={1}>            
@@ -279,6 +322,57 @@ const GameSettings = () => {
               <CButton onClick={() => setWinPercent()}>Set Win Percent</CButton>
             </CCol> 
           </CRow>                 
+        </CCardBody>
+      </CCard> 
+
+      <CCard className="mb-4">
+        <CCardHeader>Prize Percentage & Address</CCardHeader>
+        <CCardBody>   
+          <CRow className='mb-2'>
+            <CCol xs={2}>            
+              <CFormLabel htmlFor="exampleFormControlInput1">Percentage:</CFormLabel>
+            </CCol>  
+            <CCol xs={2}>  
+              <CFormInput type="number" size="sm" placeholder = {"%"}
+                  value = {prizePercentage} 
+                  onChange={(event) => {Number(event.target.value) >= 0 && Number(event.target.value)<= 100 ? setPrizePercentage(event.target.value) : 0}}
+              />           
+            </CCol>
+          </CRow>
+          <CRow>
+            <CCol xs={2}>            
+              <CFormLabel htmlFor="exampleFormControlInput1">Address:</CFormLabel>
+            </CCol>  
+            <CCol xs={2}>  
+              <CFormInput type="text" size="sm" placeholder = {"Address"}
+                  value = {prizeAddress} 
+                  onChange={(event) => {setPrizeAddress(event.target.value)}}
+              />           
+            </CCol>             
+            <CCol xs={3}>   
+              <CButton onClick={() => setPrizeInfo()}>Save</CButton>
+            </CCol> 
+          </CRow>              
+        </CCardBody>
+      </CCard> 
+
+      <CCard className="mb-4">
+        <CCardHeader>NFT Betting</CCardHeader>
+        <CCardBody>
+          <CRow>
+            <CCol xs={2}>            
+              <CFormLabel htmlFor="exampleFormControlInput1">Fee:</CFormLabel>
+            </CCol>  
+            <CCol xs={2}>  
+              <CFormInput type="number" size="sm" placeholder = {"10"}
+                  value = {feeNFTBetting} 
+                  onChange={(event) => {setFeeNFTBetting(event.target.value)}}
+              />           
+            </CCol>             
+            <CCol xs={3}>   
+              <CButton onClick={() => setFeeForNFTBetting()}>Save</CButton>
+            </CCol> 
+          </CRow>              
         </CCardBody>
       </CCard> 
       

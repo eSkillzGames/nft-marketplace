@@ -1,24 +1,15 @@
-import React from "react";
-import {
-  Button,
-  FormControlLabel,
-  Checkbox,
-  makeStyles,
-  LinearProgress,
-} from "@material-ui/core";
-import styles from "./style";
-import { useEffect, useState } from "react";
-import { Directions } from "@material-ui/icons";
-import { element } from "prop-types";
-import { ethers, providers } from "ethers";
-import { useDispatch, useSelector } from "react-redux";
-// import * as homeActions from "../../pages/home/store/actions";
-import { Select, MenuItem, InputBase, CircularProgress } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import React from 'react'
+import { Button, FormControlLabel, Checkbox, makeStyles, LinearProgress } from '@material-ui/core'
+import styles from './style'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { Directions } from '@material-ui/icons'
+import { element } from 'prop-types'
+import { ethers, providers } from 'ethers'
+import { Select, MenuItem, InputBase, CircularProgress } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
-const { default: axios } = require("axios");
-
-const { EventEmitter } = require("events");
+const { EventEmitter } = require('events')
 
 // import { useRouter } from 'next/router';
 // import Router from 'next/router'
@@ -45,97 +36,49 @@ const API_URL = "https://versusxapi.net";
 const PAGE_SIZE = 10
 const METAKEEP_DEV = '0x141a7ca9b5435377EdCf9438e1253DDB968EBf89'
 
-const providerR = new ethers.providers.JsonRpcProvider(
-  "https://rpc-mumbai.maticvigil.com"
-);
-// const providerW = new ethers.providers.JsonRpcProvider("https://polygon-mumbai.infura.io/v3/" + process.env.REACT_APP_INFURAID);
-const NFTContract = new ethers.Contract(
-  NFTcontractAddress,
-  NFTcontractABI,
-  providerR
-);
-const MarketContract = new ethers.Contract(
-  MarketcontractAddress,
-  MarketcontractABI,
-  providerR
-);
-const useStyles = makeStyles(styles);
-
-const myEmitter = new EventEmitter();
-let eventvariable = 1;
-var repeatMarkOwnedCheck = new Array(100000);
-var repeatOwnedCheck = new Array(100000);
-var repeatMarkCheck = new Array(100000);
+const useStyles = makeStyles(styles)
 
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
-  "label + &": {
+  'label + &': {
     marginTop: theme.spacing(3),
   },
-  "& .MuiInputBase-input": {
+  '& .MuiInputBase-input': {
     borderRadius: 4,
-    position: "relative",
-    backgroundColor: "#00748d",
-    border: "1px solid #00748d",
-    color: "white",
+    position: 'relative',
+    backgroundColor: '#00748d',
+    border: '1px solid #00748d',
+    color: 'white',
     fontSize: 16,
-    padding: "10px 26px 10px 12px",
-    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    padding: '10px 26px 10px 12px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
     // Use the system font instead of the default Roboto font.
-    fontFamily: [
-      "-apple-system",
-      "BlinkMacSystemFont",
-      '"Segoe UI"',
-      "Roboto",
-      '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(","),
-    "&:focus": {
+    fontFamily: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"'].join(','),
+    '&:focus': {
       borderRadius: 4,
-      borderColor: "#009bb9",
-      boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
+      borderColor: '#009bb9',
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
     },
   },
-  "& .MuiSelect-icon": {
-    color: "white",
+  '& .MuiSelect-icon': {
+    color: 'white',
   },
-}));
+}))
 
-const Cue = (props) => {
-  const classes = useStyles();
-  const [sellprice, setPrice] = useState("");
-  const [isPending, setIsPending] = useState(0);
-  const [showDescrit, setShowDescrit] = useState(0);
-  const {
-    name,
-    description,
-    itemId,
-    tokenId,
-    level,
-    owned,
-    image,
-    strength,
-    accuracy,
-    control,
-    freeItemDropChance,
-    isActive,
-    price,
-    lastPrice,
-    isAuto,
-    isSelected,
-    count,
-    check,
-    collection,
-    ...rest
-  } = props;
-  const imgRef = React.useRef(null);
-  const [size, setSize] = useState({});
-  // const { uid, address } = useSelector(({ authReducer }) => authReducer.auth);
-  // const { balance } = useSelector(({ homeReducer }) => homeReducer.home);
-  // const dispatch = useDispatch();
+const myEmitter = new EventEmitter()
+let eventvariable = 1
+var repeatMarkOwnedCheck = new Array(100000)
+var repeatOwnedCheck = new Array(100000)
+var repeatMarkCheck = new Array(100000)
+
+const GeneralNFT = (props) => {
+  const classes = useStyles()
+  const [sellprice, setPrice] = useState('')
+  const [isPending, setIsPending] = useState(0)
+  const [showDescrit, setShowDescrit] = useState(0)
+  const { adminWallet, collection, name, description, itemId, tokenId, level, owned, image, strength, accuracy, control, freeItemDropChance, isActive, price, lastPrice, isAuto, isSelected, count, check, ...rest } = props
+  const imgRef = React.useRef(null)
+  const [size, setSize] = useState({})
+
   async function sellNft(id, tokenID, price) {
     try {
       const response = await axios.post(
@@ -243,29 +186,26 @@ const Cue = (props) => {
     }
   }
 
-  myEmitter.on("event1", () => {
-    setIsPending(1 - isPending);
-  });
+  myEmitter.on('event1', () => {
+    setIsPending(1 - isPending)
+  })
   function showDescription(e) {
-    setShowDescrit(1);
+    setShowDescrit(1)
   }
   function hideDescription(e) {
-    setShowDescrit(0);
+    setShowDescrit(0)
   }
-  var countReal = 0;
+  var countReal = 0
   if (check == 0) {
-    countReal = repeatOwnedCheck[count];
+    countReal = repeatOwnedCheck[count]
   } else if (check == 1) {
-    countReal = repeatMarkOwnedCheck[count];
+    countReal = repeatMarkOwnedCheck[count]
   } else {
-    countReal = repeatMarkCheck[count];
+    countReal = repeatMarkCheck[count]
   }
   if (countReal > 0) {
     return (
-      <div
-        className={`${classes.cue} ${isSelected ? classes.selected_cue : ""}`}
-        {...rest}
-      >
+      <div className={`${classes.cue} ${isSelected ? classes.selected_cue : ''}`} {...rest}>
         <div className="first-div">
           <div>
             <h3 onMouseOver={showDescription} onMouseOut={hideDescription}>
@@ -273,55 +213,34 @@ const Cue = (props) => {
             </h3>
             <div>
               <p>{level} Level</p>
-              <LinearProgress variant="determinate" value={level} />
+              <LinearProgress variant="determinate" value={Number(level || "0")} />
             </div>
           </div>
-          <h4
-            style={{ textAlign: "center", padding: "4px 0px", margin: "0px" }}
-          >
-            {" "}
-            {showDescrit == 1 ? description : ""}
-          </h4>
-          <div style={{ maxWidth: "400px", maxHeight: "30px" }}>
+          <h4 style={{ textAlign: 'center', padding: '4px 0px', margin: '0px' }}> {showDescrit == 1 ? description : ''}</h4>
+          <div style={{ maxWidth: '400px', maxHeight: '30px' }}>
             <img
               ref={imgRef}
               src={image}
               alt=""
               style={{ width: size.width, height: size.height }}
               onLoad={(event) => {
-                if (
-                  event.target.naturalHeight / event.target.naturalWidth >
-                  30 / 400
-                ) {
+                if (event.target.naturalHeight / event.target.naturalWidth > 30 / 400) {
                   setSize({
                     height: 30,
-                    width:
-                      (event.target.naturalWidth * 30) /
-                      event.target.naturalHeight,
-                  });
+                    width: (event.target.naturalWidth * 30) / event.target.naturalHeight,
+                  })
                 } else {
                   setSize({
-                    height:
-                      (event.target.naturalHeight * 400) /
-                      event.target.naturalWidth,
+                    height: (event.target.naturalHeight * 400) / event.target.naturalWidth,
                     width: 400,
-                  });
+                  })
                 }
               }}
             />
           </div>
         </div>
         <div>
-          <span
-            style={{
-              margin: "0px 50%",
-              color: "white",
-              fontSize: "20px",
-              paddingTop: "30px",
-            }}
-          >
-            {countReal > 1 ? countReal : ""}
-          </span>
+          <span style={{ margin: '0px 50%', color: 'white', fontSize: '20px', paddingTop: '30px' }}>{countReal > 1 ? countReal : ''}</span>
         </div>
         <div>
           <Power power={strength} label="Strength" />
@@ -331,41 +250,20 @@ const Cue = (props) => {
         </div>
         <div>
           {pendingArray[itemId] > 0 ? (
-            <div style={{ flexDirection: "column", alignItems: "center" }}>
+            <div style={{ flexDirection: 'column', alignItems: 'center' }}>
               {isActive ? (
                 <>
                   <div>
-                    <Button
-                      id="upgrade"
-                      style={{ width: "10px" }}
-                      onClick={() => { }}
-                    >
-                      {pendingArray[itemId] == 1 ? "Pending" : "Sell"}
+                    <Button id="upgrade" style={{ width: '10px' }} onClick={() => { }}>
+                      {pendingArray[itemId] == 1 ? 'Pending' : 'Sell'}
                     </Button>
-                    <input
-                      type="text"
-                      placeholder="0.00"
-                      value={""}
-                      style={{
-                        width: "50px",
-                        height: "20px",
-                        margin: "5px 5px",
-                      }}
-                    />
-                    <label
-                      style={{
-                        width: "30px",
-                        height: "20px",
-                        margin: "5px 0px",
-                      }}
-                    >
-                      {"MATIC"}
-                    </label>
+                    <input type="text" placeholder="0.00" value={''} style={{ width: '50px', height: '20px', margin: '5px 5px' }} />
+                    <label style={{ width: '30px', height: '20px', margin: '5px 0px' }}>{'MATIC'}</label>
                   </div>
-                  <div style={{ paddingTop: "5px" }}>
-                    <span>{"Last Price : "}</span>
+                  <div style={{ paddingTop: '5px' }}>
+                    <span>{'Last Price : '}</span>
                     <img src="/images/token.png" alt="" />
-                    <span>{lastPrice + " MATIC"}</span>
+                    <span>{lastPrice + ' MATIC'}</span>
                   </div>
                   <div>
                     <Button id="upgrade" style={{ width: '10px', background: '#752f2f', width: '140px' }}>
@@ -377,7 +275,7 @@ const Cue = (props) => {
                 <Button id="buy">
                   Pending
                   <img src="/images/token.png" alt="" />
-                  <span>{price + " MATIC"}</span>
+                  <span>{price + ' MATIC'}</span>
                 </Button>
               )}
             </div>
@@ -390,6 +288,7 @@ const Cue = (props) => {
                       id="upgrade"
                       style={{ width: '10px' }}
                       onClick={() => {
+                        console.log(sellprice);
                         if (Number(sellprice) > 0) {
                           eventvariable = 0
                           pendingArray[itemId] = 1
@@ -483,7 +382,7 @@ const Power = (props) => {
   )
 }
 
-const Cues = (props) => {
+const GeneralNFTs = (props) => {
   const classes = useStyles()
   const [nfts, setNfts] = useState([])
   const [marketNfts, setMarketNfts] = useState([])
@@ -492,10 +391,9 @@ const Cues = (props) => {
   const [loaded, setLoaded] = useState(0)
   const [walletAddress, setWalletAddress] = useState(0)
   var TokenContract = new web3.eth.Contract(NFTcontractABI, NFTcontractAddress)
-  const { check, sortVal, connected, provider, collection } = props
+  const { check, sortVal, connected, provider, collection, adminWallet } = props
 
   const [page, setPage] = useState(1)
-  const [totalPage, setTotalPage] = useState(5);
   const [pageArray, setPageArray] = useState([])
 
   if (loaded == 0) {
@@ -1027,8 +925,9 @@ const Cues = (props) => {
           {check === 1 &&
             nfts.map((cue, index) => (
               //if(repeatOwnedCheck[index] > 0){
-              <Cue
+              <GeneralNFT
                 key={index}
+                adminWallet={adminWallet}
                 itemId={cue.itemId}
                 tokenId={cue.tokenId}
                 name={cue.name}
@@ -1054,12 +953,11 @@ const Cues = (props) => {
               />
               // }
             ))}
-          {/* {check === 0 && marketNftsOwned.map((cue, index) => <Cue key={nfts.length + index} itemId={cue.itemId} tokenId={cue.tokenId} name={cue.name} description={cue.description} owned={cue.owned} level={cue.level} image={cue.image} strength={cue.strength} accuracy={cue.accuracy} control={cue.control} freeItemDropChance={cue.freeItemDropChance} isActive={cue.isActive} price={cue.price} lastPrice={cue.lastPrice} count={index} check={1} isSelected={selected === nfts.length + index} onClick={() => setSelected(nfts.length + index)} />)} */}
-          {check === 0 && marketNfts.map((cue, index) => <Cue key={nfts.length + marketNftsOwned.length + index} itemId={cue.itemId} tokenId={cue.tokenId} name={cue.name} description={cue.description} owned={cue.owned} level={cue.level} image={cue.image} strength={cue.strength} accuracy={cue.accuracy} control={cue.control} freeItemDropChance={cue.freeItemDropChance} isActive={cue.isActive} price={cue.price} lastPrice={cue.lastPrice} count={index} check={2} isSelected={selected === nfts.length + marketNftsOwned.length + index} collection={collection} onClick={() => setSelected(nfts.length + marketNftsOwned.length + index)} />)}
+          {check === 0 && marketNfts.map((cue, index) => <GeneralNFT key={nfts.length + marketNftsOwned.length + index} itemId={cue.itemId} tokenId={cue.tokenId} name={cue.name} description={cue.description} owned={cue.owned} level={cue.level} image={cue.image} strength={cue.strength} accuracy={cue.accuracy} control={cue.control} freeItemDropChance={cue.freeItemDropChance} isActive={cue.isActive} price={cue.price} lastPrice={cue.lastPrice} count={index} check={2} isSelected={selected === nfts.length + marketNftsOwned.length + index} collection={collection} onClick={() => setSelected(nfts.length + marketNftsOwned.length + index)} />)}
         </div>
       )}
     </>
   )
 }
 
-export default Cues
+export default GeneralNFTs

@@ -59,6 +59,7 @@ const Tournaments = React.lazy(() => import('./views/tournaments/Tournaments'))
 const EskillzToken = React.lazy(() => import('./views/eskillzToken/EskillzToken'))
 const Mint = React.lazy(() => import('./views/mint'))
 const Market = React.lazy(() => import('./views/market'))
+const Collections = React.lazy(() => import('./views/collections'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -113,7 +114,8 @@ const routes = [
   { path: '/gameSettings', name: 'Game Settings', element: GameSettings },
   { path: '/tournaments', name: 'Tournaments', element: Tournaments },
   { path: '/mint', name: 'NFT Mint', element: Mint },
-  { path: '/market', name: 'Market', element: Market }
+  { path: '/market', name: 'Market', element: Market },
+  { path: '/collection', name: 'Collection', element: Collections }
 ]
 
 export default routes

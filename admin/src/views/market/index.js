@@ -2,519 +2,267 @@ import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
 import Cues from "./Cues";
 import Cards from "./Card";
+import GeneralNFTs from "./General";
 import styles from "./style";
 import { useEffect, useState } from "react";
 import { ethers, providers } from "ethers";
 import { useNavigate } from "react-router-dom";
-// import { SpaOutlined } from '@material-ui/icons';
-// import Link from 'next/link';
-// import { useRouter } from "next/router";
-const NFTcontractABI = require("../../ABIs/NFT.json");
-const CardNFTcontractABI = require("../../ABIs/NFT_CARD.json");
-const NFTcontractAddress = "0xd7694bf6715dc2672c3c42558f09114e7a9fe6c3";
-const CardNFTcontractAddress = "0x4daf37319a02ae027b3165fd625fd5cf22ea622d";
-const sportTokenAddress = "0x8B65efE0E27D090F6E46E0dFE93E73d3574E5d99";
+
+import { Select, MenuItem, InputBase } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import GeneralNFT from "./General";
+import { CRow, CCol, CCardBody, CCardHeader, CCard, CButton } from '@coreui/react'
+
 const Web3 = require("web3");
+const axios = require('axios');
 
-let web3 = new Web3(
-  new Web3.providers.WebsocketProvider(
-    "wss://polygon-mumbai.g.alchemy.com/v2/4mg4dqqHfJ7nfo4sELW9PcnPiHXTDD93"
-  )
-  // new Web3.providers.HttpProvider("https://polygon-mumbai.infura.io/v3/4ee04b874a1b4ceeb448e8c8df37cdff")
-);
+const MarketContractInfo = require('./../../ABIs/VersusXMarket.json')
+const VersusX721Info = require('./../../ABIs/VersusX721.json')
+const VersusX1155Info = require('./../../ABIs/VersusX1155.json')
 
-var minABI = [
-  // balanceOf
-  {
-    constant: true,
-    inputs: [{ name: "_owner", type: "address" }],
-    name: "balanceOf",
-    outputs: [{ name: "balance", type: "uint256" }],
-    type: "function",
-  },
-  // decimals
-  {
-    constant: true,
-    inputs: [],
-    name: "decimals",
-    outputs: [{ name: "", type: "uint8" }],
-    type: "function",
-  },
-];
+console.log(process.env.REACT_APP_INFURA_KEY, process.env.REACT_APP_MARKETPLACE);
+let web3 = new Web3(process.env.REACT_APP_INFURA_KEY);
+let MarketContract = new web3.eth.Contract(MarketContractInfo.abi, process.env.REACT_APP_MARKETPLACE);
 
 const useStyles = makeStyles(styles);
+
+const BootstrapInput = styled(InputBase)(({ theme }) => ({
+  "label + &": {
+    marginTop: theme.spacing(3),
+  },
+  "& .MuiInputBase-input": {
+    borderRadius: 4,
+    position: "relative",
+    backgroundColor: "#00748d",
+    border: "1px solid #00748d",
+    color: "white",
+    fontSize: 16,
+    padding: "10px 26px 10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+    "&:focus": {
+      borderRadius: 4,
+      borderColor: "#009bb9",
+      boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
+    },
+  },
+  "& .MuiSelect-icon": {
+    color: "white",
+  },
+}));
+
+const getSaleNfts = async (nftaddress, nfttype) => {
+  try {
+    let nftList = await MarketContract.methods.fetchMarketItems(nftaddress).call();
+    const items = await Promise.all(nftList.map(async nftItem => {
+      let nftInfo;
+      if (nfttype == 'ERC721') {
+        let VersusX721Contract = new web3.eth.Contract(VersusX721Info.abi, nftaddress);
+        nftInfo = await VersusX721Contract.methods.tokenURI(nftItem.tokenId).call();
+      } else {
+        let VersusX1155Contract = new web3.eth.Contract(VersusX1155Info.abi, nftaddress);
+        nftInfo = await VersusX1155Contract.methods.uri(nftItem.tokenId).call();
+      }
+      let nftMetadata = await axios.get(nftInfo);
+      return {
+        id: nftItem["tokenId"],
+        itemId: nftItem["itemId"],
+        address: nftItem["nftContract"],
+        thumbnail: nftMetadata.data["image_url"],
+        title: nftMetadata.data["name"],
+        description: nftMetadata.data["description"],
+        metadata: nftMetadata.data,
+        isOwned: nftItem["seller"] == process.env.REACT_APP_TREASURY_ADDRESS,
+        price: nftItem["price"]
+      };
+    }))
+    return items;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
+
+const getOwnNfts = async (nftaddress) => {
+  try {
+    let nftListData = await axios.get(`https://polygon-mumbai.g.alchemy.com/nft/v2/${process.env.REACT_APP_ALCHEMY_KEY}/getNFTs?owner=${process.env.REACT_APP_TREASURY_ADDRESS}&contractAddresses[]=${nftaddress}&withMetadata=true&pageSize=100`);
+    let nftList = nftListData.data.ownedNfts;
+
+    const items = await Promise.all(nftList.map(async nftItem => {
+      return {
+        id: nftItem["id"]["tokenId"],
+        balance: nftItem["balance"],
+        address: nftItem["contract"]["address"],
+        thumbnail: nftItem["metadata"]["image_url"],
+        title: nftItem["title"],
+        description: nftItem["description"],
+        metadata: nftItem["metadata"],
+        isOwned: true
+      };
+    }))
+    return items;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
 
 function HomePage() {
   const classes = useStyles();
 
-  const [selected, setSelected] = React.useState(0);
   const [sortValue, setSortValue] = React.useState(0);
-  const [byAndSellSelected, setByAndSellSelected] = React.useState(0);
-  const [presaleSelected, setPresaleSelected] = React.useState(0);
-  const [stakingSelected, setStakingSelected] = React.useState(0);
+  const [byAndSellSelected, setByAndSellSelected] = React.useState(1);
   // const router = useRouter();
   // const history = useHistory();
-  const navigate = useNavigate();
-  const images = ["hall.png", "cues.png", "lifes.png"];
-
-  const titles = ["CARDS", "CUES", "Connect Wallet"];
-  const [balance, setBalance] = useState("");
-  const [sportBalance, setSportBalance] = useState("");
-  const [address, setAdress] = useState("");
-  const [chainID, setChainID] = useState("");
-  const [netName, setNetName] = useState("");
 
   const [loaded, setLoaded] = useState(0);
-  const [web3Modal, setWeb3Modal] = useState(null);
-  const [providerWe3Modal, setProvider] = useState(null);
-  const [ethersProvider, setEthersProvider] = useState(null);
-  const [signer, setSigner] = useState();
-  const [userAddress, setUserAddress] = useState();
- 
-  var TokenContract = new web3.eth.Contract(NFTcontractABI, NFTcontractAddress);
-  var CardTokenContract = new web3.eth.Contract(
-    CardNFTcontractABI,
-    CardNFTcontractAddress
-  );
-  var sportContract = new web3.eth.Contract(minABI, sportTokenAddress);
-  if (loaded == 0) {
-    setLoaded(1);
-    TokenContract.events.Transfer((err, events) => {
-      eventListened();
-    });
-    CardTokenContract.events.Transfer((err, events) => {
-      eventListened();
-    });
-  }
-  function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-  async function eventListened() {
-    await sleep(15000);
-    try {
-      if(address !=""){
 
-        if (window.ethereum) {
-          const addressArray = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          var web3Window = new Web3(window.ethereum);
-          const chainIDBuffer = await web3Window.eth.net.getId();
-          if (addressArray.length > 0) {
-            if (chainIDBuffer == 80001) {
-              web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-                let balETH = ethers.utils.formatUnits(balanceOf, "ether");
-                var string = balETH.toString().split(".");
-                if(string.length>1){
-                  if(string[1].length > 3){
-                    setBalance(string[0] +"." + string[1].substring(0,4) + " MATIC");
-                  }
-                  else{
-                    setBalance(string[0] +"." + string[1] + " MATIC");
-                  }
-                }
-                else{
-                  setBalance(string[0] + " MATIC");
-                }
-              });
-              sportContract.methods
-                .balanceOf(addressArray[0])
-                .call(function (err, res) {
-                  if (res.length > 7) {
-                    setSportBalance(
-                      String(
-                        parseInt(String(res).substring(0, res.length - 7)) / 100
-                      ) + " SPORT"
-                    );
-                  } else {
-                    setSportBalance("0.00 SPORT");
-                  }
-                });
-            }
-          }
-        } 
-      }
-    } catch (err) {
-      return {
-        address: "",
-      };
-    }
-  }
-  
+  const [collectionData, setCollectionData] = useState([]);
+  const [curCollection, setCurCollection] = useState(null);
+  const [collectionIndex, setCollectionIndex] = useState(0);
+  const [nfts, setNfts] = useState([]);
+
   useEffect(() => {
-    try {
-      if (window.ethereum) {
-        window.ethereum.on("chainChanged", () => {
-          navigate("/market");
-        });
-        window.ethereum.on("accountsChanged", () => {
-          navigate("/market");
-        });
-        getCurrentWalletConnected();
-      }
-    } catch {
-      return;
-    }
+    getAllCollections();
   }, []);
 
-
-  async function getCurrentWalletConnected() {
-    try {
-      if (window.ethereum) {
-        const addressArray = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        var web3Window = new Web3(window.ethereum);
-        const chainIDBuffer = await web3Window.eth.net.getId();
-        if (addressArray.length > 0) {
-          setAdress(addressArray[0]);
-          if (chainIDBuffer == 80001) {
-            setNetName("");
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, "ether");
-              var string = balETH.toString().split(".");
-              if(string.length>1){
-                if(string[1].length > 3){
-                  setBalance(string[0] +"." + string[1].substring(0,4) + " MATIC");
-                }
-                else{
-                  setBalance(string[0] +"." + string[1] + " MATIC");
-                }
-              }
-              else{
-                setBalance(string[0] + " MATIC");
-              }
-            });
-            sportContract.methods
-              .balanceOf(addressArray[0])
-              .call(function (err, res) {
-                if (res.length > 7) {
-                  setSportBalance(
-                    String(
-                      parseInt(String(res).substring(0, res.length - 7)) / 100
-                    ) + " SPORT"
-                  );
-                } else {
-                  setSportBalance("0.00 SPORT");
-                }
-              });
-          } else {
-            setNetName("Wrong NET(DisConnect)");
-          }
-        }
-      } 
-    } catch (err) {
-      return {
-        address: "",
-      };
-    }
-  }
-
-  const connect_Wallet = async () => {
-    const chainId = 80001;
-    // try{
-    if (window.ethereum) {
-      var web3Window = new Web3(window.ethereum);
-      if (window.ethereum.networkVersion != chainId) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            //params: [{ chainId: web3.utils.toHex(chainId) }],
-            params: [{ chainId: "0x" + chainId.toString(16) }],
-          });
-          if (address == "") {
-            await window.ethereum.request({
-              method: "wallet_requestPermissions",
-              params: [
-                {
-                  eth_accounts: {},
-                },
-              ],
-            });
-            const addressArray = await window.ethereum.request({
-              method: "eth_accounts",
-            });
-            if (addressArray.length > 0) {
-              setAdress(addressArray[0]);
-              setNetName("");
-              web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-                let balETH = ethers.utils.formatUnits(balanceOf, "ether");
-                var string = balETH.toString().split(".");
-                if(string.length>1){
-                  if(string[1].length > 3){
-                    setBalance(string[0] +"." + string[1].substring(0,4) + " MATIC");
-                  }
-                  else{
-                    setBalance(string[0] +"." + string[1] + " MATIC");
-                  }
-                }
-                else{
-                  setBalance(string[0] + " MATIC");
-                }
-              });
-              sportContract.methods
-                .balanceOf(addressArray[0])
-                .call(function (err, res) {
-                  if (res.length > 7) {
-                    setSportBalance(
-                      String(
-                        parseInt(String(res).substring(0, res.length - 7)) / 100
-                      ) + " SPORT"
-                    );
-                  } else {
-                    setSportBalance("0.00 SPORT");
-                  }
-                });
-            }
-          } else {
-            setAdress("");
-            setNetName("");
-            setBalance("");
-            setSportBalance("");
-          }
-        } catch (err) {
-          // This error code indicates that the chain has not been added to MetaMask.
-          if (err.code === 4902) {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainName: "Polygon Mumbai",
-                  chainId: web3.utils.toHex(chainId),
-                  nativeCurrency: {
-                    name: "Matic",
-                    decimals: 18,
-                    symbol: "Matic",
-                  },
-                  rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
-                },
-              ],
-            });
-          }
-        }
-      } else {
-        if (address == "") {
-          await window.ethereum.request({
-            method: "wallet_requestPermissions",
-            params: [
-              {
-                eth_accounts: {},
-              },
-            ],
-          });
-          const addressArray = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          if (addressArray.length > 0) {
-            setAdress(addressArray[0]);
-            setNetName("");
-            web3Window.eth.getBalance(addressArray[0], (err, balanceOf) => {
-              let balETH = ethers.utils.formatUnits(balanceOf, "ether");
-              var string = balETH.toString().split(".");
-              if(string.length>1){
-                if(string[1].length > 3){
-                  setBalance(string[0] +"." + string[1].substring(0,4) + " MATIC");
-                }
-                else{
-                  setBalance(string[0] +"." + string[1] + " MATIC");
-                }
-              }
-              else{
-                setBalance(string[0] + " MATIC");
-              }
-              });
-             // console.log(sportContract);
-            // sportContract.methods
-            //   .balanceOf(addressArray[0])
-            //   .call(function (err, res) {
-            //     console.log(res);
-            //     if (res.length > 7) {
-            //       setSportBalance(
-            //         String(
-            //           parseInt(String(res).substring(0, res.length - 7)) / 100
-            //         ) + " SPORT"
-            //       );
-            //     } else {
-            //       setSportBalance("0.00 SPORT");
-            //     }
-            //   });
-          }
-        } else {
-          setAdress("");
-          setNetName("");
-          setBalance("");
-          setSportBalance("");
-        }
-      }
-    } 
-    // }
-    // catch{
-    //   return;
-    // }
+  const onChangeCollection = (val) => {
+    setCurCollection(collectionData[val]);
+    setCollectionIndex(parseInt(val));
+    loadNfts();
   };
 
+  useEffect(() => {
+    loadNfts();
+  }, [curCollection]);
+
+  const getAllCollections = async () => {
+    try {
+      const res = await axios({
+        method: "post",
+        url: process.env.REACT_APP_BASE_URL + "/getCollections",
+        data: {},
+        headers: {
+          "Content-Type": `application/json`,
+        },
+      });
+      if (res.data.status == true) {
+        let tempa = res.data.data
+          .map((e, i) => {
+            console.log(e);
+            if (i == 0) {
+              setCurCollection(e);
+            }
+            e.properties = e.properties == "" ? [] : e.properties.split(",");
+            return e;
+          });
+        console.log(tempa);
+        setCollectionData(tempa);
+      }
+    } catch (er) {
+      console.log(er);
+    }
+  };
+
+  useEffect(() => {
+    loadNfts();
+  }, [byAndSellSelected]);
+
+  const loadNfts = async () => {
+    console.log(curCollection);
+    let items = [];
+    if (byAndSellSelected == 0) {
+      items = await getSaleNfts(curCollection.collection_address, curCollection.collection_type);
+    } else {
+      items = await getOwnNfts(curCollection.collection_address);
+    }
+    console.log("======");
+    console.log(items);
+    console.log("======");
+    setNfts(items);
+  }
+
   return (
-    <div style={{backgroundColor:'#072b36',padding:"20px"}}>
-      <div
-        className={classes.buttons}
-        style={{ justifyContent: "center", marginTop: "24px" }}
-      >
-       
+    <CCard>
+      <CCardHeader>
+        NFTs
+      </CCardHeader>
+      <CCardBody>
         <div
-          className="seperator"
-          style={{ width: "32px", flexShrink: "0%" }}
-        ></div>
-        <Button
-          className={`${classes.btn} ${
-            byAndSellSelected === 0 ? classes.selected_btn : ""
-          }`}
-          onClick={() => {
-            setByAndSellSelected(0);
-          }}
+          className={classes.buttons}
+          style={{ justifyContent: "center", marginTop: "24px" }}
         >
-          {"BUY"}
-        </Button>
-        <div
-          className="seperator"
-          style={{ width: "32px", flexShrink: "0%" }}
-        ></div>
-        <Button
-          className={`${classes.btn} ${
-            byAndSellSelected === 1 ? classes.selected_btn : ""
-          }`}
-          onClick={() => {
-            setByAndSellSelected(1);
-          }}
-        >
-          {"SELL"}
-        </Button>
-        <div
-          className="last-div"
-          style={{ flexDirection: "column", display: "flex" }}
-        >
-          <span style={{ color: "white" }}>
-            &nbsp; &nbsp; ADDRESS : &nbsp;
-            {address.length > 0
-              ? String(address).substring(0, 8) +
-                "..." +
-                String(address).substring(36)
-              : ""}
-          </span>
-          <span style={{ color: "#06f506" }}>
-            &nbsp; &nbsp; MATIC BALANCE : &nbsp;
-            {address.length > 0 ? balance : ""}
-          </span>
-          {/* <span style={{ color: "#00edff" }}>
-            &nbsp; &nbsp; SPORT BALANCE : &nbsp;
-            {address.length > 0 ? sportBalance : ""}
-          </span> */}
-        </div>
-        
-      </div>
-      <div className={classes.hero}>
-        <Button
-          className={classes.circle_btn}
-          onClick={() => {
-            setSortValue(1 - sortValue);
-          }}
-        >
-          {sortValue < 1 ? "↑" : "↓"}
-        </Button>
-        <div className={classes.buttons}>
-          {images.map((img, index) => (
-            <Button
-              key={index}
-              className={`${classes.btn} ${
-                selected === index ? classes.selected_btn : ""
-              }`}
-              onClick={() => {
-                if (index === 2) {
-                  connect_Wallet();}
-                else {
-                  setSelected(index);
-                }
+          {collectionData.length > 0 && (
+            <Select
+              value={collectionIndex}
+              onChange={(event) => {
+                onChangeCollection(Number(event.target.value));
               }}
+              displayEmpty
+              input={<BootstrapInput />}
             >
-              <img src={"/images/" + img} alt="" />
-              {index === 2
-                ? netName == ""
-                  ? balance.length == 0
-                    ? titles[index]
-                    : "DisConnect"
-                  : netName
-                : titles[index]}
-            </Button>
-          ))}
+              {collectionData.map((e, ci) => {
+                return <MenuItem style={{ display: "grid" }} value={ci}>{e.collection_name}</MenuItem>;
+              })}
+            </Select>
+          )}
+          <div
+            className="seperator"
+            style={{ width: "32px", flexShrink: "0%" }}
+          ></div>
+          <CButton color="info"
+            variant={byAndSellSelected === 0 ? "" : "outline"}
+            onClick={() => {
+              setByAndSellSelected(0);
+            }}
+          >BUY</CButton>
+
+          <div
+            className="seperator"
+            style={{ width: "32px", flexShrink: "0%" }}
+          ></div>
+          <CButton color="info"
+            variant={byAndSellSelected === 1 ? "" : "outline"}
+            onClick={() => {
+              setByAndSellSelected(1);
+            }}
+          >SELL</CButton>
         </div>
-        {selected === 0 &&
-          byAndSellSelected === 1 &&
-          sortValue == 1 &&
-          address == "" && <Cards check={1} sortVal={1} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 1 &&
-          sortValue == 0 &&
-          address == "" && <Cards check={1} sortVal={0} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 0 &&
-          sortValue == 1 &&
-          address == "" && <Cards check={0} sortVal={1} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 0 &&
-          sortValue == 0 &&
-          address == "" && <Cards check={0} sortVal={0} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 1 &&
-          sortValue == 1 &&
-          address != "" && <Cards check={1} sortVal={1} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 1 &&
-          sortValue == 0 &&
-          address != "" && <Cards check={1} sortVal={0} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 0 &&
-          sortValue == 1 &&
-          address != "" && <Cards check={0} sortVal={1} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 0 &&
-          byAndSellSelected === 0 &&
-          sortValue == 0 &&
-          address != "" && <Cards check={0} sortVal={0} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 1 &&
-          sortValue == 1 &&
-          address == "" && <Cues check={1} sortVal={1} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 1 &&
-          sortValue == 0 &&
-          address == "" && <Cues check={1} sortVal={0} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 0 &&
-          sortValue == 1 &&
-          address == "" && <Cues check={0} sortVal={1} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 0 &&
-          sortValue == 0 &&
-          address == "" && <Cues check={0} sortVal={0} connected={0} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 1 &&
-          sortValue == 1 &&
-          address != "" && <Cues check={1} sortVal={1} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 1 &&
-          sortValue == 0 &&
-          address != "" && <Cues check={1} sortVal={0} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 0 &&
-          sortValue == 1 &&
-          address != "" && <Cues check={0} sortVal={1} connected={1} provider = {providerWe3Modal}/>}
-        {selected === 1 &&
-          byAndSellSelected === 0 &&
-          sortValue == 0 &&
-          address != "" && <Cues check={0} sortVal={0} connected={1} provider = {providerWe3Modal} />}
-        {/* { selected === 2 && <LifesAndTokens /> } */}
-      </div>
-    </div>
+
+        {/* <Button
+        className={classes.circle_btn}
+        onClick={() => {
+          setSortValue(1 - sortValue);
+        }}
+      >
+        {sortValue < 1 ? "↑" : "↓"}
+      </Button> */}
+        <CRow className="mt-3">
+          {nfts.map((e) => (
+            <CCol xs={12}>
+              <GeneralNFTs isBuy={byAndSellSelected == 0} nft={e} collection={curCollection}
+                onSell={() => { loadNfts() }}
+                onBuy={() => { loadNfts() }}
+                onCancel={() => { loadNfts() }}
+              />
+            </CCol>
+          ))}
+        </CRow>
+      </CCardBody>
+    </CCard>
+
   );
 }
 

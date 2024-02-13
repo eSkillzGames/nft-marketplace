@@ -28,6 +28,7 @@ const ESGToken = () => {
   const [address, setAdress] = useState("");
 
   async function setFee() {
+    return;
     setTaxFee(parseInt(Number(taxFee) * 100)/100);
     try{
       const { ethereum } = window;
@@ -62,6 +63,7 @@ const ESGToken = () => {
   }
 
   async function SetFeeReceiver() {
+    return;
     if(taxFeeReceiver.length==42 && taxFeeReceiver.substring(0,2) =="0x"){
       try{
         const { ethereum } = window;
@@ -97,6 +99,7 @@ const ESGToken = () => {
   }
 
   async function SetOption() {
+    return;
     try{
       const { ethereum } = window;
       if(ethereum){
@@ -129,6 +132,7 @@ const ESGToken = () => {
   }
 
   async function SetShareExempt() {
+    return;
     if(shareExemptAddress.length==42 && shareExemptAddress.substring(0,2) =="0x"){
       try{
         const { ethereum } = window;
@@ -164,7 +168,7 @@ const ESGToken = () => {
   }
 
   async function WithdrawToTreasury() {
-    
+    return;
     try{
       const { ethereum } = window;
       if(ethereum){
@@ -278,19 +282,19 @@ const ESGToken = () => {
             }
           } catch (err) {
               // This error code indicates that the chain has not been added to MetaMask.
-            if (err.code === 4902) {
-              await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                  {
-                    chainName: 'Ropsten TestNet',
-                    chainId: web3.utils.toHex(chainId),
-                    nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
-                    rpcUrls: ['https://ropsten.infura.io/v3/'],
-                  },
-                ],
-              });
-            }
+            // if (err.code === 4902) {
+            //   await window.ethereum.request({
+            //     method: 'wallet_addEthereumChain',
+            //     params: [
+            //       {
+            //         chainName: 'Ropsten TestNet',
+            //         chainId: web3.utils.toHex(chainId),
+            //         nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+            //         rpcUrls: ['https://ropsten.infura.io/v3/'],
+            //       },
+            //     ],
+            //   });
+            // }
           }
         }
         else{
@@ -326,9 +330,9 @@ const ESGToken = () => {
 
   return (
     <>
-    <CContainer className="mb-4">        
+    {/* <CContainer className="mb-4">        
         <CButton onClick={() => connectWallet()}>{address.length == 0 ? "Connect Wallet" : "DisConnect"} </CButton>
-    </CContainer>
+    </CContainer> */}
       <CCard className="mb-4">
         <CCardHeader>Tax Fee</CCardHeader>
         <CCardBody>   
