@@ -33,25 +33,29 @@ const theme = createTheme({
     },
   },
   typography: {
+    fontFamily: `"Poppins"`,
+    fontWeightLight: "100",
+    fontWeightRegular: "400",
+    fontWeightBold: "700",
     color: "white",
-    h5: {
-      color: "white",
-      fontSize: "1.5rem",
-      fontWeight: 600,
-    },
-    h6: {
-      color: "white",
-      fontSize: "1.25rem",
-      fontWeight: 400,
-    },
-    body2: {
-      color: "white",
-      fontSize: "1rem",
-    },
-    caption: {
-      color: grey[400],
-      fontSize: "1rem",
-    },
+    // h5: {
+    //   color: "white",
+    //   fontSize: "1.5rem",
+    //   fontWeight: 600,
+    // },
+    // h6: {
+    //   color: "white",
+    //   fontSize: "1.25rem",
+    //   fontWeight: 400,
+    // },
+    // body2: {
+    //   color: "white",
+    //   fontSize: "1rem",
+    // },
+    // caption: {
+    //   color: grey[400],
+    //   fontSize: "1rem",
+    // },
   },
 });
 

@@ -45,6 +45,7 @@ const PresaleBuy = ({ data, id}) => {
                 setCustomTokenBalance("0.00");
               }
               let sportPrice = await tokenPriceContract.getPrice(sportTokenAddress);
+              console.log((sportPrice[0] * sportPrice[2]) / sportPrice[1] / 10 ** 6);
               setTotalPrice(toFixed(
                   (sportPrice[0] * sportPrice[2]) / sportPrice[1] / 10 ** 6
                 ));
@@ -169,11 +170,11 @@ const PresaleBuy = ({ data, id}) => {
           <h3 className={`${style.color_white} mt-4`}>
             {Number(customTokenBalance)}
           </h3>
-          <div className={`h6 ${style.color_blue} mt-3`}>
+          {/* <div className={`h6 ${style.color_blue} mt-3`}>
             ${" "}
             {(Number(customTokenBalance) * Number(totalPrice))
               .toString()}
-          </div>
+          </div> */}
           <Button
             variant="outline-primary"
             className={`${style.color_blue} ${style.btn_outline_primary} rounded-pill w-100 mt-4`}
@@ -185,12 +186,12 @@ const PresaleBuy = ({ data, id}) => {
           </Button>
           
         </div>
-        <div className="m-4 text-start">
+        {/* <div className="m-4 text-start">
           <p className={style.color_light_green}>{data.priceTitle}</p>
           <div className={`h2 ${style.color_blue}`}>
             ${String(totalPrice).substring(0, 12)}
           </div>
-        </div>
+        </div> */}
       </div>
       <Presale
         hideModel={hideModel}

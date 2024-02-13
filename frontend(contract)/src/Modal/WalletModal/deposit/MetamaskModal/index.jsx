@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import metamask from "../../../../assets/image/metamask.webp";
 import { ethers, providers } from "ethers";
 import { useDispatch, useSelector } from "react-redux";
-import * as homeActions from "../../../../pages/home/store/actions";
+import {homeActions} from "../../../../store/actions";
 import sportABI from '../../../../Sport.json';
 import esgABI from '../../../../Esg.json';
 import Web3Modal from "web3modal";

@@ -110,7 +110,7 @@ const LifesAndTokens = () => {
           </Button>
           <div style={{width:"34px"}}></div>
           <Button className={`${classes.btn2} ${esgAndSPORTSelected === 1 ? classes.selected_btn : ''}`} onClick={() => {setESGAndSPORTSelected(1);router.push('/sport');}}>              
-            {"SPORT Token sale"}
+            {"SKILL Token sale"}
           </Button>
         </div>        
         <div>

@@ -1,209 +1,246 @@
-import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, TextField ,Box, Link } from "@mui/material";
+import { VisibilityOutlined, VisibilityOffOutlined } from "@material-ui/icons";
+import {
+  Button,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  Box,
+  Typography,
+} from "@mui/material";
+import VersusInput from "../../components/VersusInput";
+import VersusButton from "../../components/VersusButton";
+import VersusLoading from "../../components/VersusLoading";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db, firebase } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
-import * as fuseActions from "../../store/actions";
-import * as loginActions from "../register/store/actions";
+import { fuseActions } from "../../store/actions";
+import { authActions } from "../../store/actions";
+import * as React from "react";
+
 const Login = () => {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [userName, setUserName] = useState("");
-    const [password, setPass] = useState("");
-    const [confirm, setConfirm] = useState("");
-    const [sign, setSign] = useState(true);
-    const [show, setShow] = useState(false);
-    const dispatch = useDispatch();
-    const [value,setValue] = useState("2000-01-01");
-  
-    const handleRegister = async () => {
-      if (password !== confirm) {
-        setConfirm("");
-        setPass("");
-        dispatch(
-          fuseActions.showMessage({ message: "wrong password", variant: "error" })
-        );
-        return 0;
-      }
-      if (password.length < 6) {
-        dispatch(
-          fuseActions.showMessage({
-            message: "password must be 6 character at least",
-            variant: "error",
-          })
-        );
-        return 0;
-      }
-      if (userName.length < 3) {
-        dispatch(
-          fuseActions.showMessage({
-            message: "userName must be 3 character at least",
-            variant: "error",
-          })
-        );
-        return 0;
-      }
-      dispatch(loginActions.register(navigate, email, password,userName,value.toString()));
-    };
-    const handleSignin = async () => {
-      dispatch(loginActions.login(navigate, auth, email, password));
-    };
-  
-    const handleClickShowPassword = () => {
-      setShow(!show);
-    };
-  
-    const handleMouseDownPassword = (event) => {
-      event.preventDefault();
-    };
-  
-    return(
-        <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [password, setPass] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [sign, setSign] = useState(true);
+  const [show, setShow] = useState(false);
+  const dispatch = useDispatch();
+  const [value, setValue] = useState("2000-01-01");
+  const [size, setSize] = useState([0, 0]);
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async () => {
+    if (password !== confirm) {
+      setConfirm("");
+      setPass("");
+      dispatch(
+        fuseActions.showMessage({ message: "wrong password", variant: "error" })
+      );
+      return 0;
+    }
+    if (password.length < 6) {
+      dispatch(
+        fuseActions.showMessage({
+          message: "password must be 6 character at least",
+          variant: "error",
+        })
+      );
+      return 0;
+    }
+    if (userName.length < 3) {
+      dispatch(
+        fuseActions.showMessage({
+          message: "userName must be 3 character at least",
+          variant: "error",
+        })
+      );
+      return 0;
+    }
+    dispatch(
+      authActions.register(
+        navigate,
+        email,
+        password,
+        userName,
+        value.toString()
+      )
+    );
+  };
+
+  const endLoading = () => {
+    setLoading(false);
+  }
+
+  const handleSignin = async () => {
+    dispatch(authActions.login(navigate, auth, email, password, endLoading));
+  };
+
+  const handleClickShowPassword = () => {
+    setShow(!show);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+  React.useEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight]);
+    }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+  },[]);
+
+  return (
+    !loading?
+    <div style={{ textAlign: "center", padding: "5rem 2rem" }}> 
+      <div
+        style={{maxWidth: "60rem", margin: "auto"}}
       >
-        <Paper
-          sx={{
-            p: 5,
-            mt: 8,
-            width: "500px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <Box
+          alignItems={"center"}
+          justifyContent={"center"}
+          display={"flex"}
+          width={"100%"}
         >
-          <FormControl sx={{ m: 1, width: "30ch" }} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">Email</InputLabel>
-            <OutlinedInput
-              label="Email"
-              // placeholder="email"
-  
-              variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            
-          </FormControl>
-          {/* {!sign && (<FormControl sx={{ m: 1, width: "30ch" }} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">UserName</InputLabel>
-              <OutlinedInput
-                label="UserName"
-                // placeholder="email"
-  
-                variant="outlined"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-              
-            </FormControl>
-          )} */}
-  
-          <FormControl sx={{ m: 1, width: "30ch" }} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">
-              Password
-            </InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-password"
-              type={show ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPass(e.target.value)}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {show ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="Password"
-            />
-          </FormControl>
-          {/* {!sign && (
-            <FormControl sx={{ m: 1, width: "30ch" }} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                Confirm Password
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={show ? "text" : "password"}
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {show ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Confirm Password"
-              />
-            </FormControl>
-          )}
-           {!sign && (<FormControl sx={{m:1,width:"30ch"}} >
-              <TextField  label="Birthday"
-                type="date"
-                value={value}
-                onChange={(e) =>{
-                  setValue(e.target.value)
-                } }
-                defaultValue={"2000-01-01"}/>
-            </FormControl>
-          )} */}
-          <Button
-            variant="contained"
-            onClick={() =>  handleSignin()}
-            sx={{ my: 2 }}
-          >
-        Sign in 
-          </Button>
-          <Button
-            onClick={() => {
-              navigate("/register")
-            }}
-            sx={{ my: 2 }}
-          >
-           go to Register
-          </Button>
-          <Button onClick={() => navigate("/forgot")}  sx={{ my: 2 }}>
-            Forgot Password
-          </Button>
           <Box
-            component="img"
-            sx={{
-              // width: "100%",
-              // maxHeight: { xs: 233, md: 167 },
-              maxWidth: { xs: 250, md: 250 },
-            }}
-            alt="ESKILLZ"
-            src="/images/logo-new.png"
-          />
-          {/* <Link
-            color='secondary'
-            component="button"
-            variant="body2"
-            onClick={() => {
-              window.open("https://app.appsonair.com/install/QjNptp");
-            }}
+            display={"flex"}
+            justifyContent={"center"}
+            alignContent={"center"}
+            textAlign={"center"}
+            width={"100%"}
+            position={"relative"}
           >
-            Download eSkillz Pool for iOS
-          </Link> */}
-          
-        </Paper>
+            {/* <img src="/imgs/login/login-panel.png" style={{ height: "60vh" }} /> */}
+            <div
+              style={{
+                padding: "2rem 3.5rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#2aa8db20",
+                margin: "10px",
+                outlineOffset: "10px",
+                outline: "2px solid #2aa8db",
+                width:"100%"
+              }}
+            >
+              <div>
+                <div style={{marginBottom:"1.5rem"}}>
+                  <img src="/imgs/versusx-logo.png" style={{width: "15rem"}} />
+                </div>
+                <div style={{ textAlign: "left", marginTop: "8px" }}>
+                  <Typography
+                    variant="body1"
+                    color="white"
+                    mb={0.5}
+                  >
+                    Email
+                  </Typography>
+                  <FormControl sx={{ width: "45ch" }} variant="outlined">
+                    <VersusInput
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </FormControl>
+                </div>
+                <div style={{ textAlign: "left", marginTop: "16px" }}>
+                  <Typography
+                    variant="body1"
+                    color="white"
+                    mb={0.5}
+                  >
+                    Password
+                  </Typography>
+                  <FormControl sx={{ width: "45ch" }} variant="outlined">
+                    <VersusInput
+                      placeholder="Enter your password"
+                      type={show ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPass(e.target.value)}
+                      onKeyDown={(e) => {
+                        console.log("Pressed Enter")
+                        if (e.keyCode === 13) {
+                          setLoading(true); 
+                          handleSignin()
+                        }
+                      }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            sx={{ color: "white" }}
+                          >
+                            {show ? (
+                              <VisibilityOffOutlined />
+                            ) : (
+                              <VisibilityOutlined />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                </div>
+                <div style={{ textAlign: "left" }}>
+                  <Typography
+                    variant="subtitle2"
+                    color="white"
+                    mt={1}
+                    style={{cursor:"pointer"}}
+                    onClick={() => navigate("/forgot")}
+                  >
+                    Forgot Password
+                  </Typography>
+                </div>
+                <div style={{ position: "relative", marginTop: "32px" }}>
+                  <VersusButton
+                    label={"LOG IN"}
+                    style={{ width: "45ch", cursor: "pointer" }}
+                    onClick={() => { 
+                      setLoading(true); 
+                      handleSignin()
+                    }
+                    }
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "8px"
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    color="white"
+                  >
+                    New to VersusX?
+                  </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    color="#00bdff"
+                    ml={1}
+                    onClick={() => navigate("/register")}
+                    style={{cursor:"pointer"}}
+                  >
+                    Sign up
+                  </Typography>
+                </div>
+              </div>
+            </div>
+          </Box>
+        </Box>
       </div>
-    )
-}
+    </div>
+    :
+    <VersusLoading />
+  );
+};
 export default Login;

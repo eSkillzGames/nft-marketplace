@@ -108,7 +108,7 @@ const Calculator = () => {
           <div
             className={`ms-5 text-start ${style.color_middle_green} ${style.subtitle}`}
           >
-            SPORT amount
+            SKILL amount
           </div>
           <div className="d-flex position-relative align-items-center">
             <input

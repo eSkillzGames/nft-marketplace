@@ -1,6 +1,5 @@
-body {
-  background-color: #072b36 !important;
-  /*background-image: linear-gradient(180deg, #072B36 0%, #031E26 100%);*/
+body, html {
+  font-family: "Poppins";
 }
 .modal-content {
   border-radius: 2.5rem;
@@ -40,4 +39,12 @@ output {
   pointer-events: none;
   background: transparent;
   text-align: center;
+}
+
+.ellipsis{
+  overflow: hidden;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }

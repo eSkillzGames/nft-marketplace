@@ -115,26 +115,101 @@ const styles = createStyles({
     float: "right",
   },
   select: {
-    color: "white !important",
-    "& > fieldset": {
-      borderColor: "white !important" ,
-      "& > legend": {
-        display: "none",
-      }
-    },
-    "& > svg": {
-      color: "white !important" 
-    }
+    marginBottom: "10px",
+    // "& > fieldset": {
+    //   background: "#00748d",
+    //   borderColor: "#00748d !important",
+    //   "& > legend": {
+    //     display: "none",
+    //   }
+    // },
+    // "& > div": {
+    //   zIndex: "1",
+    // },
+    // "& > svg": {
+    //   color: "white !important",
+    //   zIndex: "1",
+    // }
   },
   row: {
     width: "100%",
+    margin: "0px",
+    "& > div":{
+      padding: "0px"
+    }
   },
   tablePagination: {
     "& p": {
       color: "black",
       marginBottom: "0px",
     }
-  }
+  },
+  // leaderboard list item
+  leaderboard_item: {
+    position: "relative",
+    marginBottom: "10px",
+    fontSize: "16px",
+    // fontFamily: "Averta",
+    filter: "drop-shadow(0px 0px 5px #00748d)",
+    "& > .top-shape": {
+      borderBottom: "5px solid #009bb9",
+      borderLeft: "10px solid transparent",
+      borderRight: "10px solid transparent",
+    },
+    "& > .bottom-shape": {
+      borderTop: "45px solid #00748d",
+      borderLeft: "25px solid transparent",
+      borderRight: "25px solid transparent",
+    },
+    "& > .top-shape.reverse": {
+      borderBottom: "45px solid #009bb9",
+      borderLeft: "25px solid transparent",
+      borderRight: "25px solid transparent",
+    },
+    "& > .bottom-shape.reverse": {
+      borderTop: "5px solid #00748d",
+      borderLeft: "10px solid transparent",
+      borderRight: "10px solid transparent",
+    },
+    "& > .content": {
+      position: "absolute",
+      top: "20%",
+      left: "0px",
+      padding: "0px 35px",
+      width: "100%",
+      color: "white",
+      "& .rank": {
+        alignItems: "center",
+        display: "flex",
+        justifyContent: "left",
+      },
+      "& .info": {
+        display: "flex",
+        alignItems: "center",
+        overflow: "hidden",
+        "& > span": {
+          marginLeft: "10px",
+          width: "100%",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }
+      },
+      "& .score": {
+        alignItems: "center",
+        display: "flex",
+        justifyContent: "right",
+      }
+    },
+  },
+  "@media (max-width: 576px)": {
+    "mobile_center": {
+      textAlign: "center"
+    },
+    showtype: {
+      float: "inherit",
+      marginTop: "10px !important"
+    }
+  },
 });
 
 export default styles;

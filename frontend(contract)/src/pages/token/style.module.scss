@@ -1,7 +1,7 @@
 @import "src/constant/color";
 
 .token {
-    padding: 5rem;
+    padding: 40px;
     @media (max-width: 1024px) {
         padding: 4rem 5rem 3rem 5rem;
         @media (max-width: 425px) {
@@ -87,9 +87,10 @@
         }
     }
     .logo {
-        position: absolute;
-        left: calc(50% - 5vw);
-        top: 2.5rem;
+        // position: absolute;
+        // left: calc(50% - 5vw);
+        // top: 2.5rem;
+        text-align: center;
         @media (max-width: 1024px) {
             display: flex;
             position: unset;
@@ -137,7 +138,7 @@
         }
     }
     .second_container {
-        margin-top: 7.5rem;
+        margin-top: 4rem;
         padding: 0;
         @media (max-width: 1023px) {
             margin-top: 2.5rem;
@@ -208,7 +209,7 @@
                 flex-direction: column;;
             }
             .sub_container {
-                width: 70%;
+                width: 100%;
                 border-radius: 2rem;
                 padding: 2rem;
                 @media (max-width:425px) {

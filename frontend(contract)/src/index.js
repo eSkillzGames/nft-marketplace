@@ -13,13 +13,31 @@ import store from "./store/store";
 import FuseMessage from "./components/FuseMessage/FuseMessage";
 import { ThemeProvider } from "@mui/material";
 
+import { Buffer } from "buffer";
+
+////////////////
+import { Web3ReactProvider } from "@web3-react/core";
+import { Web3Provider } from "@ethersproject/providers";
+import { ethers } from "ethers";
+
+window.Buffer = window.Buffer || Buffer;
+
+const getLibrary = (provider) => {
+  const library = new Web3Provider(provider);
+  library.pollingInterval = 8000; // frequency provider is polling
+  return library;
+};
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <Web3ReactProvider getLibrary={getLibrary}>
+        <App/>
+      </Web3ReactProvider>
         <FuseMessage />
       </ThemeProvider>
     </Provider>

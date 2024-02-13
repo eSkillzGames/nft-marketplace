@@ -6,7 +6,7 @@ import MuiAlert from "@mui/material/Alert";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Slide from "@mui/material/Slide";
-import * as Actions from "../../store/actions";
+import { fuseActions } from "../../store/actions";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -34,7 +34,7 @@ export default function FuseMessage() {
   const options = useSelector(({ fuse }) => fuse.message.options);
   useEffect(() => {
     setTimeout(() => {
-      dispatch(Actions.hideMessage());
+      dispatch(fuseActions.hideMessage());
     }, options.timer);
   }, [options]);
 
@@ -42,7 +42,7 @@ export default function FuseMessage() {
     if (reason === "clickaway") {
       return;
     }
-    dispatch(Actions.hideMessage());
+    dispatch(fuseActions.hideMessage());
   };
 
   return (

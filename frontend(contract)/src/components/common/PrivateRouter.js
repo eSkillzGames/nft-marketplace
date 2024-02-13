@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import * as fuseActions from "../../store/actions";
+import { fuseActions } from "../../store/actions";
 import auth from "./auth-helper";
 
 // eslint-disable-next-line react/prop-types
@@ -12,7 +12,7 @@ const PrivateRoute = ({ children }) => {
     if (!auth.isLogined()) {
       dispatch(
         fuseActions.showMessage({
-          message: "you dont have access to that page",
+          message: "You dont have access to that page",
           variant: "error",
         })
       );

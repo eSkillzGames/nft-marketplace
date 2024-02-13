@@ -15,25 +15,8 @@ admin.initializeApp({
   credential: admin.credential.cert(credentials),
 });
 
-global.adminAuth = admin.auth();
-
-
 app.use("/api/user", require("./server/routes/api/user"));
-
-// app.use(express.static('public'));
-// app.use(express.json());
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.setHeader("Access-Control-Allow-Credentials", "true");
-//   res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
-//   res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-//   next();
-// });
-
-// // error handling middleware
-// app.use(function(err,req,res,next){
-//     res.status(422).send({error: err.message});
-// });
+app.use("/api/leaderboard", require("./server/routes/api/leaderboard"));
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve(__dirname, "./build")));

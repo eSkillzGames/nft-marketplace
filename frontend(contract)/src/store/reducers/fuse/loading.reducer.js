@@ -1,4 +1,4 @@
-import * as fuseActions from "../../actions";
+import {fuseActions} from "../../actions";
 
 const initialState = {
   state: false,

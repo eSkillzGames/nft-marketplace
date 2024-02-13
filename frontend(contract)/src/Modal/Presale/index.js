@@ -13,33 +13,36 @@ import { makeStyles } from "@material-ui/core/styles";
 import tokenPriceABI from "../../GetTokenPrice.json";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import * as homeActions from "../../pages/home/store/actions"
-import * as fuseActions from "../../store/actions";
+import { fuseActions, homeActions } from "../../store/actions";
 const { default: axios } = require("axios");
 const UniswapABI = require("../../Uniswap.json");
 const UniswapAddress = "0x8954AfA98594b838bda56FE4C12a09D7739D179b";
 const tokenPriceAddress = "0x6b186a04C801A3D717621b0B19D018375161bFF8";
 const sportTokenAddress = "0x2caFAb766a586a09659a09E92e9f4005DF827512";
 const esgTokenAddress = "0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28";
-const providerR = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com");
+const providerR = new ethers.providers.JsonRpcProvider(
+  "https://rpc-mumbai.maticvigil.com"
+);
 // const providerW = new ethers.providers.JsonRpcProvider("https://polygon-mumbai.infura.io/v3/" + process.env.REACT_APP_INFURAID);
-const PresaleContract = new ethers.Contract(UniswapAddress, UniswapABI, providerR); 
-const tokenPriceContract = new ethers.Contract(tokenPriceAddress, tokenPriceABI, providerR); 
+const PresaleContract = new ethers.Contract(
+  UniswapAddress,
+  UniswapABI,
+  providerR
+);
+const tokenPriceContract = new ethers.Contract(
+  tokenPriceAddress,
+  tokenPriceABI,
+  providerR
+);
 // const Web3 = impor("web3");
 const useStyles = makeStyles({
-  
   input: {
-    color: "white"
-  }
+    color: "white",
+  },
 });
 
 const Presale = (props) => {
-  const {
-    show,
-    onHide,
-    id,      
-    hideModel,    
-  } = props;
+  const { show, onHide, id, hideModel } = props;
 
   const [ethAmount, setEthAmount] = React.useState("");
   const [sportAmount, setSportAmount] = React.useState("0");
@@ -49,67 +52,61 @@ const Presale = (props) => {
   const dispatch = useDispatch();
   const buy = async () => {
     try {
-          if (parseFloat(ethAmount) > 0) {             
-              
-              try {
-                hideModel();
-                var type = "esg";
-                if (id == 1) {
-                  type = "sport";
-                }
-                const response = await axios.post(
-                  "https://eskillzserver.net/sendtransaction/v1/BuyToken",
-                  { Account: address, Type: type, ethValue: ethAmount, UserID: uid}
-                );
-                console.log("response->", response.data);
-           
-                dispatch(homeActions.setBalance(address));                
-
-                setSportAmount("0");
-                setEthAmount("");
-              } catch (err) {
-
-              }
-            
-          } else {
-            dispatch(
-              fuseActions.showMessage({
-                message: "MATIC Amount must not be Zero.",
-                variant: "error",
-                timer:3000
-              })
-            );
+      if (parseFloat(ethAmount) > 0) {
+        try {
+          hideModel();
+          var type = "esg";
+          if (id == 1) {
+            type = "sport";
           }
-        
-      
+          const response = await axios.post(
+            process.env.REACT_APP_API_URL + "/sendtransaction/v1/BuyToken",
+            { Account: address, Type: type, ethValue: ethAmount, UserID: uid }
+          );
+          console.log("response->", response.data);
+
+          dispatch(homeActions.setBalance(address));
+
+          setSportAmount("0");
+          setEthAmount("");
+        } catch (err) { }
+      } else {
+        dispatch(
+          fuseActions.showMessage({
+            message: "MATIC Amount must not be Zero.",
+            variant: "error",
+            timer: 3000,
+          })
+        );
+      }
     } catch {
       return;
     }
   };
 
   const calcEarnVal = async (val) => {
-    try {   
-            if (id == 1) {
-              if (val != 0) {
-                const price = await tokenPriceContract.getETHPriceUsingAmount(sportTokenAddress,
-                  (val * 10 ** 18).toString());    
-                  setSportAmount(String(price / 10 ** 9));          
-                
-              } else {
-                setSportAmount(0);
-              }
-            } else {
-              if (val != 0) {
-                const price = await tokenPriceContract.getETHPriceUsingAmount(esgTokenAddress,
-                  (val * 10 ** 18).toString());    
-                  setSportAmount(String(price / 10 ** 9));  
-              } else {
-                setSportAmount(0);
-              }
-            }
-          
-        
-      
+    try {
+      if (id == 1) {
+        if (val != 0) {
+          const price = await tokenPriceContract.getETHPriceUsingAmount(
+            sportTokenAddress,
+            (val * 10 ** 18).toString()
+          );
+          setSportAmount(String(price / 10 ** 9));
+        } else {
+          setSportAmount(0);
+        }
+      } else {
+        if (val != 0) {
+          const price = await tokenPriceContract.getETHPriceUsingAmount(
+            esgTokenAddress,
+            (val * 10 ** 18).toString()
+          );
+          setSportAmount(String(price / 10 ** 9));
+        } else {
+          setSportAmount(0);
+        }
+      }
     } catch (err) {
       return {
         address: "",
@@ -149,8 +146,8 @@ const Presale = (props) => {
                       Number(event.target.value.toString()[1]) >= 0
                       ? event.target.value.toString()[1]
                       : Number(event.target.value) >= 0
-                      ? event.target.value
-                      : ""
+                        ? event.target.value
+                        : ""
                     : 0
                 );
 
@@ -162,8 +159,8 @@ const Presale = (props) => {
                       Number(event.target.value.toString()[1]) >= 0
                       ? event.target.value.toString()[1]
                       : Number(event.target.value) >= 0
-                      ? event.target.value
-                      : ""
+                        ? event.target.value
+                        : ""
                     : 0
                 );
               }}

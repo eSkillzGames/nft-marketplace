@@ -3,7 +3,7 @@ import style from "../../pages/token/style.module.scss";
 import distributeeABI from "../../Distribute.json";
 import { ethers } from "ethers";
 import { useDispatch, useSelector } from "react-redux";
-import * as fuseActions from "../../store/actions";
+import { fuseActions } from "../../store/actions";
 import tokenPriceABI from "../../GetTokenPrice.json";
 const distributeAddress = "0x025F0aeEE1D58Af5f51f8EAA27779Bf484eF5012";
 const sportTokenAddress = "0x2caFAb766a586a09659a09E92e9f4005DF827512";

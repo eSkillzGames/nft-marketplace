@@ -97,7 +97,7 @@ export default function WalletTab(props) {
         </Tabs>
       </Grid>
       <Grid container justifyContent="space-around" sx={{ mt: 4 }}>
-        {["MATIC", "SPORT"].map((item, index) => (
+        {["MATIC", "SKILL"].map((item, index) => (
           <Grid item key={index}>
             <TokenButton
               // key={index}

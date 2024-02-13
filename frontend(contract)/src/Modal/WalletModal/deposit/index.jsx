@@ -9,6 +9,7 @@ import {
   InputBase,
   FormGroup,
   ButtonGroup,
+  CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { grey } from "@mui/material/colors";
@@ -18,14 +19,15 @@ import MetamaskModal from "./MetamaskModal";
 import metamask from "../../../assets/image/metamask.webp";
 import { ethers, providers } from "ethers";
 import { useDispatch, useSelector } from "react-redux";
-import * as homeActions from "../../../pages/home/store/actions";
-import * as fuseActions from "../../../store/actions";
-import sportABI from '../../../Sport.json';
-import esgABI from '../../../Esg.json';
+import { fuseActions, homeActions } from "../../../store/actions";
+import sportABI from "../../../Sport.json";
+import sportJson from "../../../Sport_m.json";
+import esgABI from "../../../Esg.json";
 // import Web3Modal from "web3modal";
 // import WalletConnectProvider from "@walletconnect/web3-provider";
 const { default: axios } = require("axios");
-const sportTokenAddress = "0x2caFAb766a586a09659a09E92e9f4005DF827512";
+// const sportTokenAddress = "0x2caFAb766a586a09659a09E92e9f4005DF827512";
+const sportTokenAddress = "0xec1E041B32898b8a33F5a7789226f9d64c7ed287";
 const esgTokenAddress = "0x6637926e5c038c7ae3d3fd2c2d77c44e8be1ed28";
 const QRDiv = styled("div")(({ theme }) => ({
   padding: 12,
@@ -54,7 +56,7 @@ const Root = styled("div")(({ theme }) => ({
 }));
 
 const Deposit = (props) => {
-  const { selected, metaMaskAddress,provider, ...other } = props;
+  const { selected, metaMaskAddress, provider, ...other } = props;
   const { address } = useSelector(({ authReducer }) => authReducer.auth);
   const [ethAmount, setEthAmount] = React.useState(0);
   const [metaMaskMatic, setMetaMaskMatic] = React.useState(0);
@@ -65,119 +67,81 @@ const Deposit = (props) => {
   const [providerMobile, setProvider] = React.useState(null);
   const [web3Modal, setWeb3Modal] = React.useState(null);
   const { balance } = useSelector(({ homeReducer }) => homeReducer.home);
+  const [isLoading, setLoading] = React.useState(false);
+
   useEffect(() => {
-    if(balance.MaticBal !=null){
+    if (balance.MaticBal != null) {
       btnChanged();
     }
-    
   }, [selected]);
 
   useEffect(() => {
-    if(balance.MaticBal !=null){
+    if (balance.MaticBal != null) {
       getMetaMaskBalance();
       btnChanged();
     }
-    
-  }, [metaMaskAddress,balance]);
+  }, [metaMaskAddress, balance]);
 
-  
-  async function btnChanged(){
+  async function btnChanged() {
     setEthAmount(0);
-    
-    if(selected == 0){
+
+    if (selected == 0) {
       setMaxBalance(metaMaskMatic);
-    }
-    else if (selected == 1){
+    } else if (selected == 1) {
       setMaxBalance(metaMaskSport);
-      
     }
-    
   }
   async function getMetaMaskBalance() {
+    setLoading(true);
+    if (metaMaskAddress == "" || metaMaskAddress == null) {
+      return;
+    }
     const response1 = await axios.post(
-      "https://eskillzserver.net/api/v1/getMaticBalanceFromWallet",
-      { address: metaMaskAddress}
+      process.env.REACT_APP_API_URL + "/api/v1/getMaticBalanceFromWallet",
+      { address: metaMaskAddress }
     );
-    
+
     setMetaMaskMatic(Number(response1.data));
     const response2 = await axios.post(
-      "https://eskillzserver.net/api/v1/getSportBalanceFromWallet",
-      { address: metaMaskAddress}
+      process.env.REACT_APP_API_URL + "/api/v1/getSportBalanceFromWallet",
+      { address: metaMaskAddress }
     );
     setMetaMaskSport(Number(response2.data));
-    if(selected == 0){
+    if (selected == 0) {
       setMaxBalance(Number(response1.data));
-    }
-    else if (selected == 1){
+    } else if (selected == 1) {
       setMaxBalance(Number(response2.data));
-      
     }
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   }
   async function deposit_Coin() {
     try {
-      if(Number(ethAmount) > 0){
-        let ethAmountBuf = parseInt(Number(ethAmount) * 10** 7) / 10 ** 7;
+      if (Number(ethAmount) > 0) {
+        let ethAmountBuf = parseInt(Number(ethAmount) * 10 ** 7) / 10 ** 7;
         setEthAmount(0);
         var chainID = 80001;
-        if(selected == 0){
-  
-          if(window.ethereum){
+        if (selected == 0) {
+          if (window.ethereum) {
             // const ethersProvider = new ethers.providers.Web3Provider(provider);
             // const signer = await ethersProvider.getSigner();
             // await ethersProvider.send("eth_requestAccounts", []);
             await window.ethereum.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: "0x"+chainID.toString(16) }],
-            }); 
-            const providerBuf = new ethers.providers.Web3Provider(window.ethereum)
-    
-            await providerBuf.send("eth_requestAccounts", []);
-    
-            const signer = providerBuf.getSigner()
-    
-            const tx = await signer.sendTransaction({
-                to: address,
-                value: ethers.utils.parseEther(ethAmountBuf.toString())
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: "0x" + chainID.toString(16) }],
             });
-            await tx.wait();
-            dispatch(homeActions.setBalance(address)); 
-            dispatch(
-              fuseActions.showMessage({
-                message: "Deposited " + ethAmountBuf + "Matic successfuly.",
-                variant: "success",
-                timer:10000
-              })
+            const providerBuf = new ethers.providers.Web3Provider(
+              window.ethereum
             );
-          }
-          else{
-            // let providerM;
-            // if(providerMobile == null){
-            //   providerM = await web3Modal.connect();    
-            //   setProvider(providerM);
-            // }
-            // else{
-            //   providerM = providerMobile;
-            // }
-            // let providerM = await web3Modal.connect();
-            provider.updateRpcUrl(80001); 
-            const ethersProvider = new ethers.providers.Web3Provider(provider);
-            const network = await ethersProvider.getNetwork();
-            const chainIdBuf = network.chainId;
-            if (!(Number(chainIdBuf) === Number(chainID))) {
-              await ethersProvider.provider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x"+chainID.toString(16) }],
-              });            
-            }
-            const signer = await ethersProvider.getSigner();
-            await ethersProvider.send("eth_requestAccounts", []);  
-            
+
+            await providerBuf.send("eth_requestAccounts", []);
+
+            const signer = providerBuf.getSigner();
+
             const tx = await signer.sendTransaction({
-                to: address,
-                value: ethers.utils.parseUnits(
-                  ethAmountBuf.toString(),
-                  "ether"
-                )._hex,
+              to: address,
+              value: ethers.utils.parseEther(ethAmountBuf.toString()),
             });
             await tx.wait();
             dispatch(homeActions.setBalance(address));
@@ -185,21 +149,57 @@ const Deposit = (props) => {
               fuseActions.showMessage({
                 message: "Deposited " + ethAmountBuf + "Matic successfuly.",
                 variant: "success",
-                timer:10000
+                timer: 10000,
               })
-            ); 
+            );
+          } else {
+            // let providerM;
+            // if(providerMobile == null){
+            //   providerM = await web3Modal.connect();
+            //   setProvider(providerM);
+            // }
+            // else{
+            //   providerM = providerMobile;
+            // }
+            // let providerM = await web3Modal.connect();
+            provider.updateRpcUrl(80001);
+            const ethersProvider = new ethers.providers.Web3Provider(provider);
+            const network = await ethersProvider.getNetwork();
+            const chainIdBuf = network.chainId;
+            if (!(Number(chainIdBuf) === Number(chainID))) {
+              await ethersProvider.provider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: "0x" + chainID.toString(16) }],
+              });
+            }
+            const signer = await ethersProvider.getSigner();
+            await ethersProvider.send("eth_requestAccounts", []);
+
+            const tx = await signer.sendTransaction({
+              to: address,
+              value: ethers.utils.parseUnits(ethAmountBuf.toString(), "ether")
+                ._hex,
+            });
+            await tx.wait();
+            dispatch(homeActions.setBalance(address));
+            dispatch(
+              fuseActions.showMessage({
+                message: "Deposited " + ethAmountBuf + "Matic successfuly.",
+                variant: "success",
+                timer: 10000,
+              })
+            );
           }
-        }
-        else if (selected == 1){
-          if(window.ethereum){
+        } else if (selected == 1) {
+          if (window.ethereum) {
             await window.ethereum.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: "0x"+chainID.toString(16) }],
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: "0x" + chainID.toString(16) }],
             });
             const addressArray = await window.ethereum.request({
               method: "eth_accounts",
             });
-            if(addressArray.length == 0){
+            if (addressArray.length == 0) {
               await window.ethereum.request({
                 method: "wallet_requestPermissions",
                 params: [
@@ -209,24 +209,32 @@ const Deposit = (props) => {
                 ],
               });
             }
-            const providerBuf = new ethers.providers.Web3Provider(window.ethereum);
+            const providerBuf = new ethers.providers.Web3Provider(
+              window.ethereum
+            );
             const signer = providerBuf.getSigner();
-            var sportContract = new ethers.Contract(sportTokenAddress, sportABI, signer);
-            let nftTxn = await sportContract.transfer(address,String(ethAmountBuf * 10**9)); 
+            var sportContract = new ethers.Contract(
+              sportTokenAddress,
+              sportJson.abi,
+              signer
+            );
+            let nftTxn = await sportContract.transfer(
+              address,
+              String(ethAmountBuf * 10 ** 9)
+            );
             await nftTxn.wait();
             dispatch(homeActions.setBalance(address));
             dispatch(
               fuseActions.showMessage({
-                message: "Deposited " + ethAmountBuf + "Sport successfuly.",
+                message: "Deposited " + ethAmountBuf + "Skill successfuly.",
                 variant: "success",
-                timer:10000
+                timer: 10000,
               })
-            ); 
-          }
-          else{
+            );
+          } else {
             // let providerM;
             // if(providerMobile == null){
-            //   providerM = await web3Modal.connect();    
+            //   providerM = await web3Modal.connect();
             //   setProvider(providerM);
             // }
             // else{
@@ -234,40 +242,46 @@ const Deposit = (props) => {
             // }
             // providerM = await web3Modal.connect();
             // let providerM = await web3Modal.connect();
-            provider.updateRpcUrl(80001); 
+            provider.updateRpcUrl(80001);
             const ethersProvider = new ethers.providers.Web3Provider(provider);
             const network = await ethersProvider.getNetwork();
             const chainIdBuf = network.chainId;
             if (!(Number(chainIdBuf) === Number(chainID))) {
               await ethersProvider.provider.request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x"+chainID.toString(16) }],
-              });            
+                params: [{ chainId: "0x" + chainID.toString(16) }],
+              });
             }
             const signer = await ethersProvider.getSigner();
-            var sportContract = new ethers.Contract(sportTokenAddress, sportABI, signer);
-            let nftTxn = await sportContract.transfer(address,String(ethAmountBuf * 10**9)); 
+            var sportContract = new ethers.Contract(
+              sportTokenAddress,
+              sportJson.abi,
+              signer
+            );
+            let nftTxn = await sportContract.transfer(
+              address,
+              String(ethAmountBuf * 10 ** 9)
+            );
             await nftTxn.wait();
             dispatch(homeActions.setBalance(address));
             dispatch(
               fuseActions.showMessage({
-                message: "Deposited " + ethAmountBuf + "Sport successfuly.",
+                message: "Deposited " + ethAmountBuf + "Skill successfuly.",
                 variant: "success",
-                timer:10000
+                timer: 10000,
               })
-            ); 
+            );
           }
-        }
-        else{
-          if(window.ethereum){
+        } else {
+          if (window.ethereum) {
             await window.ethereum.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: "0x"+chainID.toString(16) }],
-            }); 
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: "0x" + chainID.toString(16) }],
+            });
             const addressArray = await window.ethereum.request({
               method: "eth_accounts",
             });
-            if(addressArray.length == 0){
+            if (addressArray.length == 0) {
               await window.ethereum.request({
                 method: "wallet_requestPermissions",
                 params: [
@@ -277,85 +291,97 @@ const Deposit = (props) => {
                 ],
               });
             }
-            const providerBuf = new ethers.providers.Web3Provider(window.ethereum);
+            const providerBuf = new ethers.providers.Web3Provider(
+              window.ethereum
+            );
             const signer = providerBuf.getSigner();
-            var esgContract = new ethers.Contract(esgTokenAddress, esgABI, signer);
-            let nftTxn = await esgContract.transfer(address,ethAmountBuf * 10**9); 
+            var esgContract = new ethers.Contract(
+              esgTokenAddress,
+              esgABI,
+              signer
+            );
+            let nftTxn = await esgContract.transfer(
+              address,
+              ethAmountBuf * 10 ** 9
+            );
             await nftTxn.wait();
             dispatch(homeActions.setBalance(address));
             dispatch(
               fuseActions.showMessage({
                 message: "Deposited " + ethAmountBuf + "Esg successfuly.",
                 variant: "success",
-                timer:10000
+                timer: 10000,
               })
-            );  
-          }
-          else{
+            );
+          } else {
             // let providerM;
             // if(providerMobile == null){
-            //   providerM = await web3Modal.connect();    
+            //   providerM = await web3Modal.connect();
             //   setProvider(providerM);
             // }
             // else{
             //   providerM = providerMobile;
             // }
             // let providerM = await web3Modal.connect();
-            provider.updateRpcUrl(80001); 
+            provider.updateRpcUrl(80001);
             const ethersProvider = new providers.Web3Provider(provider);
             const network = await ethersProvider.getNetwork();
             const chainIdBuf = network.chainId;
             if (!(Number(chainIdBuf) === Number(chainID))) {
               await ethersProvider.provider.request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x"+chainID.toString(16) }],
-              });            
+                params: [{ chainId: "0x" + chainID.toString(16) }],
+              });
             }
             const signer = await ethersProvider.getSigner();
-            var esgContract = new ethers.Contract(esgTokenAddress, esgABI, signer);
-            let nftTxn = await esgContract.transfer(address,ethAmountBuf * 10**9); 
+            var esgContract = new ethers.Contract(
+              esgTokenAddress,
+              esgABI,
+              signer
+            );
+            let nftTxn = await esgContract.transfer(
+              address,
+              ethAmountBuf * 10 ** 9
+            );
             await nftTxn.wait();
-            dispatch(homeActions.setBalance(address)); 
+            dispatch(homeActions.setBalance(address));
             dispatch(
               fuseActions.showMessage({
                 message: "Deposited " + ethAmountBuf + "Esg successfuly.",
                 variant: "success",
-                timer:10000
+                timer: 10000,
               })
-            ); 
+            );
           }
         }
-        
-      }
-      else{
+      } else {
         dispatch(
           fuseActions.showMessage({
-            message: "Topup Amount must be bigger than zero.",
+            message: "Top-up Amount must be bigger than zero.",
             variant: "error",
-            timer:3000
+            timer: 3000,
           })
         );
       }
-      } catch (err) {
-        dispatch(
-          fuseActions.showMessage({
-            message: err,
-            variant: "error",
-            timer:3000
-          })
-        );
-      }
+    } catch (err) {
+      dispatch(
+        fuseActions.showMessage({
+          message: err,
+          variant: "error",
+          timer: 3000,
+        })
+      );
     }
+  }
   const copy = async () => {
     dispatch(
       fuseActions.showMessage({
         message: "MetaMask Walllet Address Copied.",
         variant: "success",
-        timer:3000
+        timer: 3000,
       })
     );
     await navigator.clipboard.writeText(metaMaskAddress);
-    
   };
 
   // const showModal = (val) => {
@@ -385,16 +411,28 @@ const Deposit = (props) => {
           </Grid> 
         </Grid>
       </Root> */}
+      {isLoading && (
+        <div style={{ color: "white", textAlign: "center" }}>
+          <CircularProgress
+            color="inherit"
+            style={{
+              width: "30px",
+              height: "30px",
+            }}
+          />
+        </div>
+      )}
       <FormGroup>
         <Typography variant="caption">MetaMask Address</Typography>
-        <StyledInputRoot style={{
-          display: "flex",
-        }}>
-          <StyledInput 
+        <StyledInputRoot
+          style={{
+            display: "flex",
+          }}
+        >
+          <StyledInput
             variant="filled"
             value={metaMaskAddress}
-            readOnly = {true}
-            
+            readOnly={true}
           />
           <IconButton onClick={copy}>
             <ContentCopyIcon color="secondary" />
@@ -403,7 +441,7 @@ const Deposit = (props) => {
       </FormGroup>
       {/* <Grid container flexDirection="column">
         <Typography variant="caption" sx={{ mt: 4 }}>
-          Topup Amount
+          Top-up Amount
         </Typography>
         <StyledInput 
           placeholder="0"
@@ -426,11 +464,11 @@ const Deposit = (props) => {
         />
       </Grid> */}
       <FormGroup sx={{ my: 4 }}>
-        <Typography variant="caption">Topup Amount</Typography>
+        <Typography variant="caption">Top-up Amount</Typography>
         <StyledInputRoot>
           <Grid container alignItems="center">
             <Grid item md>
-              <StyledInput 
+              <StyledInput
                 placeholder="0"
                 variant="filled"
                 value={ethAmount}
@@ -438,15 +476,15 @@ const Deposit = (props) => {
                   event.preventDefault();
                   setEthAmount(
                     Number(event.target.value) >= 0 &&
-                    Number(event.target.value) <= Number(maxBalance)
-                    ? event.target.value.toString().length == 2 &&
-                      event.target.value.toString()[0] == "0" &&
-                      Number(event.target.value.toString()[1]) >= 0
-                      ? event.target.value.toString()[1]
-                      : Number(event.target.value) >= 0
-                      ? event.target.value
-                      : ""
-                    : 0
+                      Number(event.target.value) <= Number(maxBalance)
+                      ? event.target.value.toString().length == 2 &&
+                        event.target.value.toString()[0] == "0" &&
+                        Number(event.target.value.toString()[1]) >= 0
+                        ? event.target.value.toString()[1]
+                        : Number(event.target.value) >= 0
+                          ? event.target.value
+                          : ""
+                      : 0
                   );
                 }}
               />
@@ -459,20 +497,51 @@ const Deposit = (props) => {
                       variant="outlined"
                       sx={{
                         borderRadius: "16px 1px 1px 16px",
-                        textTransform: "capitalize"
+                        textTransform: "capitalize",
                       }}
-                      onClick={() => setEthAmount(maxBalance/20)}
+                      onClick={() => {
+                        if (isLoading) {
+                          return;
+                        }
+                        setEthAmount(maxBalance / 20);
+                      }}
                     >
                       Min
                     </Button>
-                    <Button variant="outlined" onClick={() => setEthAmount(maxBalance/4)}>25%</Button>
-                    <Button variant="outlined" onClick={() => setEthAmount(maxBalance/2)}>50%</Button>
                     <Button
                       variant="outlined"
-                      sx={{ borderRadius: "1px 16px 16px 1px", 
-                        textTransform: "capitalize"
+                      onClick={() => {
+                        if (isLoading) {
+                          return;
+                        }
+                        setEthAmount(maxBalance / 4);
                       }}
-                      onClick={() => setEthAmount(maxBalance)}
+                    >
+                      25%
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        if (isLoading) {
+                          return;
+                        }
+                        setEthAmount(maxBalance / 2);
+                      }}
+                    >
+                      50%
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        borderRadius: "1px 16px 16px 1px",
+                        textTransform: "capitalize",
+                      }}
+                      onClick={() => {
+                        if (isLoading) {
+                          return;
+                        }
+                        setEthAmount(maxBalance);
+                      }}
                     >
                       Max
                     </Button>
@@ -487,11 +556,16 @@ const Deposit = (props) => {
         <Grid item md={6}>
           <Button
             variant="contained"
-            onClick={() => deposit_Coin()}
+            onClick={() => {
+              if (isLoading) {
+                return;
+              }
+              deposit_Coin();
+            }}
             fullWidth
-            sx={{ borderRadius: 8, mt: 4 , textTransform: "capitalize"}}
+            sx={{ borderRadius: 8, mt: 4, textTransform: "none" }}
           >
-            Topup From MetaMask &nbsp;&nbsp;
+            Top-up From MetaMask &nbsp;&nbsp;
             <Grid item>
               <img src={metamask} alt="metamask" width="25px" />
             </Grid>
